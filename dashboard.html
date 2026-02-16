@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/modal.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+    <style>
+        body {
+            background-color: var(--bg-secondary);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+        }
+        
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+        }
+        .sidebar-logo span { color: var(--text-secondary); }
+        
+        .nav-menu {
+            list-style: none;
+            flex: 1;
+        }
+        
+        .nav-item {
+            margin-bottom: 8px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-link.active {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+            cursor: pointer;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .stat-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .stat-trend {
+            font-size: 12px;
+            color: #166534;
+            background: #DCFCE7;
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-weight: 600;
+        }
+
+        .recent-section {
+            margin-top: 40px;
+        }
+        
+        .recent-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .project-list {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .project-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.2s;
+        }
+        
+        .project-item:last-child {
+            border-bottom: none;
+        }
+        
+        .project-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .project-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .project-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .project-date {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+        
+        .status-done {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 80px; padding: 24px 12px; }
+            .nav-link span, .user-info, .sidebar-logo span { display: none; }
+            .main-content { margin-left: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="/index.html" class="sidebar-logo">навырост<span>.</span></a>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <span>📊</span>
+                    <span>Дашборд</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/platform/tools/unit-economics.html" class="nav-link">
+                    <span>🔢</span>
+                    <span>Юнит-экономика</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/platform/tools/pnl-report.html" class="nav-link">
+                    <span>💰</span>
+                    <span>P&L Отчет</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/platform/resources/documents.html" class="nav-link">
+                    <span>📄</span>
+                    <span>Документы</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/platform/resources/education.html" class="nav-link">
+                    <span>🎓</span>
+                    <span>Обучение</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-profile" onclick="logout()">
+            <div class="avatar">И</div>
+            <div class="user-info">
+                <div class="user-name">Иван Петров</div>
+                <div class="user-role">Free Plan</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Мои Проекты</h1>
+                <p class="text-secondary">Управляйте своими идеями и бизнесами</p>
+            </div>
+            <button class="btn-primary" onclick="createNewProject()">Новый проект +</button>
+        </div>
+        
+        <div class="recent-section">
+            <div class="project-list" id="projectList">
+                <!-- Project Items Generated Here -->
+            </div>
+        </div>
+
+        <div class="recent-header" style="margin-top: 40px;">Быстрый доступ</div>
+        <div class="dashboard-grid" style="margin-top: 20px;">
+            <div class="stat-card" style="cursor: pointer;" onclick="openQuickTool('unit')">
+                <div class="stat-header">
+                    <span class="stat-title">Калькулятор</span>
+                </div>
+                <div class="stat-value" style="font-size: 20px;">🔢 Юнит-экономика</div>
+                <div style="margin-top: 8px; font-size: 13px; color: var(--text-tertiary);">Быстрый расчет без сохранения в проект</div>
+            </div>
+            <div class="stat-card" style="cursor: pointer;" onclick="openQuickTool('pnl')">
+                <div class="stat-header">
+                    <span class="stat-title">Калькулятор</span>
+                </div>
+                <div class="stat-value" style="font-size: 20px;">💰 P&L Отчет</div>
+                <div style="margin-top: 8px; font-size: 13px; color: var(--text-tertiary);">Быстрый прогноз на 6 мес</div>
+            </div>
+            <div class="stat-card" style="cursor: pointer;" onclick="openDocs()">
+                <div class="stat-header">
+                    <span class="stat-title">Библиотека</span>
+                </div>
+                <div class="stat-value" style="font-size: 20px;">📄 Документы</div>
+                <div style="margin-top: 8px; font-size: 13px; color: var(--text-tertiary);">Шаблоны договоров и счетов</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/assets/js/data-manager.js"></script>
+    <script src="/assets/js/app-config.js"></script>
+    <script src="/assets/js/sidebar-logic.js"></script>
+    <script src="/assets/js/modal.js"></script>
+    <script>
+        // Check auth
+        if (!DataManager.getUser()) {
+            window.location.href = '/auth/login.html';
+        } else {
+            // Use unified post-login home
+            window.location.href = '/platform/home.html';
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem(DataManager.USER_KEY);
+            window.location.href = '/index.html';
+        }
+
+        function createNewProject() {
+            Modal.prompt(
+                'Новый проект', 
+                'Введите название проекта (например, "Кофейня"):', 
+                (name) => {
+                    const project = DataManager.createProject(name);
+                    renderProjects();
+                }
+            );
+        }
+
+        function openProject(id) {
+            DataManager.setCurrentProjectId(id);
+            window.location.href = '/platform/project.html';
+        }
+
+        function openQuickTool(type) {
+            DataManager.setCurrentProjectId(null); // Clear project context
+            if (type === 'unit') window.location.href = '/platform/tools/unit-economics.html';
+            if (type === 'pnl') window.location.href = '/platform/tools/pnl-report.html';
+        }
+
+        function openDocs() {
+            window.location.href = '/platform/resources/documents.html';
+        }
+
+        function renderProjects() {
+            const list = document.getElementById('projectList');
+            const projects = DataManager.getProjects();
+
+            if (projects.length === 0) {
+                list.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: var(--text-tertiary);">
+                        У вас пока нет проектов. Создайте первый!
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = '';
+            projects.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'project-item';
+                el.style.cursor = 'pointer';
+                el.onclick = () => openProject(p.id);
+                
+                // Determine status
+                let status = 'Черновик';
+                let statusClass = '';
+                if (p.unitData || p.pnlData) {
+                    status = 'В работе';
+                    statusClass = 'status-done';
+                }
+
+                el.innerHTML = `
+                    <div class="project-info">
+                        <div class="project-icon" style="background: var(--bg-tertiary); font-size: 20px;">🚀</div>
+                        <div>
+                            <div class="project-name">${p.name}</div>
+                            <div class="project-date">Обновлен ${DataManager.formatDate(p.updated)}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <div style="text-align: right; font-size: 12px; color: var(--text-tertiary);">
+                            ${p.stats.revenue ? 'Выручка: ' + DataManager.formatMoney(p.stats.revenue) : ''}
+                        </div>
+                        <span class="status-badge ${statusClass}">${status}</span>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', renderProjects);
+    </script>
+</body>
+</html>

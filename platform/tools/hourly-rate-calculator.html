@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор почасовой ставки — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <a href="/index.html" class="sidebar-logo">навырост<span>.</span></a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+            <div class="user-profile">
+                <div class="avatar">И</div>
+                <div class="user-info">
+                    <div class="user-name">Иван Петров</div>
+                    <div class="user-role">Free Plan</div>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Калькулятор почасовой ставки</h1>
+                <p class="page-subtitle">Рассчитайте оптимальную почасовую ставку для ваших услуг</p>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Входные данные</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Желаемый годовой доход (₽)</label>
+                            <input type="number" class="form-input" id="desiredIncome" placeholder="1,200,000" value="1200000">
+                            <div class="form-help">Сколько вы хотите зарабатывать в год после уплаты налогов</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Рабочих часов в неделю</label>
+                            <input type="number" class="form-input" id="hoursPerWeek" placeholder="40" value="40">
+                            <div class="form-help">Фактическое количество часов, которое вы готовы работать</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Нерабочие недели в году</label>
+                            <input type="number" class="form-input" id="nonWorkingWeeks" placeholder="4" value="4">
+                            <div class="form-help">Отпуск, больничные, праздники</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Процент неоплачиваемого времени (%)</label>
+                            <input type="number" class="form-input" id="nonBillablePercent" placeholder="20" value="20">
+                            <div class="form-help">Время на административные задачи, поиск клиентов и т.д.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Налоговая ставка (%)</label>
+                            <input type="number" class="form-input" id="taxRate" placeholder="13" value="13">
+                            <div class="form-help">Процент налогов от вашего дохода</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Расходы на бизнес в год (₽)</label>
+                            <input type="number" class="form-input" id="businessExpenses" placeholder="100,000" value="100000">
+                            <div class="form-help">Оборудование, софт, аренда, маркетинг и другие расходы</div>
+                        </div>
+
+                        <button class="btn-primary" onclick="calculateHourlyRate()">Рассчитать ставку</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Результаты расчета</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="results" style="display: none;">
+                            <div class="metric-card">
+                                <div class="metric-label">Рекомендуемая почасовая ставка</div>
+                                <div class="metric-value" id="hourlyRate">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Годовой доход до налогов</div>
+                                <div class="metric-value" id="grossIncome">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Чистый годовой доход</div>
+                                <div class="metric-value" id="netIncome">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Рабочих часов в год</div>
+                                <div class="metric-value" id="workingHours">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Оплачиваемых часов в год</div>
+                                <div class="metric-value" id="billableHours">—</div>
+                            </div>
+
+                            <div class="explanation-box">
+                                <h4>Как использовать эту ставку:</h4>
+                                <ul>
+                                    <li>Для новых клиентов начинайте с этой ставки</li>
+                                    <li>Для долгосрочных проектов можно предложить скидку 10-20%</li>
+                                    <li>Для срочных задач увеличьте ставку на 25-50%</li>
+                                    <li>Регулярно пересматривайте ставку с учетом инфляции и роста квалификации</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="noResults" class="no-results">
+                            <div class="no-results-icon">⏰</div>
+                            <div class="no-results-text">Заполните форму и нажмите "Рассчитать ставку"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/data-manager.js"></script>
+    <script src="/assets/js/app-config.js"></script>
+    <script src="/assets/js/sidebar-logic.js"></script>
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = '/auth/login.html';
+        }
+
+        function calculateHourlyRate() {
+            // Get input values
+            const desiredIncome = parseFloat(document.getElementById('desiredIncome').value) || 0;
+            const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 40;
+            const nonWorkingWeeks = parseFloat(document.getElementById('nonWorkingWeeks').value) || 0;
+            const nonBillablePercent = parseFloat(document.getElementById('nonBillablePercent').value) || 0;
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            const businessExpenses = parseFloat(document.getElementById('businessExpenses').value) || 0;
+
+            // Calculations
+            const workingWeeks = 52 - nonWorkingWeeks;
+            const totalWorkingHours = workingWeeks * hoursPerWeek;
+            const billableHours = totalWorkingHours * (1 - nonBillablePercent / 100);
+            
+            // Calculate required gross income (before taxes)
+            const netIncomeAfterTaxes = desiredIncome;
+            const grossIncomeNeeded = netIncomeAfterTaxes / (1 - taxRate / 100);
+            const totalRevenueNeeded = grossIncomeNeeded + businessExpenses;
+            
+            // Calculate hourly rate
+            const hourlyRate = totalRevenueNeeded / billableHours;
+
+            // Display results
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+
+            document.getElementById('hourlyRate').textContent = '₽' + Math.round(hourlyRate).toLocaleString();
+            document.getElementById('grossIncome').textContent = '₽' + Math.round(grossIncomeNeeded).toLocaleString();
+            document.getElementById('netIncome').textContent = '₽' + Math.round(netIncomeAfterTaxes).toLocaleString();
+            document.getElementById('workingHours').textContent = totalWorkingHours.toLocaleString() + ' ч.';
+            document.getElementById('billableHours').textContent = Math.round(billableHours).toLocaleString() + ' ч.';
+        }
+
+        // Initialize sidebar
+        if (typeof renderSidebar === 'function') {
+            renderSidebar();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>навырост. — Платформа управления бизнесом</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <meta name="description" content="Финансовые модели, юнит-экономика и шаблоны документов для предпринимателей.">
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-inner">
+            <a href="#" class="logo">навырост<span>.</span></a>
+            <div class="nav-links">
+                <a href="#platform" class="nav-link">Платформа</a>
+                <a href="#tools" class="nav-link">Инструменты</a>
+                <a href="/auth/login.html" class="nav-link">Войти</a>
+                <a href="/auth/register.html" class="btn-primary">Начать бесплатно</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="hero-tag">Beta 2.0</div>
+            <h1>Управляйте бизнесом на основе <span>реальных цифр</span></h1>
+            <p>Платформа для расчёта юнит-экономики, P&L и налоговой нагрузки. Без сложных таблиц и консультантов.</p>
+            <div class="hero-actions">
+                <button class="btn-primary">Начать работу</button>
+                <button class="btn-secondary">Как это работает</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">2 мин</div>
+                    <div class="stat-label">На первый расчёт</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Точность данных</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">0₽</div>
+                    <div class="stat-label">Базовый тариф</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="platform" class="section platform-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Система управления</h2>
+                <p>Все ключевые метрики бизнеса в одном интерфейсе</p>
+            </div>
+
+            <div class="platform-container">
+                <div class="platform-nav">
+                    <div class="platform-tab active" data-tab="finance">
+                        <div class="tab-icon">📊</div>
+                        <span>Финансы и P&L</span>
+                    </div>
+                    <div class="platform-tab" data-tab="marketing">
+                        <div class="tab-icon">⚡️</div>
+                        <span>Маркетинг</span>
+                    </div>
+                    <div class="platform-tab" data-tab="product">
+                        <div class="tab-icon">💎</div>
+                        <span>Продукт</span>
+                    </div>
+                    <div class="platform-tab" data-tab="hr">
+                        <div class="tab-icon">👥</div>
+                        <span>Команда</span>
+                    </div>
+                    <div class="platform-tab" data-tab="legal">
+                        <div class="tab-icon">⚖️</div>
+                        <span>Право</span>
+                    </div>
+                </div>
+
+                <div class="platform-content">
+                    <!-- Finance Pane -->
+                    <div class="content-pane active" id="pane-finance">
+                        <h3>Финансовое планирование</h3>
+                        <p class="text-secondary pane-desc">Полный контроль над денежными потоками компании.</p>
+                        <div class="step-list">
+                            <div class="step-card">
+                                <span class="step-num">Шаг 01</span>
+                                <div class="step-title">Юнит-экономика</div>
+                                <div class="step-desc">Расчет маржинальности одной продажи. Поймите, зарабатываете ли вы на каждом клиенте.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 02</span>
+                                <div class="step-title">P&L Отчет</div>
+                                <div class="step-desc">Прогноз прибылей и убытков на 12 месяцев. Кассовые разрывы видны заранее.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 03</span>
+                                <div class="step-title">Налоговое планирование</div>
+                                <div class="step-desc">Сравнение режимов (УСН, ОСНО, Патент) на ваших реальных цифрах.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 04</span>
+                                <div class="step-title">Точка безубыточности</div>
+                                <div class="step-desc">Сколько нужно продать, чтобы выйти в ноль и начать зарабатывать.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marketing Pane -->
+                    <div class="content-pane" id="pane-marketing">
+                        <h3>Маркетинговая стратегия</h3>
+                        <p class="text-secondary pane-desc">От анализа аудитории до стоимости привлечения клиента.</p>
+                        <div class="step-list">
+                            <div class="step-card">
+                                <span class="step-num">Шаг 01</span>
+                                <div class="step-title">Анализ ЦА и JTBD</div>
+                                <div class="step-desc">Портреты клиентов, их боли и работы, которые должен выполнить ваш продукт.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 02</span>
+                                <div class="step-title">Каналы привлечения</div>
+                                <div class="step-desc">Выбор эффективных каналов и расчет стоимости лида (CPL) и клиента (CAC).</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 03</span>
+                                <div class="step-title">Воронка продаж</div>
+                                <div class="step-desc">Этапы конверсии от первого касания до покупки и повторных продаж.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 04</span>
+                                <div class="step-title">Позиционирование</div>
+                                <div class="step-desc">Уникальное торговое предложение (УТП) и коммуникационная стратегия.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Pane -->
+                    <div class="content-pane" id="pane-product">
+                        <h3>Управление продуктом</h3>
+                        <p class="text-secondary pane-desc">Создание ценности и проверка гипотез.</p>
+                        <div class="step-list">
+                            <div class="step-card">
+                                <span class="step-num">Шаг 01</span>
+                                <div class="step-title">Ценностное предложение</div>
+                                <div class="step-desc">Формулировка ценности продукта через Value Proposition Canvas.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 02</span>
+                                <div class="step-title">MVP и Прототипирование</div>
+                                <div class="step-desc">Создание минимально жизнеспособного продукта для проверки спроса.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 03</span>
+                                <div class="step-title">HADI-циклы</div>
+                                <div class="step-desc">Системная проверка гипотез: гипотеза → действие → данные → выводы.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 04</span>
+                                <div class="step-title">Roadmap развития</div>
+                                <div class="step-desc">План развития функционала продукта на основе обратной связи.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HR Pane -->
+                    <div class="content-pane" id="pane-hr">
+                        <h3>Команда и процессы</h3>
+                        <p class="text-secondary pane-desc">Построение эффективной оргструктуры.</p>
+                        <div class="step-list">
+                            <div class="step-card">
+                                <span class="step-num">Шаг 01</span>
+                                <div class="step-title">Организационная структура</div>
+                                <div class="step-desc">Распределение ролей, зон ответственности и иерархии в компании.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 02</span>
+                                <div class="step-title">Профиль должности</div>
+                                <div class="step-desc">Описание компетенций и требований для эффективного найма.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 03</span>
+                                <div class="step-title">Система мотивации</div>
+                                <div class="step-desc">KPI, бонусы и нематериальная мотивация сотрудников.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 04</span>
+                                <div class="step-title">Онбординг</div>
+                                <div class="step-desc">Процесс адаптации новых сотрудников для быстрого выхода на продуктивность.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legal Pane -->
+                    <div class="content-pane" id="pane-legal">
+                        <h3>Юридическая безопасность</h3>
+                        <p class="text-secondary pane-desc">Защита бизнеса и правильное оформление.</p>
+                        <div class="step-list">
+                            <div class="step-card">
+                                <span class="step-num">Шаг 01</span>
+                                <div class="step-title">Регистрация бизнеса</div>
+                                <div class="step-desc">Выбор между ИП, ООО и самозанятостью. Плюсы, минусы, риски.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 02</span>
+                                <div class="step-title">Договорная база</div>
+                                <div class="step-desc">Шаблоны договоров с клиентами, подрядчиками и сотрудниками.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 03</span>
+                                <div class="step-title">Оферта и политика</div>
+                                <div class="step-desc">Необходимые документы для сайта и онлайн-продаж.</div>
+                            </div>
+                            <div class="step-card">
+                                <span class="step-num">Шаг 04</span>
+                                <div class="step-title">Защита IP</div>
+                                <div class="step-desc">Регистрация товарного знака и защита интеллектуальной собственности.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tools" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Инструменты</h2>
+                <p>Готовые решения для ежедневных задач</p>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card large">
+                    <div class="tool-status status-live">Работает</div>
+                    <div>
+                        <div class="tool-icon">🔢</div>
+                        <div class="tool-title">Калькулятор Юнит-экономики</div>
+                        <div class="tool-desc">Профессиональный инструмент для расчета маржинальности. Учитывает CAC, COGS, LTV и другие метрики.</div>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-status status-live">Работает</div>
+                    <div>
+                        <div class="tool-icon">💰</div>
+                        <div class="tool-title">P&L Калькулятор</div>
+                        <div class="tool-desc">Прогноз прибыли и убытков на год вперед.</div>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-status status-soon">Скоро</div>
+                    <div>
+                        <div class="tool-icon">📄</div>
+                        <div class="tool-title">Конструктор договоров</div>
+                        <div class="tool-desc">Шаблоны оферт, NDA и договоров с подрядчиками.</div>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-status status-soon">Скоро</div>
+                    <div>
+                        <div class="tool-icon">📈</div>
+                        <div class="tool-title">Маркетинг-дашборд</div>
+                        <div class="tool-desc">Визуализация воронки продаж и конверсий.</div>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-status status-soon">Скоро</div>
+                    <div>
+                        <div class="tool-icon">🎓</div>
+                        <div class="tool-title">База знаний</div>
+                        <div class="tool-desc">Гайды по запуску и управлению.</div>
+                    </div>
+                </div>
+                <div class="tool-card large" style="background: #F4F4F5; color: #18181B;">
+                    <div class="tool-status status-soon">Скоро</div>
+                    <div>
+                        <div class="tool-icon" style="background: white; color: #18181B;">💼</div>
+                        <div class="tool-title">HR Платформа</div>
+                        <div class="tool-desc" style="color: #52525B;">Инструменты для найма, онбординга и оценки эффективности сотрудников.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">навырост.</div>
+                <div class="footer-links">
+                    <a href="#">О нас</a>
+                    <a href="#">Тарифы</a>
+                    <a href="#">Блог</a>
+                    <a href="#">Контакты</a>
+                </div>
+                <div class="footer-copy" style="color: var(--text-tertiary); font-size: 14px;">
+                    © 2026 Навырост. Все права защищены.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/assets/js/script.js"></script>
+    <script>
+        function checkAuth() {
+            if (localStorage.getItem('user')) {
+                window.location.href = '/platform/home.html';
+            } else {
+                window.location.href = '/auth/register.html';
+            }
+        }
+        // Bind to CTA button
+        const ctaBtn = document.querySelector('.hero-actions .btn-primary');
+        if (ctaBtn) {
+            ctaBtn.onclick = (e) => {
+                e.preventDefault();
+                checkAuth();
+            };
+        }
+    </script>
+</body>
+</html>

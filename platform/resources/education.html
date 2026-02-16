@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучение — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+    <style>
+        body {
+            background-color: var(--bg-secondary);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar (Reused) */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+        }
+        .sidebar-logo span { color: var(--text-secondary); }
+        
+        .nav-menu { list-style: none; flex: 1; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        .nav-link.active { font-weight: 600; }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+            cursor: pointer;
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .user-info { flex: 1; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .user-role { font-size: 12px; color: var(--text-tertiary); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .page-title h1 { font-size: 28px; margin-bottom: 4px; }
+
+        /* Education Grid */
+        .edu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .course-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            border-color: var(--border-hover);
+        }
+
+        .course-thumb {
+            height: 160px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+        
+        .course-tag {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(255,255,255,0.9);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .course-body {
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .course-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .course-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #10B981;
+            width: 0%;
+        }
+
+        @media (max-width: 1024px) {
+            .edu-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 80px; padding: 24px 12px; }
+            .nav-link span:last-child, .user-info, .sidebar-logo span { display: none; }
+            .main-content { margin-left: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="/index.html" class="sidebar-logo">навырост<span>.</span></a>
+        
+        <ul class="nav-menu">
+            <!-- Dynamically populated by sidebar-logic.js -->
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>База знаний</h1>
+                <p class="text-secondary">Курсы и гайды для старта бизнеса</p>
+            </div>
+        </div>
+        
+        <div class="edu-grid">
+            <div class="course-card" onclick="window.location.href='/platform/resources/course-viewer.html?id=start'">
+                <div class="course-thumb" style="background: #EFF6FF;">
+                    🚀
+                    <div class="course-tag">Старт бизнеса</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-title">Как открыть ИП и не сойти с ума</div>
+                    <div class="course-desc">Пошаговая инструкция: от выбора ОКВЭД до первого налогового платежа.</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div>
+                    <div class="course-meta">
+                        <span>3 из 10 уроков</span>
+                        <span>~ 45 мин</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="course-card" onclick="window.location.href='/platform/resources/course-viewer.html?id=finance'">
+                <div class="course-thumb" style="background: #ECFDF5;">
+                    💰
+                    <div class="course-tag">Финансы</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-title">Основы финмоделирования</div>
+                    <div class="course-desc">Научимся считать P&L, Cashflow и понимать, куда уходят деньги.</div>
+                    <div class="course-meta">
+                        <span>0 из 8 уроков</span>
+                        <span>~ 60 мин</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="course-card" onclick="window.location.href='/platform/resources/course-viewer.html?id=marketing'">
+                <div class="course-thumb" style="background: #FFFBEB;">
+                    📣
+                    <div class="course-tag">Маркетинг</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-title">Маркетинг для основателей</div>
+                    <div class="course-desc">Как построить воронку продаж и не слить бюджет на тесты.</div>
+                    <div class="course-meta">
+                        <span>0 из 12 уроков</span>
+                        <span>~ 90 мин</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="course-card" style="opacity: 0.6; pointer-events: none;">
+                <div class="course-thumb" style="background: #F3F4F6;">
+                    🔒
+                    <div class="course-tag">Скоро</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-title">Юридическая безопасность</div>
+                    <div class="course-desc">Как не получить штраф и защитить свои активы.</div>
+                    <div class="course-meta">
+                        <span>В разработке</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/assets/js/data-manager.js"></script>
+    <script src="/assets/js/app-config.js"></script>
+    <script src="/assets/js/sidebar-logic.js"></script>
+    <script>
+        if (!DataManager.getUser()) {
+            window.location.href = '/auth/login.html';
+        }
+        function logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('navirost_user_profile');
+            window.location.href = '/index.html';
+        }
+    </script>
+</body>
+</html>

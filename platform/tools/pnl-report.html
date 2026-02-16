@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P&L Калькулятор — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/modal.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+    <style>
+        body {
+            background-color: var(--bg-secondary);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar (Reused) */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+        }
+        .sidebar-logo span { color: var(--text-secondary); }
+        
+        .nav-menu { list-style: none; flex: 1; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        .nav-link.active { font-weight: 600; }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+            cursor: pointer;
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .user-info { flex: 1; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .user-role { font-size: 12px; color: var(--text-tertiary); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            overflow-x: auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .page-title h1 { font-size: 28px; margin-bottom: 4px; }
+
+        /* P&L Table */
+        .pnl-container {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+            width: 200px;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 10;
+            border-right: 1px solid var(--border-light);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .row-header {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .row-total {
+            font-weight: 700;
+            background: var(--bg-tertiary);
+        }
+        .row-total td:first-child { background: var(--bg-tertiary); }
+
+        .input-cell {
+            width: 100px;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            text-align: right;
+            font-family: inherit;
+            font-size: 14px;
+            background: transparent;
+            transition: all 0.2s;
+        }
+        .input-cell:hover, .input-cell:focus {
+            background: var(--bg-tertiary);
+            border-color: var(--border-light);
+            outline: none;
+        }
+
+        .val-positive { color: #166534; }
+        .val-negative { color: #DC2626; }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; padding: 24px 12px; }
+            .nav-link span:last-child, .user-info, .sidebar-logo span { display: none; }
+            .main-content { margin-left: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="/index.html" class="sidebar-logo">навырост<span>.</span></a>
+        
+        <ul class="nav-menu">
+            <!-- Dynamically populated by sidebar-logic.js -->
+        </ul>
+        
+        <div class="user-profile">
+            <div class="avatar">И</div>
+            <div class="user-info">
+                <div class="user-name">Иван Петров</div>
+                <div class="user-role">Free Plan</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <h1 id="pnlTitle">P&L (Прибыли и убытки)</h1>
+                <p class="text-secondary" id="pnlSub">План на 6 месяцев</p>
+            </div>
+            <button class="btn-primary" onclick="savePnl()">Сохранить</button>
+        </div>
+        
+        <div class="pnl-container">
+            <table id="pnlTable">
+                <thead>
+                    <tr>
+                        <th>Статья</th>
+                        <th>Месяц 1</th>
+                        <th>Месяц 2</th>
+                        <th>Месяц 3</th>
+                        <th>Месяц 4</th>
+                        <th>Месяц 5</th>
+                        <th>Месяц 6</th>
+                        <th>Итого</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Revenue -->
+                    <tr>
+                        <td class="row-header">Выручка (Revenue)</td>
+                        <td><input type="number" class="input-cell revenue" value="0"></td>
+                        <td><input type="number" class="input-cell revenue" value="0"></td>
+                        <td><input type="number" class="input-cell revenue" value="0"></td>
+                        <td><input type="number" class="input-cell revenue" value="0"></td>
+                        <td><input type="number" class="input-cell revenue" value="0"></td>
+                        <td><input type="number" class="input-cell revenue" value="0"></td>
+                        <td class="row-sum">0</td>
+                    </tr>
+                    
+                    <!-- COGS -->
+                    <tr>
+                        <td class="row-header">Себестоимость (COGS)</td>
+                        <td><input type="number" class="input-cell cogs" value="0"></td>
+                        <td><input type="number" class="input-cell cogs" value="0"></td>
+                        <td><input type="number" class="input-cell cogs" value="0"></td>
+                        <td><input type="number" class="input-cell cogs" value="0"></td>
+                        <td><input type="number" class="input-cell cogs" value="0"></td>
+                        <td><input type="number" class="input-cell cogs" value="0"></td>
+                        <td class="row-sum">0</td>
+                    </tr>
+
+                    <!-- Gross Profit -->
+                    <tr class="row-total">
+                        <td>Валовая прибыль</td>
+                        <td class="gp">0</td>
+                        <td class="gp">0</td>
+                        <td class="gp">0</td>
+                        <td class="gp">0</td>
+                        <td class="gp">0</td>
+                        <td class="gp">0</td>
+                        <td class="gp-total">0</td>
+                    </tr>
+
+                    <!-- OPEX Header -->
+                    <tr>
+                        <td colspan="8" style="text-align: left; font-size: 12px; color: var(--text-tertiary); padding-top: 24px;">ОПЕРАЦИОННЫЕ РАСХОДЫ (OPEX)</td>
+                    </tr>
+
+                    <!-- Marketing -->
+                    <tr>
+                        <td class="row-header">Маркетинг</td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td class="row-sum">0</td>
+                    </tr>
+
+                    <!-- Salaries -->
+                    <tr>
+                        <td class="row-header">Зарплаты (ФОТ)</td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td class="row-sum">0</td>
+                    </tr>
+
+                    <!-- Rent/Other -->
+                    <tr>
+                        <td class="row-header">Аренда и прочее</td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td><input type="number" class="input-cell opex" value="0"></td>
+                        <td class="row-sum">0</td>
+                    </tr>
+
+                    <!-- Net Profit -->
+                    <tr class="row-total" style="border-top: 2px solid var(--border-light);">
+                        <td>Чистая прибыль</td>
+                        <td class="net">0</td>
+                        <td class="net">0</td>
+                        <td class="net">0</td>
+                        <td class="net">0</td>
+                        <td class="net">0</td>
+                        <td class="net">0</td>
+                        <td class="net-total">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#10B981; color:white; padding:12px 24px; border-radius:12px; display:none; animation: slideUp 0.3s; z-index: 3000;">
+        Сохранено!
+    </div>
+
+    <script src="data-manager.js"></script>
+    <script src="/assets/js/data-manager.js"></script>
+    <script src="/assets/js/app-config.js"></script>
+    <script src="/assets/js/sidebar-logic.js"></script>
+    <script src="/assets/js/modal.js"></script>
+    <script>
+        // Auth check
+        if (!localStorage.getItem('user')) {
+            window.location.href = '/auth/login.html';
+        }
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/index.html';
+        }
+
+        let currentProject = null;
+
+        function init() {
+            const pid = DataManager.getCurrentProjectId();
+            if (pid) {
+                currentProject = DataManager.getProject(pid);
+                if (currentProject) {
+                    document.getElementById('pnlTitle').innerText = `${currentProject.name}: P&L`;
+                    document.getElementById('pnlSub').innerText = 'Автосохранение отключено. Нажмите "Сохранить"';
+                    
+                    // Add Save Button
+                    const header = document.querySelector('.page-header');
+                    if (!document.getElementById('saveBtn')) {
+                        const btn = document.createElement('button');
+                        btn.id = 'saveBtn';
+                        btn.className = 'btn-primary';
+                        btn.style.marginLeft = '12px';
+                        btn.innerText = 'Сохранить изменения';
+                        btn.onclick = savePnl;
+                        header.appendChild(btn);
+                        
+                        // Hide old save button if any (not needed as we add one dynamically or replace it)
+                        const oldBtn = header.querySelector('button[onclick="savePnl()"]');
+                        if(oldBtn && oldBtn.id !== 'saveBtn') oldBtn.style.display = 'none';
+                    }
+
+                    if (currentProject.pnlData) {
+                        loadData(currentProject.pnlData);
+                    }
+                }
+            } else {
+                document.getElementById('pnlTitle').innerText = `Быстрый P&L`;
+                document.getElementById('pnlSub').innerText = 'Данные не сохраняются в проект';
+                
+                // Hide save button in quick mode
+                const oldBtn = document.querySelector('button[onclick="savePnl()"]');
+                if(oldBtn) oldBtn.style.display = 'none';
+            }
+            recalc();
+        }
+
+        // ... (loadData, recalc, getVal, setVal, updateRowSums, formatMoney) ...
+
+        function savePnl() {
+            const stats = recalc(); // Ensure stats are fresh
+            
+            if (currentProject) {
+                const allInputs = Array.from(document.querySelectorAll('.input-cell')).map(i => i.value);
+                const data = {
+                    inputs: allInputs,
+                    revenue: stats.revenue,
+                    profit: stats.profit
+                };
+                
+                DataManager.updateProject(currentProject.id, 'pnl', data);
+                showToast();
+            } else {
+                Modal.alert(
+                    'Режим черновика',
+                    'В режиме быстрого просмотра данные не сохраняются. Создайте проект, чтобы сохранить расчеты.'
+                );
+            }
+        }
+
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2000);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

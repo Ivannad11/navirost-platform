@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор точки безубыточности — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <a href="/index.html" class="sidebar-logo">навырост<span>.</span></a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+            <div class="user-profile">
+                <div class="avatar">И</div>
+                <div class="user-info">
+                    <div class="user-name">Иван Петров</div>
+                    <div class="user-role">Free Plan</div>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Калькулятор точки безубыточности</h1>
+                <p class="page-subtitle">Рассчитайте минимальный объем продаж для покрытия расходов</p>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Входные данные</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Фиксированные расходы в месяц (₽)</label>
+                            <input type="number" class="form-input" id="fixedCosts" placeholder="50,000" value="50000">
+                            <div class="form-help">Аренда, зарплата, коммунальные, страховка и т.д.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Цена продажи за единицу (₽)</label>
+                            <input type="number" class="form-input" id="sellingPrice" placeholder="1,000" value="1000">
+                            <div class="form-help">Сколько стоит один ваш продукт или услуга</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Переменные расходы на единицу (₽)</label>
+                            <input type="number" class="form-input" id="variableCostPerUnit" placeholder="400" value="400">
+                            <div class="form-help">Материалы, комиссии, доставка и другие расходы на единицу</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ожидаемый спрос в месяц (единиц)</label>
+                            <input type="number" class="form-input" id="expectedDemand" placeholder="100" value="100">
+                            <div class="form-help">Сколько единиц вы планируете продавать в месяц</div>
+                        </div>
+
+                        <button class="btn-primary" onclick="calculateBreakEven()">Рассчитать точку безубыточности</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Результаты расчета</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="results" style="display: none;">
+                            <div class="metric-card">
+                                <div class="metric-label">Точка безубыточности (единиц в месяц)</div>
+                                <div class="metric-value" id="breakEvenUnits">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Выручка в точке безубыточности (₽)</div>
+                                <div class="metric-value" id="breakEvenRevenue">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Маржинальность (%)</div>
+                                <div class="metric-value" id="profitMargin">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Прибыль при ожидаемом спросе (₽)</div>
+                                <div class="metric-value" id="expectedProfit">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Коэффициент безопасности (%)</div>
+                                <div class="metric-value" id="safetyMargin">—</div>
+                            </div>
+
+                            <div id="breakEvenAnalysis" class="explanation-box">
+                                <h4>Анализ точки безубыточности</h4>
+                                <div id="breakEvenAnalysisText"></div>
+                            </div>
+                        </div>
+
+                        <div id="noResults" class="no-results">
+                            <div class="no-results-icon">⚖️</div>
+                            <div class="no-results-text">Заполните форму и нажмите "Рассчитать точку безубыточности"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/data-manager.js"></script>
+    <script src="/assets/js/app-config.js"></script>
+    <script src="/assets/js/sidebar-logic.js"></script>
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = '/auth/login.html';
+        }
+
+        function calculateBreakEven() {
+            // Get input values
+            const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) || 0;
+            const sellingPrice = parseFloat(document.getElementById('sellingPrice').value) || 0;
+            const variableCostPerUnit = parseFloat(document.getElementById('variableCostPerUnit').value) || 0;
+            const expectedDemand = parseFloat(document.getElementById('expectedDemand').value) || 0;
+
+            // Calculations
+            const contributionMargin = sellingPrice - variableCostPerUnit;
+            const profitMargin = (contributionMargin / sellingPrice) * 100;
+            const breakEvenUnits = Math.ceil(fixedCosts / contributionMargin);
+            const breakEvenRevenue = breakEvenUnits * sellingPrice;
+            
+            // Calculate profit at expected demand
+            const totalRevenue = expectedDemand * sellingPrice;
+            const totalVariableCosts = expectedDemand * variableCostPerUnit;
+            const totalCosts = fixedCosts + totalVariableCosts;
+            const expectedProfit = totalRevenue - totalCosts;
+            
+            // Calculate safety margin
+            const safetyMargin = expectedDemand > 0 ? ((expectedDemand - breakEvenUnits) / expectedDemand) * 100 : 0;
+
+            // Display results
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+
+            document.getElementById('breakEvenUnits').textContent = breakEvenUnits.toLocaleString() + ' ед.';
+            document.getElementById('breakEvenRevenue').textContent = '₽' + Math.round(breakEvenRevenue).toLocaleString();
+            document.getElementById('profitMargin').textContent = profitMargin.toFixed(1) + '%';
+            document.getElementById('expectedProfit').textContent = '₽' + Math.round(expectedProfit).toLocaleString();
+            document.getElementById('safetyMargin').textContent = safetyMargin.toFixed(1) + '%';
+
+            // Analysis
+            let analysisText = '';
+            if (expectedProfit > 0) {
+                analysisText = `При ожидаемом спросе в ${expectedDemand} единиц, вы получите прибыль в размере ₽${Math.round(expectedProfit).toLocaleString()} в месяц. `;
+            } else if (expectedProfit === 0) {
+                analysisText = `При ожидаемом спросе вы работаете в точке безубыточности. `;
+            } else {
+                analysisText = `При ожидаемом спросе вы получите убыток в размере ₽${Math.round(Math.abs(expectedProfit)).toLocaleString()} в месяц. `;
+            }
+
+            if (safetyMargin > 30) {
+                analysisText += 'Коэффициент безопасности выше 30% - это хороший показатель для бизнеса.';
+            } else if (safetyMargin > 10) {
+                analysisText += 'Коэффициент безопасности между 10-30% - приемлемый уровень, но старайтесь увеличить спрос.';
+            } else if (safetyMargin > 0) {
+                analysisText += 'Коэффициент безопасности ниже 10% - высокий риск. Работайте над увеличением спроса или снижением расходов.';
+            } else {
+                analysisText += 'Коэффициент безопасности отрицательный - вам нужно увеличить спрос или пересмотреть бизнес-модель.';
+            }
+
+            document.getElementById('breakEvenAnalysisText').textContent = analysisText;
+        }
+
+        // Initialize sidebar
+        if (typeof renderSidebar === 'function') {
+            renderSidebar();
+        }
+    </script>
+</body>
+</html>

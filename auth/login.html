@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">С возвращением</h1>
+            <p class="auth-subtitle">Войдите, чтобы управлять проектами</p>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input" required placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" class="form-input" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary w-100">Войти</button>
+            </form>
+            
+            <div class="auth-footer">
+                Нет аккаунта? <a href="/auth/register.html">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/data-manager.js"></script>
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            // Mock login
+            const email = e.target.querySelector('input[type="email"]').value;
+            // Create user if not exists or update
+            let user = DataManager.getUser();
+            if (!user) {
+                user = { name: email.split('@')[0], email: email, company: '', city: '', plan: 'Pro Plan', onboarding: {} };
+                DataManager.saveUser(user);
+            }
+            window.location.href = '/platform/home.html';
+        }
+    
+        // Check if already logged in
+        if (DataManager.getUser()) {
+            window.location.href = '/platform/home.html';
+        }
+    </script>
+</body>
+</html>

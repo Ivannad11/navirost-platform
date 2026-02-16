@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Калькулятор — навырост.</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <a href="/index.html" class="sidebar-logo">навырост<span>.</span></a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+            <div class="user-profile">
+                <div class="avatar">И</div>
+                <div class="user-info">
+                    <div class="user-name">Иван Петров</div>
+                    <div class="user-role">Free Plan</div>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>ROI Калькулятор</h1>
+                <p class="page-subtitle">Рассчитайте возврат инвестиций и срок окупаемости</p>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Входные данные</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Первоначальная инвестиция (₽)</label>
+                            <input type="number" class="form-input" id="initialInvestment" placeholder="100,000" value="100000">
+                            <div class="form-help">Сумма, которую вы инвестируете в проект</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ежегодный доход от инвестиции (₽)</label>
+                            <input type="number" class="form-input" id="annualRevenue" placeholder="30,000" value="30000">
+                            <div class="form-help">Сколько денег проект принесет в год</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ежегодные расходы (₽)</label>
+                            <input type="number" class="form-input" id="annualExpenses" placeholder="5,000" value="5000">
+                            <div class="form-help">Обслуживание, аренда, персонал и другие расходы</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Срок инвестиции (лет)</label>
+                            <input type="number" class="form-input" id="investmentPeriod" placeholder="5" value="5">
+                            <div class="form-help">На сколько лет вы планируете инвестицию</div>
+                        </div>
+
+                        <button class="btn-primary" onclick="calculateROI()">Рассчитать ROI</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Результаты расчета</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="results" style="display: none;">
+                            <div class="metric-card">
+                                <div class="metric-label">ROI (Return on Investment)</div>
+                                <div class="metric-value" id="roiPercentage">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Срок окупаемости</div>
+                                <div class="metric-value" id="paybackPeriod">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Чистая прибыль за весь период</div>
+                                <div class="metric-value" id="totalProfit">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Общий доход за период</div>
+                                <div class="metric-value" id="totalRevenue">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Чистая прибыль в год</div>
+                                <div class="metric-value" id="annualProfit">—</div>
+                            </div>
+
+                            <div id="roiAnalysis" class="explanation-box">
+                                <h4>Анализ инвестиции</h4>
+                                <div id="roiAnalysisText"></div>
+                            </div>
+                        </div>
+
+                        <div id="noResults" class="no-results">
+                            <div class="no-results-icon">📈</div>
+                            <div class="no-results-text">Заполните форму и нажмите "Рассчитать ROI"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/data-manager.js"></script>
+    <script src="/assets/js/app-config.js"></script>
+    <script src="/assets/js/sidebar-logic.js"></script>
+    <script>
+        if (!localStorage.getItem('user')) {
+            window.location.href = '/auth/login.html';
+        }
+
+        function calculateROI() {
+            // Get input values
+            const initialInvestment = parseFloat(document.getElementById('initialInvestment').value) || 0;
+            const annualRevenue = parseFloat(document.getElementById('annualRevenue').value) || 0;
+            const annualExpenses = parseFloat(document.getElementById('annualExpenses').value) || 0;
+            const investmentPeriod = parseFloat(document.getElementById('investmentPeriod').value) || 0;
+
+            // Calculations
+            const annualProfit = annualRevenue - annualExpenses;
+            const totalProfit = annualProfit * investmentPeriod;
+            const totalRevenue = annualRevenue * investmentPeriod;
+            const roi = ((totalProfit - initialInvestment) / initialInvestment) * 100;
+            const paybackYears = initialInvestment / annualProfit;
+
+            // Display results
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+
+            document.getElementById('roiPercentage').textContent = roi.toFixed(1) + '%';
+            document.getElementById('paybackPeriod').textContent = paybackYears.toFixed(1) + ' лет';
+            document.getElementById('totalProfit').textContent = '₽' + Math.round(totalProfit).toLocaleString();
+            document.getElementById('totalRevenue').textContent = '₽' + Math.round(totalRevenue).toLocaleString();
+            document.getElementById('annualProfit').textContent = '₽' + Math.round(annualProfit).toLocaleString();
+
+            // ROI Analysis
+            let analysisText = '';
+            if (roi > 50) {
+                analysisText = 'Отличная инвестиция! ROI выше 50% указывает на высокую доходность.';
+            } else if (roi > 20) {
+                analysisText = 'Хорошая инвестиция! ROI между 20-50% считается приемлемым для большинства бизнесов.';
+            } else if (roi > 0) {
+                analysisText = 'Инвестиция окупается, но доходность ниже среднерыночной. Рассмотрите альтернативы.';
+            } else {
+                analysisText = 'Инвестиция не окупается. Подумайте о снижении затрат или увеличении дохода.';
+            }
+
+            if (paybackYears <= 1) {
+                analysisText += ' Срок окупаемости менее года - это отличный показатель.';
+            } else if (paybackYears <= 3) {
+                analysisText += ' Срок окупаемости 1-3 года считается приемлемым для большинства инвестиций.';
+            } else {
+                analysisText += ' Срок окупаемости более 3 лет требует тщательного анализа рисков.';
+            }
+
+            document.getElementById('roiAnalysisText').textContent = analysisText;
+        }
+
+        // Initialize sidebar
+        if (typeof renderSidebar === 'function') {
+            renderSidebar();
+        }
+    </script>
+</body>
+</html>
