@@ -752,6 +752,7 @@ footer {
     }
 }
 
+<<<<<<< HEAD
 /* Бургер-меню */
 .burger-btn {
     display: none;
@@ -867,7 +868,7 @@ html {
 }
 
 /* ============================================
-   AUTH IMPROVEMENTS
+   AUTH PAGE IMPROVEMENTS
    ============================================ */
 
 .auth-logo {
@@ -885,6 +886,7 @@ html {
 }
 
 .auth-logo span {
+<<<<<<< HEAD
     color: var(--primary);
 }
 
@@ -895,6 +897,11 @@ html {
 }
 
 /* Social Login Button */
+=======
+    color: var(--text-secondary);
+}
+
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .social-login-group {
     margin-bottom: 24px;
 }
@@ -902,7 +909,11 @@ html {
 .btn-social {
     width: 100%;
     padding: 12px 16px;
+<<<<<<< HEAD
     border: 1px solid var(--border);
+=======
+    border: 1px solid var(--border-light);
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     border-radius: 8px;
     background: white;
     color: var(--text-primary);
@@ -918,14 +929,21 @@ html {
 
 .btn-social:hover {
     background: var(--bg-secondary);
+<<<<<<< HEAD
     border-color: var(--text-tertiary);
+=======
+    border-color: var(--border-hover);
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .btn-social svg {
     flex-shrink: 0;
 }
 
+<<<<<<< HEAD
 /* Divider */
+=======
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .divider {
     position: relative;
     text-align: center;
@@ -939,7 +957,11 @@ html {
     top: 50%;
     width: 100%;
     height: 1px;
+<<<<<<< HEAD
     background: var(--border);
+=======
+    background: var(--border-light);
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .divider span {
@@ -950,14 +972,20 @@ html {
     color: var(--text-tertiary);
 }
 
+<<<<<<< HEAD
 /* Input Hints */
+=======
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .input-hint {
     font-size: 12px;
     color: var(--text-tertiary);
     margin-top: 6px;
 }
 
+<<<<<<< HEAD
 /* Checkbox Group */
+=======
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .checkbox-group {
     margin-bottom: 24px;
 }
@@ -970,6 +998,10 @@ html {
     color: var(--text-secondary);
     cursor: pointer;
     margin: 0;
+<<<<<<< HEAD
+=======
+    font-weight: normal;
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -981,15 +1013,24 @@ html {
 }
 
 .checkbox-label a {
+<<<<<<< HEAD
     color: var(--primary);
     text-decoration: none;
+=======
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .checkbox-label a:hover {
     text-decoration: underline;
 }
 
+<<<<<<< HEAD
 /* Auth Benefits */
+=======
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .auth-benefits {
     margin-top: 24px;
     padding: 16px;
@@ -1012,6 +1053,7 @@ html {
     flex-shrink: 0;
 }
 
+<<<<<<< HEAD
 /* Responsive */
 @media (max-width: 640px) {
     .auth-card {
@@ -1023,6 +1065,8 @@ html {
     }
 }
 
+=======
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 /* ============================================
    ONBOARDING STYLES
    ============================================ */
@@ -1066,6 +1110,10 @@ html {
     background: white;
     border-radius: 999px;
     transition: width 0.3s ease;
+<<<<<<< HEAD
+=======
+    width: 0;
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .progress-text {
@@ -1082,14 +1130,24 @@ html {
 
 .onboarding-step {
     display: none;
+<<<<<<< HEAD
     animation: fadeIn 0.3s ease;
+=======
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .onboarding-step.active {
     display: block;
+<<<<<<< HEAD
 }
 
 @keyframes fadeIn {
+=======
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -1161,7 +1219,11 @@ html {
 .option-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+<<<<<<< HEAD
     border-color: var(--primary);
+=======
+    border-color: #667eea;
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .option-icon {
@@ -1199,8 +1261,17 @@ html {
     color: white;
 }
 
+<<<<<<< HEAD
 /* Responsive */
 @media (max-width: 768px) {
+=======
+/* Responsive Onboarding */
+@media (max-width: 768px) {
+    .onboarding-container {
+        padding: 16px;
+    }
+
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     .step-header h1 {
         font-size: 24px;
     }
@@ -1208,11 +1279,47 @@ html {
     .btn-back {
         position: static;
         margin-bottom: 24px;
+<<<<<<< HEAD
+=======
+        display: inline-flex;
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     }
 
     .options-grid {
         grid-template-columns: 1fr;
     }
+<<<<<<< HEAD
 }
 
+=======
+    
+    .option-card {
+        padding: 20px;
+    }
+    
+    .option-icon {
+        font-size: 40px;
+    }
+}
+
+/* Auth Page Responsive */
+@media (max-width: 640px) {
+    .auth-card {
+        padding: 32px 24px;
+    }
+    
+    .auth-title {
+        font-size: 24px;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .hero-actions button {
+        width: 100%;
+    }
+}
+>>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 
