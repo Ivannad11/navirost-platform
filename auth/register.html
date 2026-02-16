@@ -4,59 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация — навырост.</title>
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-card">
-            <h1 class="auth-title">Создать аккаунт</h1>
-            <p class="auth-subtitle">Начните свой путь в бизнесе</p>
+            <!-- Logo Link -->
+            <a href="../index.html" class="auth-logo">навырост<span>.</span></a>
+            
+            <h1 class="auth-title">Создайте бесплатный аккаунт</h1>
+            <p class="auth-subtitle">Присоединяйтесь к 2,847+ предпринимателям, которые уже растут вместе с нами</p>
+            
+            <!-- Social Login -->
+            <div class="social-login-group">
+                <button type="button" class="btn-social" onclick="handleGoogleAuth()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M19.8 10.2273C19.8 9.51819 19.7364 8.83637 19.6182 8.18182H10V12.05H15.5091C15.2727 13.3 14.5636 14.3591 13.5 15.0682V17.5773H16.8182C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z" fill="#4285F4"/>
+                        <path d="M10 20C12.7 20 14.9636 19.1045 16.8182 17.5773L13.5 15.0682C12.6136 15.6682 11.4818 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.40455 11.9H0.963636V14.4909C2.80909 18.1591 6.10909 20 10 20Z" fill="#34A853"/>
+                        <path d="M4.40455 11.9C4.20455 11.3 4.09091 10.6591 4.09091 10C4.09091 9.34091 4.20455 8.7 4.40455 8.1V5.50909H0.963636C0.35 6.72727 0 8.11818 0 10C0 11.8818 0.35 13.2727 0.963636 14.4909L4.40455 11.9Z" fill="#FBBC04"/>
+                        <path d="M10 3.97727C11.6136 3.97727 13.0636 4.54091 14.2045 5.61364L17.1409 2.67727C14.9591 0.636364 12.6955 -0.409091 10 0C6.10909 0 2.80909 1.84091 0.963636 5.50909L4.40455 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z" fill="#EA4335"/>
+                    </svg>
+                    Продолжить с Google
+                </button>
+            </div>
+
+            <div class="divider">
+                <span>или с email</span>
+            </div>
             
             <form id="registerForm" onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label>Имя</label>
-                    <input type="text" class="form-input" required placeholder="Иван">
+                    <input type="text" id="userName" class="form-input" required placeholder="Иван" autocomplete="given-name">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" class="form-input" required placeholder="name@company.com">
+                    <input type="email" id="userEmail" class="form-input" required placeholder="ivan@example.com" autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label>Пароль</label>
-                    <input type="password" class="form-input" required placeholder="••••••••">
+                    <input type="password" id="userPassword" class="form-input" required placeholder="Минимум 8 символов" minlength="8" autocomplete="new-password">
+                    <div class="input-hint">Минимум 8 символов</div>
                 </div>
-                <button type="submit" class="btn-primary w-100">Зарегистрироваться</button>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" required>
+                        <span>Я согласен с <a href="../terms.html" target="_blank">условиями использования</a> и <a href="../privacy.html" target="_blank">политикой конфиденциальности</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary w-100">Создать аккаунт</button>
             </form>
+
+            <div class="auth-benefits">
+                <div class="benefit-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Бесплатно навсегда</span>
+                </div>
+                <div class="benefit-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Без банковской карты</span>
+                </div>
+                <div class="benefit-item">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Отмена в любое время</span>
+                </div>
+            </div>
             
             <div class="auth-footer">
-                Есть аккаунт? <a href="/auth/login.html">Войти</a>
+                Есть аккаунт? <a href="./login.html">Войти</a>
             </div>
         </div>
     </div>
 
-    <script src="/assets/js/data-manager.js"></script>
+    <script src="../assets/js/data-manager.js"></script>
     <script>
+        function handleGoogleAuth() {
+            // Mock Google Auth - в будущем здесь будет реальная интеграция
+            alert('Google авторизация будет доступна в следующей версии');
+            // TODO: Integrate Google OAuth
+        }
+
         function handleRegister(e) {
             e.preventDefault();
-            const name = e.target.querySelector('input[type="text"]').value;
-            const email = e.target.querySelector('input[type="email"]').value;
             
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            
+            // Save basic user data
             const user = { 
                 name: name, 
                 email: email, 
                 company: '', 
                 city: '', 
-                plan: 'Pro Plan',
-                onboarding: { projectCreated: false, unitCalc: false, docGenerated: false } 
+                plan: 'Free',
+                registeredAt: new Date().toISOString(),
+                onboarding: { 
+                    completed: false,
+                    currentStep: 0,
+                    projectCreated: false, 
+                    unitCalc: false, 
+                    docGenerated: false 
+                } 
             };
+            
             DataManager.saveUser(user);
-            window.location.href = '/platform/home.html';
+            
+            // Redirect to onboarding instead of home
+            window.location.href = './onboarding.html';
         }
         
         // Check if already logged in
         if (DataManager.getUser()) {
-            window.location.href = '/platform/home.html';
+            const user = DataManager.getUser();
+            // If onboarding not completed, redirect there
+            if (!user.onboarding || !user.onboarding.completed) {
+               // Temporarily redirect to home (onboarding coming next)
+                window.location.href = '../platform/home.html';
+            } else {
+                window.location.href = '../platform/home.html';
+            }
         }
     </script>
 </body>
 </html>
+
