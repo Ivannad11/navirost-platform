@@ -201,6 +201,14 @@
         </div>
         
         <div class="pnl-container">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Налоговая ставка (%)</label>
+                <select id="taxRate" class="form-input" onchange="calculateAndDisplayPnl()">
+                    <option value="6">УСН Доходы 6%</option>
+                    <option value="15">УСН Доходы минус расходы 15%</option>
+                    <option value="13">НДФЛ 13%</option>
+                </select>
+            </div>
             <table id="pnlTable">
                 <thead>
                     <tr>
@@ -292,6 +300,18 @@
                         <td class="row-sum">0</td>
                     </tr>
 
+                    <!-- Taxes -->
+                    <tr class="row-subtotal">
+                        <td>Налоги</td>
+                        <td class="tax">0</td>
+                        <td class="tax">0</td>
+                        <td class="tax">0</td>
+                        <td class="tax">0</td>
+                        <td class="tax">0</td>
+                        <td class="tax">0</td>
+                        <td class="row-sum">0</td>
+                    </tr>
+
                     <!-- Net Profit -->
                     <tr class="row-total" style="border-top: 2px solid var(--border-light);">
                         <td>Чистая прибыль</td>
@@ -368,7 +388,107 @@
             recalc();
         }
 
-        // ... (loadData, recalc, getVal, setVal, updateRowSums, formatMoney) ...
+        // Функции расчета P&L
+        function loadData(data) {
+            if (!data || !data.inputs) return;
+            const inputs = document.querySelectorAll('.input-cell');
+            data.inputs.forEach((val, i) => {
+                if (inputs[i]) inputs[i].value = val;
+            });
+        }
+
+        function getVal(selector) {
+            const cells = document.querySelectorAll(selector);
+            return Array.from(cells).reduce((sum, cell) => sum + (parseFloat(cell.value) || 0), 0);
+        }
+
+        function setVal(selector, value) {
+            const cells = document.querySelectorAll(selector);
+            cells.forEach(cell => {
+                cell.textContent = formatMoney(value);
+            });
+        }
+
+        function formatMoney(num) {
+            return new Intl.NumberFormat('ru-RU').format(Math.round(num || 0));
+        }
+
+        function updateRowSums() {
+            // Update sums for each input row
+            const inputRows = document.querySelectorAll('tr:has(.input-cell)');
+            inputRows.forEach(row => {
+                const inputs = row.querySelectorAll('.input-cell');
+                const sumCell = row.querySelector('.row-sum');
+                if (inputs.length > 0 && sumCell) {
+                    const sum = Array.from(inputs).reduce((s, input) => s + (parseFloat(input.value) || 0), 0);
+                    sumCell.textContent = formatMoney(sum);
+                }
+            });
+        }
+
+        function calculateAndDisplayPnl() {
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 6;
+            
+            // Get values for each month
+            const months = 6;
+            const revenue = [];
+            const cogs = [];
+            const opex = [];
+            
+            for (let i = 0; i < months; i++) {
+                revenue[i] = parseFloat(document.querySelectorAll('.revenue')[i]?.value || 0);
+                cogs[i] = parseFloat(document.querySelectorAll('.cogs')[i]?.value || 0);
+                opex[i] = parseFloat(document.querySelectorAll('.opex')[i]?.value || 0);
+            }
+            
+            // Calculate for each month
+            let totalRevenue = 0;
+            let totalGrossProfit = 0;
+            let totalOpex = 0;
+            let totalTaxes = 0;
+            let totalNetProfit = 0;
+            
+            for (let i = 0; i < months; i++) {
+                // Gross Profit = Revenue - COGS
+                const grossProfit = revenue[i] - cogs[i];
+                
+                // Taxes (УСН 6% от revenue)
+                const taxes = revenue[i] * (taxRate / 100);
+                
+                // Net Profit = Gross Profit - Opex - Taxes
+                const netProfit = grossProfit - opex[i] - taxes;
+                
+                // Update table cells
+                document.querySelectorAll('.gp')[i].textContent = formatMoney(grossProfit);
+                document.querySelectorAll('.tax')[i].textContent = formatMoney(taxes);
+                document.querySelectorAll('.net')[i].textContent = formatMoney(netProfit);
+                
+                // Accumulate totals
+                totalRevenue += revenue[i];
+                totalGrossProfit += grossProfit;
+                totalOpex += opex[i];
+                totalTaxes += taxes;
+                totalNetProfit += netProfit;
+            }
+            
+            // Update total columns
+            document.querySelector('.gp-total').textContent = formatMoney(totalGrossProfit);
+            document.querySelector('.row-sum:nth-of-type(8)').textContent = formatMoney(totalOpex); // OPEX total
+            document.querySelectorAll('.tax')[6].textContent = formatMoney(totalTaxes); // Taxes total
+            document.querySelector('.net-total').textContent = formatMoney(totalNetProfit);
+            
+            // Update row sums
+            updateRowSums();
+            
+            return {
+                revenue: totalRevenue,
+                profit: totalNetProfit
+            };
+        }
+
+        function recalc() {
+            return calculateAndDisplayPnl();
+        }
 
         function savePnl() {
             const stats = recalc(); // Ensure stats are fresh
@@ -398,7 +518,16 @@
         }
 
         // Init
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            
+            // Add event listeners for auto-recalculation
+            const inputs = document.querySelectorAll('.input-cell');
+            inputs.forEach(input => {
+                input.addEventListener('input', recalc);
+                input.addEventListener('change', recalc);
+            });
+        });
     </script>
 </body>
 </html>

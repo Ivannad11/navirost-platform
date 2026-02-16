@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все инструменты — навырост.</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        body {
+            background-color: var(--bg-secondary);
+            min-height: 100vh;
+        }
+        
+        .tools-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .tools-header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+        
+        .tools-header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .tools-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+        
+        .tool-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            border-color: var(--text-primary);
+        }
+        
+        .tool-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-live {
+            background: #DCFCE7;
+            color: #166534;
+        }
+        
+        .status-soon {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+        
+        .tool-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .tool-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .tool-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        .tool-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .tool-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .tool-features li::before {
+            content: "✓";
+            color: #16A34A;
+            font-weight: bold;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 40px;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .tools-header h1 {
+                font-size: 32px;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .tool-card {
+                padding: 24px;
+            }
+            
+            .tool-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
+            }
+            
+            .tool-title {
+                font-size: 20px;
+            }
+            
+            .tool-desc {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tools-container">
+        <a href="../index.html" class="back-link">
+            ← На главную
+        </a>
+        
+        <div class="tools-header">
+            <h1>Все инструменты</h1>
+            <p>Профессиональные калькуляторы и шаблоны для управления бизнесом. Бесплатно и без регистрации.</p>
+        </div>
+        
+        <div class="tools-grid">
+            <!-- Юнит-экономика -->
+            <div class="tool-card" onclick="window.location.href='./unit-economics.html'">
+                <div class="tool-status status-live">Бесплатно</div>
+                <div class="tool-icon">🔢</div>
+                <div class="tool-title">Юнит-экономика</div>
+                <div class="tool-desc">Расчет маржинальности, LTV, CAC и окупаемости клиента</div>
+                <ul class="tool-features">
+                    <li>LTV и CAC расчет</li>
+                    <li>Маржинальность</li>
+                    <li>Окупаемость клиента</li>
+                    <li>Когортный анализ</li>
+                </ul>
+            </div>
+            
+            <!-- P&L Калькулятор -->
+            <div class="tool-card" onclick="window.location.href='./pnl-report.html'">
+                <div class="tool-status status-live">Бесплатно</div>
+                <div class="tool-icon">💰</div>
+                <div class="tool-title">P&L Калькулятор</div>
+                <div class="tool-desc">Прогноз прибыли и убытков на 12 месяцев с учетом налогов</div>
+                <ul class="tool-features">
+                    <li>План на 12 месяцев</li>
+                    <li>Учет налогов (УСН)</li>
+                    <li>Операционные расходы</li>
+                    <li>Валовая и чистая прибыль</li>
+                </ul>
+            </div>
+            
+            <!-- Точка безубыточности -->
+            <div class="tool-card" onclick="window.location.href='./break-even.html'">
+                <div class="tool-status status-live">Бесплатно</div>
+                <div class="tool-icon">⚖️</div>
+                <div class="tool-title">Точка безубыточности</div>
+                <div class="tool-desc">Рассчитайте минимальный объем продаж для выхода в ноль</div>
+                <ul class="tool-features">
+                    <li>Расчет точки безубыточности</li>
+                    <li>Коэффициент безопасности</li>
+                    <li>Анализ рисков</li>
+                    <li>График безубыточности</li>
+                </ul>
+            </div>
+            
+            <!-- Почасовая ставка -->
+            <div class="tool-card" onclick="window.location.href='./hourly-rate.html'">
+                <div class="tool-status status-live">Бесплатно</div>
+                <div class="tool-icon">📊</div>
+                <div class="tool-title">Почасовая ставка</div>
+                <div class="tool-desc">Калькулятор для фрилансеров и консультантов</div>
+                <ul class="tool-features">
+                    <li>Расчет почасовой ставки</li>
+                    <li>Учет расходов</li>
+                    <li>Прибыльность</li>
+                    <li>Рекомендации по ценам</li>
+                </ul>
+            </div>
+            
+            <!-- ROI Калькулятор -->
+            <div class="tool-card" onclick="window.location.href='./roi-calculator.html'">
+                <div class="tool-status status-live">Бесплатно</div>
+                <div class="tool-icon">📈</div>
+                <div class="tool-title">ROI Калькулятор</div>
+                <div class="tool-desc">Оцените окупаемость инвестиций и проектов</div>
+                <ul class="tool-features">
+                    <li>ROI расчет</li>
+                    <li>NPV и IRR</li>
+                    <li>Срок окупаемости</li>
+                    <li>Анализ рисков</li>
+                </ul>
+            </div>
+            
+            <!-- Конструктор договоров -->
+            <div class="tool-card">
+                <div class="tool-status status-soon">Скоро</div>
+                <div class="tool-icon">📄</div>
+                <div class="tool-title">Конструктор договоров</div>
+                <div class="tool-desc">Генератор юридических документов и шаблонов</div>
+                <ul class="tool-features">
+                    <li>Договоры оказания услуг</li>
+                    <li>NDA шаблоны</li>
+                    <li>Оферты для сайта</li>
+                    <li>Трудовые договоры</li>
+                </ul>
+            </div>
+            
+            <!-- Маркетинг-дашборд -->
+            <div class="tool-card">
+                <div class="tool-status status-soon">Скоро</div>
+                <div class="tool-icon">🎯</div>
+                <div class="tool-title">Маркетинг-дашборд</div>
+                <div class="tool-desc">Визуализация воронки продаж и конверсий</div>
+                <ul class="tool-features">
+                    <li>Воронка продаж</li>
+                    <li>Конверсии</li>
+                    <li>CAC и LTV трекинг</li>
+                    <li>Когортный анализ</li>
+                </ul>
+            </div>
+            
+            <!-- База знаний -->
+            <div class="tool-card">
+                <div class="tool-status status-soon">Скоро</div>
+                <div class="tool-icon">🎓</div>
+                <div class="tool-title">База знаний</div>
+                <div class="tool-desc">Гайды и инструкции по бизнесу</div>
+                <ul class="tool-features">
+                    <li>Гайды по запуску</li>
+                    <li>Чек-листы</li>
+                    <li>Шаблоны документов</li>
+                    <li>Видео-инструкции</li>
+                </ul>
+            </div>
+            
+            <!-- HR Платформа -->
+            <div class="tool-card">
+                <div class="tool-status status-soon">Скоро</div>
+                <div class="tool-icon">💼</div>
+                <div class="tool-title">HR Платформа</div>
+                <div class="tool-desc">Управление командой и персоналом</div>
+                <ul class="tool-features">
+                    <li>Учет сотрудников</li>
+                    <li>Калькулятор ЗП</li>
+                    <li>KPI трекинг</li>
+                    <li>Онбординг</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

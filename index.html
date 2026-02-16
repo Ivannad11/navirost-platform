@@ -39,7 +39,46 @@
             
             <div class="nav-links" id="nav-links">
                 <a href="#platform" class="nav-link">Платформа</a>
-                <a href="#tools" class="nav-link">Инструменты</a>
+                <div class="nav-dropdown">
+    <a href="#tools" class="nav-link">Инструменты <span style="font-size: 10px;">▼</span></a>
+    <div class="dropdown-menu">
+        <a href="./tools/unit-economics.html" class="dropdown-item">
+            <span class="dropdown-icon">🔢</span>
+            <div>
+                <div class="dropdown-title">Юнит-экономика</div>
+                <div class="dropdown-desc">LTV, CAC, маржинальность</div>
+            </div>
+        </a>
+        <a href="./tools/roi-calculator.html" class="dropdown-item">
+            <span class="dropdown-icon">💰</span>
+            <div>
+                <div class="dropdown-title">ROI калькулятор</div>
+                <div class="dropdown-desc">Окупаемость инвестиций</div>
+            </div>
+        </a>
+        <a href="./tools/break-even.html" class="dropdown-item">
+            <span class="dropdown-icon">⚖️</span>
+            <div>
+                <div class="dropdown-title">Точка безубыточности</div>
+                <div class="dropdown-desc">Выход в ноль</div>
+            </div>
+        </a>
+        <a href="./tools/hourly-rate.html" class="dropdown-item">
+            <span class="dropdown-icon">📊</span>
+            <div>
+                <div class="dropdown-title">Почасовая ставка</div>
+                <div class="dropdown-desc">Для фрилансеров</div>
+            </div>
+        </a>
+        <div style="border-top: 1px solid var(--border-light); margin: 8px 0;"></div>
+        <a href="./tools/index.html" class="dropdown-item" style="color: var(--text-primary); font-weight: 600;">
+            <span class="dropdown-icon" style="background: var(--text-primary); color: white;">→</span>
+            <div>
+                <div class="dropdown-title">Все инструменты</div>
+            </div>
+        </a>
+    </div>
+</div>
                 <a href="./auth/login.html" class="nav-link">Войти</a>
                 <a href="#early-access" class="btn-primary">Ранний доступ</a>
             </div>
@@ -252,60 +291,53 @@
     <section id="tools" class="section">
         <div class="container">
             <div class="section-header">
-                <h2>Инструменты</h2>
-                <p>Готовые решения для ежедневных задач</p>
+                <h2>Бесплатные инструменты</h2>
+                <p>Рассчитайте ключевые метрики за 2 минуты. Регистрация не требуется.</p>
             </div>
 
             <div class="tools-grid">
-                <div class="tool-card large">
-                    <div class="tool-status status-live">Работает</div>
-                    <div>
-                        <div class="tool-icon">🔢</div>
-                        <div class="tool-title">Калькулятор Юнит-экономики</div>
-                        <div class="tool-desc">Профессиональный инструмент для расчета маржинальности. Учитывает CAC, COGS, LTV и другие метрики.</div>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-status status-live">Работает</div>
-                    <div>
-                        <div class="tool-icon">💰</div>
-                        <div class="tool-title">P&L Калькулятор</div>
-                        <div class="tool-desc">Прогноз прибыли и убытков на год вперед.</div>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-status status-soon">Скоро</div>
-                    <div>
-                        <div class="tool-icon">📄</div>
-                        <div class="tool-title">Конструктор договоров</div>
-                        <div class="tool-desc">Шаблоны оферт, NDA и договоров с подрядчиками.</div>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-status status-soon">Скоро</div>
-                    <div>
-                        <div class="tool-icon">📈</div>
-                        <div class="tool-title">Маркетинг-дашборд</div>
-                        <div class="tool-desc">Визуализация воронки продаж и конверсий.</div>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-status status-soon">Скоро</div>
-                    <div>
-                        <div class="tool-icon">🎓</div>
-                        <div class="tool-title">База знаний</div>
-                        <div class="tool-desc">Гайды по запуску и управлению.</div>
-                    </div>
-                </div>
-                <div class="tool-card large" style="background: #F4F4F5; color: #18181B;">
-                    <div class="tool-status status-soon">Скоро</div>
-                    <div>
-                        <div class="tool-icon" style="background: white; color: #18181B;">💼</div>
-                        <div class="tool-title">HR Платформа</div>
-                        <div class="tool-desc" style="color: #52525B;">Инструменты для найма, онбординга и оценки эффективности сотрудников.</div>
-                    </div>
-                </div>
-            </div>
+    <a href="./tools/unit-economics.html" class="tool-card">
+        <div class="tool-status status-live">Бесплатно</div>
+        <div>
+            <div class="tool-icon">🔢</div>
+            <div class="tool-title">Юнит-экономика</div>
+            <div class="tool-desc">LTV, CAC, маржинальность клиента</div>
+        </div>
+    </a>
+    
+    <a href="./tools/pnl-report.html" class="tool-card">
+        <div class="tool-status status-live">Бесплатно</div>
+        <div>
+            <div class="tool-icon">💰</div>
+            <div class="tool-title">P&L Калькулятор</div>
+            <div class="tool-desc">Прогноз прибыли на 12 месяцев</div>
+        </div>
+    </a>
+    
+    <a href="./tools/break-even.html" class="tool-card">
+        <div class="tool-status status-live">Бесплатно</div>
+        <div>
+            <div class="tool-icon">⚖️</div>
+            <div class="tool-title">Точка безубыточности</div>
+            <div class="tool-desc">Выход в ноль</div>
+        </div>
+    </a>
+    
+    <a href="./tools/hourly-rate.html" class="tool-card">
+        <div class="tool-status status-live">Бесплатно</div>
+        <div>
+            <div class="tool-icon">�</div>
+            <div class="tool-title">Почасовая ставка</div>
+            <div class="tool-desc">Для фрилансеров</div>
+        </div>
+    </a>
+</div>
+<div style="text-align: center; margin-top: 40px;">
+    <a href="./tools/index.html" style="display: inline-flex; align-items: center; gap: 8px; color: var(--text-primary); font-weight: 600; font-size: 16px; padding: 12px 24px; border: 1px solid var(--border-light); border-radius: 12px; transition: all 0.3s;">
+        Все инструменты
+        <span style="font-size: 14px;">→</span>
+    </a>
+</div>
         </div>
     </section>
 

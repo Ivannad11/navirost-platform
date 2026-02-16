@@ -116,6 +116,8 @@
             font-size: 13px;
             cursor: pointer;
             transition: background 0.2s;
+            white-space: normal; /* Разрешаем перенос текста */
+            line-height: 1.4;
         }
         .menu-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
         .menu-item.danger { color: #EF4444; }
@@ -223,7 +225,22 @@
             justify-content: space-between;
             height: 140px;
             transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
         }
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
         
         .stat-icon-wrapper {
@@ -616,7 +633,7 @@
             if (subtitleEl) {
                 const hours = new Date().getHours();
                 const greeting = hours < 12 ? 'Доброе утро' : (hours < 18 ? 'Добрый день' : 'Добрый вечер');
-                const name = user && user.name ? user.name : 'друг';
+                const name = user && user.name ? user.name : (user && user.email ? user.email.split('@')[0] : 'друг');
                 subtitleEl.innerText = `${greeting}, ${name}! Вот что происходит с вашими проектами.`;
             }
             
@@ -704,7 +721,9 @@
                         <span class="empty-icon">🌱</span>
                         <div class="empty-title">Начните свой первый бизнес</div>
                         <div class="empty-desc">Создайте проект, чтобы рассчитать юнит-экономику и построить финансовую модель.</div>
-                        <button class="btn-primary" onclick="createNewProject()">Создать проект</button>
+                        <button class="btn-primary" onclick="createNewProject()" style="padding: 14px 32px; font-size: 15px;">
+    🚀 Создать первый проект
+</button>
                     </div>
                 `;
                 return;
@@ -747,11 +766,15 @@
         if (user) {
             const avatarEl = document.querySelector('.avatar');
             const nameEl = document.querySelector('.user-name');
-            if (avatarEl && user.name) {
-                avatarEl.textContent = user.name.charAt(0).toUpperCase();
+            
+            // Определяем имя: либо из user.name, либо из email
+            const displayName = user.name || (user.email ? user.email.split('@')[0] : 'Пользователь');
+            
+            if (avatarEl) {
+                avatarEl.textContent = displayName.charAt(0).toUpperCase();
             }
-            if (nameEl && user.name) {
-                nameEl.textContent = user.name;
+            if (nameEl) {
+                nameEl.textContent = displayName;
             }
         }
     </script>

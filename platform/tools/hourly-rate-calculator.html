@@ -150,9 +150,7 @@
             const billableHours = totalWorkingHours * (1 - nonBillablePercent / 100);
             
             // Calculate required gross income (before taxes)
-            const netIncomeAfterTaxes = desiredIncome;
-            const grossIncomeNeeded = netIncomeAfterTaxes / (1 - taxRate / 100);
-            const totalRevenueNeeded = grossIncomeNeeded + businessExpenses;
+            const totalRevenueNeeded = (desiredIncome + businessExpenses) / (1 - taxRate / 100);
             
             // Calculate hourly rate
             const hourlyRate = totalRevenueNeeded / billableHours;

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор почасовой ставки — Расчёт для фрилансеров | Навырост</title>
+    <meta name="description" content="Рассчитайте сколько брать за час работы с учётом налогов, расходов и желаемого дохода. Калькулятор почасовой ставки для фрилансеров и консультантов.">
+    <meta name="keywords" content="калькулятор почасовой ставки, расчет ставки фрилансера, сколько брать за час, hourly rate calculator">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📊</text></svg>">
+    
+    <style>
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        
+        .calc-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .calc-header h1 {
+            font-size: 42px;
+            margin-bottom: 16px;
+        }
+        
+        .calc-header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .calc-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 40px;
+        }
+        
+        .calc-inputs,
+        .calc-results {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 32px;
+        }
+        
+        .calc-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 15px;
+            background: var(--bg-tertiary);
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--text-primary);
+            background: white;
+        }
+        
+        .helper-text {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        
+        .result-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .result-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+        
+        .result-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+        }
+        
+        .cta-block {
+            background: linear-gradient(135deg, #18181B 0%, #3F3F46 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 48px;
+            color: white;
+        }
+        
+        .cta-block h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .cta-block p {
+            opacity: 0.8;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 768px) {
+            .calc-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .calc-header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-inner">
+            <a href="../index.html" class="logo">навырост<span>.</span></a>
+            
+            <button class="burger-btn" id="burger-btn" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="../index.html#platform" class="nav-link">Платформа</a>
+                <a href="../tools/index.html" class="nav-link">Инструменты</a>
+                <a href="../auth/login.html" class="nav-link">Войти</a>
+                <a href="../auth/register.html" class="btn-primary">Начать бесплатно</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="calculator-container">
+        <div class="calc-header">
+            <h1>Калькулятор почасовой ставки</h1>
+            <p>Рассчитайте сколько брать за час работы с учётом налогов, расходов и желаемого дохода. Для фрилансеров, консультантов и подрядчиков.</p>
+        </div>
+
+        <div class="calc-layout">
+            <!-- Левая колонка: Ввод данных -->
+            <div class="calc-inputs">
+                <h3 class="calc-section-title">Введите данные</h3>
+                
+                <div class="form-group">
+                    <label>Желаемый доход в месяц, ₽</label>
+                    <input type="number" id="desiredIncome" class="form-input" placeholder="150000" value="150000">
+                    <div class="helper-text">Сколько хотите получать на руки</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Рабочих часов в месяц</label>
+                    <input type="number" id="workingHours" class="form-input" placeholder="160" value="160">
+                    <div class="helper-text">Обычно 160 часов (8 часов × 20 рабочих дней)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Бизнес-расходы в месяц, ₽</label>
+                    <input type="number" id="businessExpenses" class="form-input" placeholder="30000" value="30000">
+                    <div class="helper-text">Программы, реклама, образование, оборудование</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Налоговая ставка (%)</label>
+                    <select id="taxRate" class="form-input">
+                        <option value="6">УСН Доходы 6%</option>
+                        <option value="15">УСН Доходы-Расходы 15%</option>
+                        <option value="13">НДФЛ 13% (самозанятый)</option>
+                        <option value="4">Самозанятый 4% (физлица)</option>
+                    </select>
+                    <div class="helper-text">Выберите ваш налоговый режим</div>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Результаты -->
+            <div class="calc-results">
+                <h3 class="calc-section-title">Результаты</h3>
+                
+                <div class="result-card">
+                    <div class="result-label">Минимальная почасовая ставка</div>
+                    <div class="result-value" id="res_hourlyRate">0 ₽/час</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Необходимая выручка в месяц</div>
+                    <div class="result-value" id="res_totalRevenue">0 ₽</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Налоги в месяц</div>
+                    <div class="result-value" id="res_taxes">0 ₽</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Чистый доход на руки</div>
+                    <div class="result-value" id="res_netIncome">0 ₽</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA блок -->
+        <div class="cta-block">
+            <h3>Хотите сохранить этот расчёт?</h3>
+            <p>Зарегистрируйтесь бесплатно и получите доступ к личному кабинету с историей всех расчётов, дашбордом проектов и экспортом в PDF.</p>
+            <a href="../auth/register.html" class="btn-primary" style="background: white; color: #18181B; display: inline-flex;">
+                Создать бесплатный аккаунт
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">навырост.</div>
+                <div class="footer-links">
+                    <a href="../index.html#platform">Платформа</a>
+                    <a href="../tools/index.html">Инструменты</a>
+                    <a href="https://t.me/navirost_platform" target="_blank" rel="noopener">Telegram</a>
+                    <a href="mailto:hello@navirost.ru">Контакты</a>
+                </div>
+                <div class="footer-copy" style="color: var(--text-tertiary); font-size: 14px;">
+                    © 2025–2026 Навырост. Все права защищены.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/script.js"></script>
+    <script>
+        const inputs = ['desiredIncome', 'workingHours', 'businessExpenses', 'taxRate'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
+            document.getElementById(id).addEventListener('change', calculate);
+        });
+
+        function calculate() {
+            const desiredIncome = parseFloat(document.getElementById('desiredIncome').value) || 0;
+            const workingHours = parseFloat(document.getElementById('workingHours').value) || 1;
+            const businessExpenses = parseFloat(document.getElementById('businessExpenses').value) || 0;
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 6;
+
+            // ПРАВИЛЬНАЯ формула для УСН (по замечанию Gemini)
+            // Выручка = (Желаемый доход + Расходы) / (1 - Налог%)
+            const totalRevenueNeeded = (desiredIncome + businessExpenses) / (1 - taxRate / 100);
+
+            // Почасовая ставка
+            const hourlyRate = totalRevenueNeeded / workingHours;
+
+            // Налоги
+            const taxes = totalRevenueNeeded * (taxRate / 100);
+
+            // Чистый доход (проверка)
+            const netIncome = totalRevenueNeeded - taxes - businessExpenses;
+
+            // Вывод результатов
+            document.getElementById('res_hourlyRate').textContent = Math.ceil(hourlyRate) + ' ₽/час';
+            document.getElementById('res_totalRevenue').textContent = formatMoney(totalRevenueNeeded);
+            document.getElementById('res_taxes').textContent = formatMoney(taxes);
+            document.getElementById('res_netIncome').textContent = formatMoney(netIncome);
+        }
+
+        function formatMoney(value) {
+            return new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        calculate();
+    </script>
+</body>
+</html>

@@ -315,6 +315,11 @@
                                 <span class="input-suffix">₽</span>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Эквайринг (%)</label>
+                            <input type="number" id="acquiring" class="form-input" placeholder="1-3" value="2" step="0.1" oninput="calc()">
+                            <div class="helper-text">Комиссия платежной системы (обычно 1.5-3%)</div>
+                        </div>
                         <div class="input-group">
                             <label>Повторные покупки (APC)</label>
                             <div class="input-wrapper">
@@ -337,12 +342,16 @@
                         <span class="res-val" id="res_margin">0 ₽</span>
                     </div>
                     <div class="result-row">
-                        <span class="res-label">Прибыль с клиента (LTV)</span>
+                        <span class="res-label">LTV (прибыль за все покупки)</span>
                         <span class="res-val" id="res_ltv">0 ₽</span>
                     </div>
                     <div class="result-row">
-                        <span class="res-label">ROI (Окупаемость)</span>
-                        <span class="res-val highlight" id="res_roi">0%</span>
+                        <span class="res-label">Прибыль с клиента</span>
+                        <span class="res-val" id="res_profit">0 ₽</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="res-label">ROMI</span>
+                        <span class="res-val" id="res_romi">0%</span>
                     </div>
                     
                     <div class="verdict" id="verdict_text">
@@ -418,10 +427,52 @@
         // ... (loadData function) ...
 
         function calc() {
-            // ... (calculation logic same as before) ...
-            // REMOVE automatic saving inside calc()
+            // Получаем данные
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const cogs = parseFloat(document.getElementById('cogs').value) || 0;
+            const acquiring = parseFloat(document.getElementById('acquiring').value) || 2;
+            const apc = parseFloat(document.getElementById('apc').value) || 1;
+            const marketing_budget = parseFloat(document.getElementById('marketing_budget').value) || 0;
+            const clicks = parseFloat(document.getElementById('clicks').value) || 0;
+            const conv_lead = parseFloat(document.getElementById('conv_lead').value) || 0;
+            const conv_sale = parseFloat(document.getElementById('conv_sale').value) || 0;
             
-            // ... (UI updates) ...
+            // Расчет CAC
+            const leads = Math.floor(clicks * (conv_lead / 100));
+            const customers = Math.floor(leads * (conv_sale / 100));
+            const cac = customers > 0 ? marketing_budget / customers : 0;
+            
+            // Расчет маржи с одной продажи (Contribution Margin)
+            const acquiringAmount = price * (acquiring / 100);
+            const contributionMargin = price - cogs - acquiringAmount;
+            
+            // Расчет LTV (прибыль за все покупки клиента)
+            const ltv = contributionMargin * apc;
+            
+            // Прибыль с клиента (Lifetime Profit)
+            const lifetimeProfit = ltv - cac;
+            
+            // ROMI (возврат инвестиций в маркетинг)
+            const romi = cac > 0 ? ((ltv - cac) / cac * 100) : 0;
+            
+            // Вывод результатов
+            document.getElementById('res_cac').textContent = cac.toFixed(0) + ' ₽';
+            document.getElementById('res_margin').textContent = contributionMargin.toFixed(2) + ' ₽';
+            document.getElementById('res_ltv').textContent = ltv.toFixed(2) + ' ₽';
+            document.getElementById('res_profit').textContent = lifetimeProfit.toFixed(2) + ' ₽';
+            document.getElementById('res_romi').textContent = romi.toFixed(1) + '%';
+            
+            // Вердикт
+            const verdictEl = document.getElementById('verdict_text');
+            if (customers === 0) {
+                verdictEl.textContent = 'Заполните данные слева, чтобы увидеть результат.';
+            } else if (romi < 100) {
+                verdictEl.textContent = '❌ Модель убыточна. Повысьте цену или снизьте CAC.';
+            } else if (romi < 200) {
+                verdictEl.textContent = '⚠️ Слабая прибыльность. Оптимизируйте маркетинг.';
+            } else {
+                verdictEl.textContent = '✅ Отличная модель! Масштабируйтесь.';
+            }
         }
 
         function saveProjectData() {
@@ -448,7 +499,13 @@
             const leads = Math.floor(data.clicks * (data.conv_lead / 100));
             const customers = Math.floor(leads * (data.conv_sale / 100));
             let cac = customers > 0 ? data.marketing_budget / customers : 0;
-            let ltv = (data.price - data.cogs) * data.apc;
+            
+            // Учитываем эквайринг в расчетах
+            const acquiring = parseFloat(document.getElementById('acquiring').value) || 2;
+            const acquiringAmount = data.price * (acquiring / 100);
+            const contributionMargin = data.price - data.cogs - acquiringAmount;
+            let ltv = contributionMargin * data.apc;
+            
             data.margin = ltv - cac;
 
             DataManager.updateProject(currentProject.id, 'unit', data);

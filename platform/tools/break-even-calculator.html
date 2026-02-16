@@ -128,6 +128,22 @@
             // Calculations
             const contributionMargin = sellingPrice - variableCostPerUnit;
             const profitMargin = (contributionMargin / sellingPrice) * 100;
+            
+            // Проверка что маржа положительная
+            if (contributionMargin <= 0) {
+                document.getElementById('results').innerHTML = `
+                    <div style="color: #DC2626; padding: 20px; background: #FEF2F2; border-radius: 12px;">
+                        <strong>⚠️ Ошибка:</strong> Вы продаете в убыток с каждой единицы товара.<br>
+                        Цена продажи должна быть больше переменных затрат.<br>
+                        Текущая маржа: ${contributionMargin.toFixed(2)} ₽ (должна быть > 0)
+                    </div>
+                `;
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('noResults').style.display = 'none';
+                return; // Прерываем расчет
+            }
+            
+            // Если все ок, считаем дальше
             const breakEvenUnits = Math.ceil(fixedCosts / contributionMargin);
             const breakEvenRevenue = breakEvenUnits * sellingPrice;
             

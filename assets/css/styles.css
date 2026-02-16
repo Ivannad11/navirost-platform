@@ -559,7 +559,7 @@ nav {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 280px;
+    min-height: 220px;
 }
 
 .tool-card:hover {
@@ -601,7 +601,7 @@ nav {
 }
 
 .tool-desc {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
     line-height: 1.5;
 }
@@ -867,9 +867,211 @@ html {
     scroll-padding-top: 80px;
 }
 
-/* ============================================
-   AUTH PAGE IMPROVEMENTS
-   ============================================ */
+/* Выпадающее меню в навигации */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-dropdown .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 280px;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1000;
+    padding: 8px;
+    margin-top: 8px;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: translateX(2px);
+}
+
+.dropdown-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.dropdown-title {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.dropdown-desc {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    line-height: 1.3;
+}
+
+/* Мобильная адаптация dropdown */
+@media (max-width: 768px) {
+    .nav-dropdown .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+        margin: 8px 0 0 0;
+    }
+    
+    .dropdown-item {
+        padding: 8px 0;
+        border-radius: 0;
+        background: transparent !important;
+    }
+    
+    .dropdown-item:hover {
+        transform: none;
+        background: transparent !important;
+    }
+    
+    .dropdown-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+    
+    .dropdown-title {
+        font-size: 13px;
+    }
+    
+    .dropdown-desc {
+        display: none;
+    }
+}
+
+/* Dropdown Navigation */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 340px;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+    padding: 8px;
+    margin-top: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1000;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.dropdown-icon {
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.dropdown-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.dropdown-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+    .nav-dropdown {
+        display: block;
+        width: 100%;
+    }
+    
+    .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        margin-top: 8px;
+        padding: 0 0 0 12px;
+        min-width: auto;
+    }
+}
 
 .auth-logo {
     display: inline-block;
@@ -886,7 +1088,6 @@ html {
 }
 
 .auth-logo span {
-<<<<<<< HEAD
     color: var(--primary);
 }
 
