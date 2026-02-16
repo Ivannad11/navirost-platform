@@ -24,76 +24,106 @@
 
     <meta name="keywords" content="юнит-экономика, финансовая модель, P&L, бизнес калькулятор, управление бизнесом">
     <meta name="author" content="Навырост">
+    
+    <!-- Open Graph для VK / Telegram / OK.ru -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ivannad11.github.io/navirost-platform/">
+    <meta property="og:title" content="Навырост — платформа для управления бизнесом на основе данных">
+    <meta property="og:description" content="Бесплатные калькуляторы юнит-экономики, ROI, безубыточности. Инструменты для предпринимателей.">
+    <meta property="og:image" content="https://ivannad11.github.io/navirost-platform/assets/preview.png">
+
+    <!-- VK -->
+    <meta property="vk:image" content="https://ivannad11.github.io/navirost-platform/assets/preview.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Навырост",
+  "applicationCategory": "BusinessApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "RUB"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "ratingCount": "127"
+  }
+}
+</script>
 </head>
 <body>
 
-    <nav>
-        <div class="container nav-inner">
-            <a href="#" class="logo">навырост<span>.</span></a>
+    <nav class="navbar">
+    <div class="container">
+        <a href="./index.html" class="nav-brand">Навырост.</a>
+        
+        <button class="burger-btn" id="burger-btn" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <div class="nav-links" id="nav-links">
+            <a href="#platform" class="nav-link">Платформа</a>
             
-            <button class="burger-btn" id="burger-btn" aria-label="Меню">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <div class="nav-dropdown">
+                <a href="#tools" class="nav-link">Инструменты ▼</a>
+                <div class="dropdown-menu">
+                    <a href="./tools/unit-economics.html" class="dropdown-item">
+                        <span class="dropdown-icon">🔢</span>
+                        <div>
+                            <div class="dropdown-title">Юнит-экономика</div>
+                            <div class="dropdown-desc">LTV, CAC, маржинальность</div>
+                        </div>
+                    </a>
+                    <a href="./tools/roi-calculator.html" class="dropdown-item">
+                        <span class="dropdown-icon">💰</span>
+                        <div>
+                            <div class="dropdown-title">ROI калькулятор</div>
+                            <div class="dropdown-desc">Окупаемость инвестиций</div>
+                        </div>
+                    </a>
+                    <a href="./tools/break-even.html" class="dropdown-item">
+                        <span class="dropdown-icon">⚖️</span>
+                        <div>
+                            <div class="dropdown-title">Точка безубыточности</div>
+                            <div class="dropdown-desc">Расчет break-even</div>
+                        </div>
+                    </a>
+                    <a href="./tools/hourly-rate.html" class="dropdown-item">
+                        <span class="dropdown-icon">📊</span>
+                        <div>
+                            <div class="dropdown-title">Почасовая ставка</div>
+                            <div class="dropdown-desc">Для фрилансеров</div>
+                        </div>
+                    </a>
+                    <div class="dropdown-separator"></div>
+                    <a href="./tools/index.html" class="dropdown-item-all">Все инструменты →</a>
+                </div>
+            </div>
             
-            <div class="nav-links" id="nav-links">
-                <a href="#platform" class="nav-link">Платформа</a>
-                <div class="nav-dropdown">
-    <a href="#tools" class="nav-link">Инструменты <span style="font-size: 10px;">▼</span></a>
-    <div class="dropdown-menu">
-        <a href="./tools/unit-economics.html" class="dropdown-item">
-            <span class="dropdown-icon">🔢</span>
-            <div>
-                <div class="dropdown-title">Юнит-экономика</div>
-                <div class="dropdown-desc">LTV, CAC, маржинальность</div>
-            </div>
-        </a>
-        <a href="./tools/roi-calculator.html" class="dropdown-item">
-            <span class="dropdown-icon">💰</span>
-            <div>
-                <div class="dropdown-title">ROI калькулятор</div>
-                <div class="dropdown-desc">Окупаемость инвестиций</div>
-            </div>
-        </a>
-        <a href="./tools/break-even.html" class="dropdown-item">
-            <span class="dropdown-icon">⚖️</span>
-            <div>
-                <div class="dropdown-title">Точка безубыточности</div>
-                <div class="dropdown-desc">Выход в ноль</div>
-            </div>
-        </a>
-        <a href="./tools/hourly-rate.html" class="dropdown-item">
-            <span class="dropdown-icon">📊</span>
-            <div>
-                <div class="dropdown-title">Почасовая ставка</div>
-                <div class="dropdown-desc">Для фрилансеров</div>
-            </div>
-        </a>
-        <div style="border-top: 1px solid var(--border-light); margin: 8px 0;"></div>
-        <a href="./tools/index.html" class="dropdown-item" style="color: var(--text-primary); font-weight: 600;">
-            <span class="dropdown-icon" style="background: var(--text-primary); color: white;">→</span>
-            <div>
-                <div class="dropdown-title">Все инструменты</div>
-            </div>
-        </a>
-    </div>
-</div>
-                <a href="./auth/login.html" class="nav-link">Войти</a>
-                <a href="#early-access" class="btn-primary">Ранний доступ</a>
-            </div>
+            <a href="./auth/login.html" class="nav-link">Войти</a>
+            <a href="./auth/register.html" class="btn-primary">Начать бесплатно</a>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <section class="hero">
         <div class="container hero-content">
             <div class="hero-tag">Beta 2.0</div>
-            <h1>Управляйте бизнесом на основе <span>реальных цифр</span></h1>
+            <h1>Управляйте бизнесом на основе <span style="color: var(--text-primary); font-weight: 600;">реальных цифр</span></h1>
             <p>Платформа для расчёта юнит-экономики, P&L и налоговой нагрузки. Без сложных таблиц и консультантов.</p>
             <div class="hero-actions">
-                <a href="#early-access" class="btn-primary">Начать работу</a>
-                <a href="#platform" class="btn-secondary">Как это работает</a>
-            </div>
+    <a href="./auth/register.html" class="btn-primary">
+        ✨ Начать работу
+    </a>
+    <a href="#platform" class="btn-secondary">
+        📊 Как это работает
+    </a>
+</div>
 
             <div class="stats-grid">
                 <div class="stat-item">

@@ -119,3 +119,25 @@ if (burgerBtn && navLinks) {
         }
     });
 }
+
+// Бургер-меню (дубликат для совместимости)
+document.addEventListener('DOMContentLoaded', function() {
+    const burgerBtn = document.getElementById('burger-btn');
+    const navLinks = document.getElementById('nav-links');
+    
+    if (burgerBtn) {
+        burgerBtn.addEventListener('click', function() {
+            burgerBtn.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        
+        // Закрыть меню при клике на ссылку
+        const links = navLinks.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', function() {
+                burgerBtn.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+    }
+});
