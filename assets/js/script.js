@@ -18,25 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Auto-rotate tabs if user hasn't interacted
-        let autoRotate = true;
-        let currentIndex = 0;
-        const rotateInterval = setInterval(() => {
-            if (!autoRotate) {
-                clearInterval(rotateInterval);
-                return;
-            }
-            currentIndex = (currentIndex + 1) % tabs.length;
-            tabs[currentIndex].click();
-        }, 5000);
-
-        // Stop auto-rotation on interaction
-        document.querySelector('.platform-container').addEventListener('mouseenter', () => {
-            autoRotate = false;
-        });
-        document.querySelector('.platform-container').addEventListener('touchstart', () => {
-            autoRotate = false;
-        }, { passive: true });
     }
 
     // Intersection Observer for scroll animations
@@ -77,3 +58,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Early Access Form Handler
+const earlyAccessForm = document.getElementById('early-access-form');
+if (earlyAccessForm) {
+    earlyAccessForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const emailInput = document.getElementById('email-input');
+        const messageEl = document.getElementById('form-message');
+        const email = emailInput.value.trim();
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            messageEl.textContent = '❌ Введите корректный email';
+            messageEl.style.color = '#DC2626';
+            return;
+        }
+        
+        let emails = JSON.parse(localStorage.getItem('earlyAccessEmails') || '[]');
+        
+        if (emails.includes(email)) {
+            messageEl.textContent = '⚠️ Этот email уже в списке';
+            messageEl.style.color = '#F59E0B';
+            return;
+        }
+        
+        emails.push(email);
+        localStorage.setItem('earlyAccessEmails', JSON.stringify(emails));
+        
+        messageEl.textContent = '✅ Вы в списке! Напишем, как только запустимся';
+        messageEl.style.color = '#16A34A';
+        emailInput.value = '';
+        
+        console.log('New email registered:', email);
+    });
+}
+
+// Burger Menu
+const burgerBtn = document.getElementById('burger-btn');
+const navLinks = document.getElementById('nav-links');
+
+if (burgerBtn && navLinks) {
+    burgerBtn.addEventListener('click', () => {
+        burgerBtn.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+    
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            burgerBtn.classList.remove('active');
+            navLinks.classList.remove('active');
+        });
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!burgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
+            burgerBtn.classList.remove('active');
+            navLinks.classList.remove('active');
+        }
+    });
+}
