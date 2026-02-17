@@ -108,7 +108,13 @@ function renderSidebar() {
             link.className = 'nav-sub-link';
             
             let isActive = false;
-            if (window.location.pathname.includes(m.url)) isActive = true;
+            const currentPath = window.location.pathname;
+            
+            // Check if current path matches the calculator URL
+            if (currentPath.includes(m.url)) {
+                isActive = true;
+            }
+            
             if (isActive) link.classList.add('active');
             
             link.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${isActive ? '#3B82F6' : '#CBD5E1'};"></span> ${m.icon} ${m.title}`;
@@ -141,7 +147,7 @@ function renderSidebar() {
             userProfile.className = 'user-profile';
             navMenu.parentElement.appendChild(userProfile);
         }
-        userProfile.onclick = () => window.location.href = 'settings.html';
+        userProfile.onclick = () => window.location.href = '/platform/settings.html';
         userProfile.innerHTML = `
             <div class="avatar">${user.name ? user.name.charAt(0).toUpperCase() : ''}</div>
             <div class="user-info">
@@ -160,15 +166,18 @@ function createNavItem(module) {
     a.href = module.url;
     
     let isActive = false;
+    const currentPath = window.location.pathname;
     const href = module.url;
     
-    // Special case for home
-    if (href === '/platform/home.html' && (window.location.pathname.endsWith('/') || window.location.pathname.includes('home.html'))) {
+    // Special case for home page
+    if (module.id === 'home' && (currentPath.endsWith('/platform/') || currentPath.endsWith('/platform/home.html') || currentPath.endsWith('home.html'))) {
         isActive = true;
     }
     
-    // Add active class if pathname matches
-    if (window.location.pathname.includes(href)) isActive = true;
+    // Check if current path matches the module URL
+    if (currentPath.includes(href) && href !== 'home.html') {
+        isActive = true;
+    }
 
     a.className = `nav-link ${isActive ? 'active' : ''}`;
     a.innerHTML = `<span>${module.icon}</span><span>${module.title}</span>`;
