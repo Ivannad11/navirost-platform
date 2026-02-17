@@ -147,7 +147,7 @@ function renderSidebar() {
             userProfile.className = 'user-profile';
             navMenu.parentElement.appendChild(userProfile);
         }
-        userProfile.onclick = () => window.location.href = '/navirost-platform/platform/settings.html';
+        userProfile.onclick = () => window.location.href = 'settings.html';
         userProfile.innerHTML = `
             <div class="avatar">${user.name ? user.name.charAt(0).toUpperCase() : ''}</div>
             <div class="user-info">
