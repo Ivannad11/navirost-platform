@@ -35,6 +35,11 @@ const DataManager = {
         localStorage.setItem(this.USER_KEY, JSON.stringify(user));
         // Keep legacy key for simple auth checks in other files
         localStorage.setItem('user', user.name); 
+        
+        // Sync
+        if (window.SupabaseService && window.SupabaseService.isConnected()) {
+            window.SupabaseService.syncUser(user);
+        }
     },
 
     updateUserOnboarding: function(key) {
@@ -90,6 +95,11 @@ const DataManager = {
         
         // Update Onboarding
         this.updateUserOnboarding('projectCreated');
+
+        // Sync
+        if (window.SupabaseService && window.SupabaseService.isConnected()) {
+            window.SupabaseService.syncProjects(projects);
+        }
         
         return newProject;
     },
@@ -111,6 +121,12 @@ const DataManager = {
             }
             
             localStorage.setItem(this.PROJECTS_KEY, JSON.stringify(projects));
+            
+            // Sync
+            if (window.SupabaseService && window.SupabaseService.isConnected()) {
+                window.SupabaseService.syncProjects(projects);
+            }
+
             return projects[index];
         }
         return null;
@@ -120,6 +136,14 @@ const DataManager = {
         const projects = this.getProjects();
         const filteredProjects = projects.filter(p => p.id !== id);
         localStorage.setItem(this.PROJECTS_KEY, JSON.stringify(filteredProjects));
+        
+        // Sync
+        if (window.SupabaseService && window.SupabaseService.isConnected()) {
+            // Note: Simplistic sync just pushes current state. 
+            // Real sync needs to handle deletes explicitly (soft delete or ID tracking).
+            // But for MVP overwriting works if we trust client is truth.
+            window.SupabaseService.syncProjects(filteredProjects);
+        }
         
         // If the deleted project was current, clear current project
         const currentProjectId = this.getCurrentProjectId();
@@ -143,6 +167,37 @@ const DataManager = {
 
     formatMoney: function(amount) {
         return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(amount);
+    },
+
+    // --- DB Sync ---
+    syncWithDatabase: async function() {
+        if (!window.SupabaseService || !window.SupabaseService.isConnected()) return;
+        
+        console.log('Syncing with database...');
+        
+        // Sync User
+        const localUser = this.getUser();
+        if (localUser) {
+            const remoteUser = await window.SupabaseService.syncUser(localUser);
+            if (remoteUser) {
+                // Update local with merged/remote data (e.g. if logged in elsewhere)
+                // Avoid infinite loop by not calling saveUser directly if possible, or just accept it.
+                // Here we just update storage directly to avoid triggering another sync immediately if logic is simple.
+                localStorage.setItem(this.USER_KEY, JSON.stringify(remoteUser));
+            }
+        }
+
+        // Sync Projects
+        const localProjects = this.getProjects();
+        const remoteProjects = await window.SupabaseService.syncProjects(localProjects);
+        if (remoteProjects) {
+            localStorage.setItem(this.PROJECTS_KEY, JSON.stringify(remoteProjects));
+            // Trigger UI refresh if needed (reload page)
+            // window.location.reload(); // Aggressive but effective
+        }
+        
+        console.log('Sync complete');
+        return true;
     }
 };
 

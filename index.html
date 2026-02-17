@@ -56,72 +56,66 @@
 </head>
 <body>
 
-    <header class="main-header">
-  <div class="header-container">
-    <a href="index.html" class="logo">навырост.</a>
-    
-    <nav class="main-nav">
-      <a href="#platform">Платформа</a>
-      
-      <!-- Выпадающее меню Инструменты -->
-      <div class="dropdown">
-        <a href="#tools" class="dropdown-trigger">
-          Инструменты 
-          <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
-        <div class="dropdown-menu">
-          <div class="dropdown-content">
-            <a href="tools/unit-economics.html" class="tool-item">
-              <div class="tool-icon">📊</div>
-              <div class="tool-info">
-                <div class="tool-name">Юнит-экономика</div>
-                <div class="tool-desc">Маржа, LTV, CAC</div>
-              </div>
-            </a>
-            <a href="tools/pnl-report.html" class="tool-item">
-              <div class="tool-icon">💰</div>
-              <div class="tool-info">
-                <div class="tool-name">P&L Отчёт</div>
-                <div class="tool-desc">Прогноз на 6-12 мес</div>
-              </div>
-            </a>
-            <a href="tools/roi-calculator.html" class="tool-item">
-              <div class="tool-icon">📈</div>
-              <div class="tool-info">
-                <div class="tool-name">ROI калькулятор</div>
-                <div class="tool-desc">Окупаемость инвестиций</div>
-              </div>
-            </a>
-            <a href="tools/break-even.html" class="tool-item">
-              <div class="tool-icon">⚖️</div>
-              <div class="tool-info">
-                <div class="tool-name">Точка безубыточности</div>
-                <div class="tool-desc">Break-even анализ</div>
-              </div>
-            </a>
-            <div class="dropdown-footer">
-              <a href="#tools">Все инструменты →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-    
-    <div class="header-actions">
-      <a href="auth/login.html" class="btn-link">Войти</a>
-      <a href="auth/register.html" class="btn-primary">Начать бесплатно</a>
-    </div>
+    <nav>
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">навырост<span>.</span></a>
+            
+            <button class="burger-btn" id="burger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="#platform" class="nav-link">Платформа</a>
+                
+                <div class="nav-dropdown">
+                    <a href="#tools" class="nav-link">
+                        Инструменты 
+                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="tools/unit-economics.html" class="dropdown-item">
+                            <div class="dropdown-icon">📊</div>
+                            <div>
+                                <div class="dropdown-title">Юнит-экономика</div>
+                                <div class="dropdown-desc">Маржа, LTV, CAC</div>
+                            </div>
+                        </a>
+                        <a href="tools/pnl-report.html" class="dropdown-item">
+                            <div class="dropdown-icon">💰</div>
+                            <div>
+                                <div class="dropdown-title">P&L Отчёт</div>
+                                <div class="dropdown-desc">Прогноз на 6-12 мес</div>
+                            </div>
+                        </a>
+                        <a href="tools/roi-calculator.html" class="dropdown-item">
+                            <div class="dropdown-icon">📈</div>
+                            <div>
+                                <div class="dropdown-title">ROI калькулятор</div>
+                                <div class="dropdown-desc">Окупаемость инвестиций</div>
+                            </div>
+                        </a>
+                        <a href="tools/break-even.html" class="dropdown-item">
+                            <div class="dropdown-icon">⚖️</div>
+                            <div>
+                                <div class="dropdown-title">Точка безубыточности</div>
+                                <div class="dropdown-desc">Break-even анализ</div>
+                            </div>
+                        </a>
+                        <div class="dropdown-footer">
+                            <a href="tools/index.html" class="dropdown-item" style="justify-content: center; color: var(--text-primary);">Все инструменты →</a>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Бургер меню для мобильных -->
-    <button class="burger-menu" id="burger-toggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </div>
-</header>
+                <a href="auth/login.html" class="nav-link">Войти</a>
+                <a href="auth/register.html" class="nav-cta">Начать бесплатно</a>
+            </div>
+        </div>
+    </nav>
 
     <section class="hero">
         <div class="container hero-content">
@@ -384,7 +378,7 @@
     <a href="./tools/hourly-rate.html" class="tool-card">
         <div class="tool-status status-live">Бесплатно</div>
         <div>
-            <div class="tool-icon">�</div>
+            <div class="tool-icon">⏱️</div>
             <div class="tool-title">Почасовая ставка</div>
             <div class="tool-desc">Для фрилансеров</div>
         </div>

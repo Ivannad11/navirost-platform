@@ -7,13 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSidebar();
 });
 
+function resolvePath(path) {
+    if (!path || path.startsWith('/') || path.startsWith('http') || path.startsWith('#')) return path;
+    
+    // Check if we are in a subdirectory (tools or resources) inside platform
+    const currentPath = window.location.pathname;
+    // Simple heuristic: count how deep we are relative to platform root
+    // If we are in /platform/tools/unit.html, we need ../ for assets
+    // But this function is for links.
+    
+    if (currentPath.includes('/tools/') || currentPath.includes('/resources/') || currentPath.includes('/auth/')) {
+        return '../' + path;
+    }
+    return path;
+}
+
 function renderSidebar() {
     const navMenu = document.querySelector('.nav-menu');
     if (!navMenu) return;
 
     navMenu.innerHTML = '';
 
-    // 1. Main Category
+    // 1. Main Category (Home)
     const mainModules = AppConfig.modules.filter(m => m.category === 'main' && m.showInSidebar);
     mainModules.forEach(m => navMenu.appendChild(createNavItem(m)));
 
@@ -21,140 +36,148 @@ function renderSidebar() {
     const projects = typeof DataManager !== 'undefined' ? DataManager.getProjects() : [];
     const currentPid = typeof DataManager !== 'undefined' ? DataManager.getCurrentProjectId() : null;
     
-    const projectsGroup = document.createElement('li');
-    projectsGroup.className = `nav-group ${projects.length > 0 ? 'open' : ''}`;
+    // Create Project Group Header
+    const projectLi = document.createElement('li');
+    projectLi.className = 'nav-item';
+    projectLi.style.marginTop = '24px';
     
-    const header = document.createElement('div');
-    header.className = 'nav-group-header';
-    header.innerHTML = `
-        <div style="display:flex; align-items:center; gap:12px;">
-            <span>🚀</span>
-            <span>Мои Проекты</span>
-        </div>
-        <span class="nav-arrow">▼</span>
-    `;
-    header.onclick = () => projectsGroup.classList.toggle('open');
-    
-    const subMenu = document.createElement('div');
-    subMenu.className = 'nav-sub-menu';
+    // Group Title
+    const projTitle = document.createElement('div');
+    projTitle.style.padding = '0 12px 8px';
+    projTitle.style.fontSize = '11px';
+    projTitle.style.fontWeight = '600';
+    projTitle.style.color = 'var(--text-tertiary)';
+    projTitle.style.textTransform = 'uppercase';
+    projTitle.innerText = 'Проекты';
+    projectLi.appendChild(projTitle);
+
+    // Projects List Container
+    const projList = document.createElement('div');
+    projList.id = 'sidebar-projects-list';
     
     if (projects.length === 0) {
         const empty = document.createElement('div');
-        empty.style.padding = "8px 16px";
+        empty.style.padding = "4px 12px";
         empty.style.fontSize = "12px";
         empty.style.color = "var(--text-tertiary)";
         empty.innerText = "Нет проектов";
-        subMenu.appendChild(empty);
+        projList.appendChild(empty);
     } else {
         projects.forEach(p => {
             const link = document.createElement('a');
             link.href = '#';
-            link.className = `nav-sub-link ${p.id === currentPid ? 'active' : ''}`;
-            link.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${p.id === currentPid ? '#3B82F6' : '#CBD5E1'};"></span> ${p.name}`;
+            link.className = `nav-link ${p.id === currentPid ? 'active' : ''}`;
+            // Small dot indicator
+            link.innerHTML = `
+                <span style="width:6px;height:6px;border-radius:50%;background:${p.id === currentPid ? 'var(--primary)' : 'var(--border-strong)'};margin-right:8px;"></span>
+                ${p.name}
+            `;
             link.onclick = (e) => {
                 e.preventDefault();
                 DataManager.setCurrentProjectId(p.id);
-                window.location.href = 'project.html';
+                window.location.href = resolvePath('project.html');
             };
-            subMenu.appendChild(link);
+            projList.appendChild(link);
         });
     }
-    
-    // Add "New Project" button
-    const addBtn = document.createElement('div');
-    addBtn.className = 'nav-sub-link';
-    addBtn.style.color = '#3B82F6';
-    addBtn.style.cursor = 'pointer';
-    addBtn.innerHTML = '<span>+</span> Новый проект';
-    addBtn.onclick = () => {
+    projectLi.appendChild(projList);
+
+    // New Project Button
+    const newProjButton = document.createElement('a');
+    newProjButton.href = '#';
+    newProjButton.className = 'nav-link';
+    newProjButton.style.color = 'var(--text-tertiary)';
+    newProjButton.innerHTML = '<span>+</span> Новый проект';
+    newProjButton.onclick = (e) => {
+        e.preventDefault();
         if (typeof createNewProject === 'function') {
             createNewProject();
-        } else if (typeof Modal !== 'undefined' && typeof DataManager !== 'undefined') {
+        } else if (typeof Modal !== 'undefined') {
             Modal.prompt('Новый проект', 'Введите название:', (name) => {
                 DataManager.createProject(name);
-                window.location.reload(); // Fallback reload to refresh sidebar
+                window.location.reload();
             });
         }
     };
-    subMenu.appendChild(addBtn);
+    projectLi.appendChild(newProjButton);
+    navMenu.appendChild(projectLi);
 
-    projectsGroup.appendChild(header);
-    projectsGroup.appendChild(subMenu);
-    navMenu.appendChild(projectsGroup);
 
-    // 3. Calculators (Accordion)
+    // 3. Tools (Group)
     const toolModules = AppConfig.modules.filter(m => m.category === 'tools' && m.showInSidebar);
     if (toolModules.length > 0) {
-        const calculatorsGroup = document.createElement('li');
-        calculatorsGroup.className = 'nav-group';
+        const toolsLi = document.createElement('li');
+        toolsLi.className = 'nav-item';
+        toolsLi.style.marginTop = '24px';
         
-        const calcHeader = document.createElement('div');
-        calcHeader.className = 'nav-group-header';
-        calcHeader.innerHTML = `
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span>🔢</span>
-                <span>Калькуляторы</span>
-            </div>
-            <span class="nav-arrow">▼</span>
-        `;
-        calcHeader.onclick = () => calculatorsGroup.classList.toggle('open');
-        
-        const calcSubMenu = document.createElement('div');
-        calcSubMenu.className = 'nav-sub-menu';
+        const toolsTitle = document.createElement('div');
+        toolsTitle.style.padding = '0 12px 8px';
+        toolsTitle.style.fontSize = '11px';
+        toolsTitle.style.fontWeight = '600';
+        toolsTitle.style.color = 'var(--text-tertiary)';
+        toolsTitle.style.textTransform = 'uppercase';
+        toolsTitle.innerText = 'Инструменты';
+        toolsLi.appendChild(toolsTitle);
         
         toolModules.forEach(m => {
-            const link = document.createElement('a');
-            link.href = m.url;
-            link.className = 'nav-sub-link';
+            const a = document.createElement('a');
+            a.href = resolvePath(m.url);
             
             let isActive = false;
             const currentPath = window.location.pathname;
+            if (currentPath.includes(m.url)) isActive = true;
             
-            // Check if current path matches the calculator URL
-            if (currentPath.includes(m.url)) {
-                isActive = true;
-            }
-            
-            if (isActive) link.classList.add('active');
-            
-            link.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${isActive ? '#3B82F6' : '#CBD5E1'};"></span> ${m.icon} ${m.title}`;
-            calcSubMenu.appendChild(link);
+            a.className = `nav-link ${isActive ? 'active' : ''}`;
+            a.innerHTML = `<span>${m.icon}</span> ${m.title}`;
+            toolsLi.appendChild(a);
         });
-        
-        calculatorsGroup.appendChild(calcHeader);
-        calculatorsGroup.appendChild(calcSubMenu);
-        navMenu.appendChild(calculatorsGroup);
+        navMenu.appendChild(toolsLi);
     }
 
-    // 4. Resources
+    // 4. Resources (Group)
     const resModules = AppConfig.modules.filter(m => m.category === 'resources' && m.showInSidebar);
-    resModules.forEach(m => navMenu.appendChild(createNavItem(m)));
+    if (resModules.length > 0) {
+        const resLi = document.createElement('li');
+        resLi.className = 'nav-item';
+        resLi.style.marginTop = '24px';
+        
+        const resTitle = document.createElement('div');
+        resTitle.style.padding = '0 12px 8px';
+        resTitle.style.fontSize = '11px';
+        resTitle.style.fontWeight = '600';
+        resTitle.style.color = 'var(--text-tertiary)';
+        resTitle.style.textTransform = 'uppercase';
+        resTitle.innerText = 'Ресурсы';
+        resLi.appendChild(resTitle);
+        
+        resModules.forEach(m => {
+            const a = document.createElement('a');
+            a.href = resolvePath(m.url);
+            let isActive = window.location.pathname.includes(m.url);
+            a.className = `nav-link ${isActive ? 'active' : ''}`;
+            a.innerHTML = `<span>${m.icon}</span> ${m.title}`;
+            resLi.appendChild(a);
+        });
+        navMenu.appendChild(resLi);
+    }
     
-    // 5. System (Settings)
-    const sysModules = AppConfig.modules.filter(m => m.category === 'system' && m.showInSidebar);
-    sysModules.forEach(m => {
-        const item = createNavItem(m);
-        item.style.marginTop = 'auto'; // Push to bottom
-        navMenu.appendChild(item);
-    });
-
-    // 6. User Profile
-    const user = typeof DataManager !== 'undefined' ? DataManager.getUser() : null;
-    if (user) {
-        let userProfile = navMenu.parentElement.querySelector('.user-profile');
-        if (!userProfile) {
-            userProfile = document.createElement('div');
-            userProfile.className = 'user-profile';
-            navMenu.parentElement.appendChild(userProfile);
+    // 5. User Profile (Append to sidebar bottom if not present)
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && !sidebar.querySelector('.user-profile')) {
+        const user = typeof DataManager !== 'undefined' ? DataManager.getUser() : null;
+        if (user) {
+            const profile = document.createElement('div');
+            profile.className = 'user-profile';
+            profile.onclick = () => window.location.href = resolvePath('settings.html');
+            profile.innerHTML = `
+                <div class="avatar">${user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>
+                <div class="user-info">
+                    <div class="user-name">${user.name || 'User'}</div>
+                    <div class="user-plan">${user.plan || 'Free Plan'}</div>
+                </div>
+            `;
+            sidebar.appendChild(profile);
         }
-        userProfile.onclick = () => window.location.href = 'settings.html';
-        userProfile.innerHTML = `
-            <div class="avatar">${user.name ? user.name.charAt(0).toUpperCase() : ''}</div>
-            <div class="user-info">
-                <div class="user-name">${user.name}</div>
-                <div class="user-role">${user.plan || 'Free Plan'}</div>
-            </div>
-        `;
     }
 }
 
@@ -163,24 +186,20 @@ function createNavItem(module) {
     li.className = 'nav-item';
     
     const a = document.createElement('a');
-    a.href = module.url;
+    a.href = resolvePath(module.url);
     
     let isActive = false;
     const currentPath = window.location.pathname;
-    const href = module.url;
     
-    // Special case for home page
-    if (module.id === 'home' && (currentPath.endsWith('/platform/') || currentPath.endsWith('/platform/home.html') || currentPath.endsWith('home.html'))) {
+    // Special case for home
+    if (module.id === 'home' && (currentPath.endsWith('/platform/') || currentPath.endsWith('home.html'))) {
         isActive = true;
-    }
-    
-    // Check if current path matches the module URL
-    if (currentPath.includes(href) && href !== 'home.html') {
+    } else if (currentPath.includes(module.url) && module.id !== 'home') {
         isActive = true;
     }
 
     a.className = `nav-link ${isActive ? 'active' : ''}`;
-    a.innerHTML = `<span>${module.icon}</span><span>${module.title}</span>`;
+    a.innerHTML = `<span>${module.icon}</span> ${module.title}`;
     
     li.appendChild(a);
     return li;

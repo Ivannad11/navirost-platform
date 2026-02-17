@@ -1,341 +1,250 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тарифы — навырост.</title>
-  <link rel="stylesheet" href="../assets/css/styles.css">
-  <link rel="stylesheet" href="../assets/css/sidebar.css">
-  <style>
-    body {
-      background-color: var(--bg-secondary);
-      color: var(--text-primary);
-      display: flex;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тарифы — навырост.</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/modal.css">
+    <style>
+        .pricing-page {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-    /* Sidebar (Reused) */
-    .sidebar {
-      width: 280px;
-      background: white;
-      border-right: 1px solid var(--border-light);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      height: 100vh;
-      top: 0;
-      left: 0;
-      z-index: 100;
-    }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+        }
 
-    .sidebar-logo {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 40px;
-    }
-    .sidebar-logo span { color: var(--text-secondary); }
+        @media (max-width: 1024px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+        }
 
-    .nav-menu { list-style: none; flex: 1; }
-    .nav-item { margin-bottom: 8px; }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: var(--text-secondary);
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    .nav-link:hover, .nav-link.active {
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
-    }
+        .pricing-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .main-content {
-      margin-left: 280px;
-      flex: 1;
-      padding: 40px;
-    }
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-strong);
+        }
 
-    .pricing-page {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        .pricing-card.featured {
+            border-color: var(--text-primary);
+            box-shadow: var(--shadow-md);
+        }
 
-    .pricing-page h1 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
+        .badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--text-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
-    .pricing-page .subtitle {
-      color: var(--text-secondary);
-      font-size: 16px;
-      margin-bottom: 40px;
-    }
+        .badge.discount {
+            background: #EF4444;
+        }
 
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-      margin-top: 40px;
-    }
+        .pricing-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
 
-    @media (max-width: 768px) {
-      .pricing-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .sidebar {
-        left: -280px;
-      }
-      
-      .main-content {
-        margin-left: 0;
-      }
-    }
+        .price {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 4px;
+        }
 
-    .pricing-card {
-      background: #fff;
-      border: 2px solid #e5e5e5;
-      border-radius: 16px;
-      padding: 32px;
-      text-align: center;
-      position: relative;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+        .price span {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
 
-    .pricing-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    }
+        .savings {
+            color: #16A34A;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            height: 20px;
+        }
 
-    .pricing-card.featured {
-      border-color: #000;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    }
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 24px 0;
+            text-align: left;
+            flex-grow: 1;
+        }
 
-    .badge {
-      position: absolute;
-      top: -12px;
-      right: 20px;
-      background: #000;
-      color: #fff;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+        .pricing-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 10px;
+            line-height: 1.5;
+        }
 
-    .badge.discount {
-      background: #f44336;
-    }
+        .btn-plan {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: auto;
+        }
 
-    .pricing-card h3 {
-      font-size: 24px;
-      margin-bottom: 16px;
-    }
+        .btn-current {
+            background: var(--bg-tertiary);
+            color: var(--text-tertiary);
+            border: 1px solid transparent;
+            cursor: default;
+        }
 
-    .price {
-      font-size: 48px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .price span {
-      font-size: 16px;
-      color: #666;
-      font-weight: 400;
-    }
-
-    .savings {
-      color: #4caf50;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .pricing-card ul {
-      list-style: none;
-      padding: 0;
-      margin: 24px 0;
-      text-align: left;
-    }
-
-    .pricing-card ul li {
-      padding: 8px 0;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .btn-primary, .btn-secondary {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-primary {
-      background: #000;
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: #333;
-    }
-
-    .btn-secondary {
-      background: #e5e5e5;
-      color: #999;
-      cursor: not-allowed;
-    }
-
-    /* User Profile */
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .user-profile:hover {
-      background: var(--bg-tertiary);
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--bg-tertiary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-
-    .user-info {
-      flex: 1;
-    }
-
-    .user-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .user-role {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-  </style>
+        .btn-upgrade {
+            background: var(--text-primary);
+            color: white;
+            border: 1px solid var(--text-primary);
+        }
+        .btn-upgrade:hover {
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
+        }
+    </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <a href="../index.html" class="sidebar-logo">навырост<span>.</span></a>
     
-    <ul class="nav-menu">
-      <!-- Dynamically populated by sidebar-logic.js -->
-    </ul>
-    
-    <div class="user-profile" id="userProfileBtn">
-      <div class="avatar">И</div>
-      <div class="user-info">
-        <div class="user-name">Иван Петров</div>
-        <div class="user-role">Pro Plan</div>
-      </div>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
-  </aside>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="pricing-page">
-      <h1>Выберите тариф</h1>
-      <p class="subtitle">Подберите оптимальный план для вашего бизнеса</p>
-      
-      <div class="pricing-grid">
-        <!-- Бесплатный -->
-        <div class="pricing-card">
-          <h3>Базовый</h3>
-          <div class="price">0 ₽ <span>/месяц</span></div>
-          <ul>
-            <li>✅ 3 калькулятора (Юнит-экономика, ROI, Безубыточность)</li>
-            <li>✅ 1 проект</li>
-            <li>❌ Сохранение истории расчётов</li>
-            <li>❌ Экспорт в PDF</li>
-            <li>❌ Шаблоны договоров</li>
-          </ul>
-          <button class="btn-secondary" disabled>Текущий тариф</button>
-        </div>
+    <div class="dashboard-container">
         
-        <!-- Платный -->
-        <div class="pricing-card featured">
-          <div class="badge">Популярный</div>
-          <h3>Профи</h3>
-          <div class="price">990 ₽ <span>/месяц</span></div>
-          <ul>
-            <li>✅ Все калькуляторы</li>
-            <li>✅ Неограниченное количество проектов</li>
-            <li>✅ История расчётов (без ограничений)</li>
-            <li>✅ Экспорт в PDF</li>
-            <li>✅ Шаблоны договоров и документов</li>
-            <li>✅ Приоритетная поддержка</li>
-          </ul>
-          <button class="btn-primary">Скоро</button>
-        </div>
-        
-        <!-- Годовой -->
-        <div class="pricing-card">
-          <div class="badge discount">-20%</div>
-          <h3>Профи Год</h3>
-          <div class="price">7 900 ₽ <span>/год</span></div>
-          <div class="savings">Экономия 3 980 ₽</div>
-          <ul>
-            <li>✅ Всё из тарифа "Профи"</li>
-            <li>✅ Скидка 20% при годовой оплате</li>
-            <li>✅ 1 час консультации в подарок</li>
-          </ul>
-          <button class="btn-primary">Скоро</button>
-        </div>
-      </div>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="pricing-page">
+                <div class="dashboard-header">
+                    <div class="welcome-text">
+                        <h1 style="font-size: 24px; font-weight: 600;">Тарифные планы</h1>
+                        <div class="date-text">Выберите инструменты для роста вашего бизнеса</div>
+                    </div>
+                </div>
+                
+                <div class="pricing-grid">
+                    <!-- Free -->
+                    <div class="pricing-card">
+                        <h3>Базовый</h3>
+                        <div class="price">0 ₽ <span>/мес</span></div>
+                        <div class="savings"></div>
+                        <ul class="pricing-features">
+                            <li><span>✅</span> 3 базовых калькулятора</li>
+                            <li><span>✅</span> 1 активный проект</li>
+                            <li><span>❌</span> Сохранение истории</li>
+                            <li><span>❌</span> Шаблоны документов</li>
+                        </ul>
+                        <button class="btn-plan btn-current">Ваш текущий план</button>
+                    </div>
+                    
+                    <!-- Pro -->
+                    <div class="pricing-card featured">
+                        <div class="badge">Популярный</div>
+                        <h3>Профи</h3>
+                        <div class="price">990 ₽ <span>/мес</span></div>
+                        <div class="savings"></div>
+                        <ul class="pricing-features">
+                            <li><span>✅</span> Все 15+ инструментов</li>
+                            <li><span>✅</span> Неограниченные проекты</li>
+                            <li><span>✅</span> Сохранение истории расчётов</li>
+                            <li><span>✅</span> Все шаблоны документов</li>
+                            <li><span>✅</span> Экспорт в PDF</li>
+                        </ul>
+                        <button class="btn-plan btn-upgrade">Выбрать Профи</button>
+                    </div>
+                    
+                    <!-- Year -->
+                    <div class="pricing-card">
+                        <div class="badge discount">-33%</div>
+                        <h3>Профи Год</h3>
+                        <div class="price">7 900 ₽ <span>/год</span></div>
+                        <div class="savings">Выгода 3 980 ₽</div>
+                        <ul class="pricing-features">
+                            <li><span>✅</span> Всё из тарифа "Профи"</li>
+                            <li><span>✅</span> 2 месяца в подарок</li>
+                            <li><span>✅</span> Приоритетная поддержка</li>
+                            <li><span>✅</span> Доступ к закрытому клубу</li>
+                        </ul>
+                        <button class="btn-plan btn-upgrade">Выбрать Годовой</button>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-  </main>
 
-  <!-- Scripts -->
-  <script src="../assets/js/data-manager.js"></script>
-  <script src="../assets/js/app-config.js"></script>
-  <script src="../assets/js/sidebar-logic.js"></script>
-  <script>
-    // Profile Menu Toggle
-    const profileBtn = document.getElementById('userProfileBtn');
-    const profileMenu = document.getElementById('profileMenu');
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
     
-    profileBtn.addEventListener('click', () => {
-      if (profileMenu) {
-        profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
-      }
-    });
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
 
-    // Update user profile display
-    const user = typeof DataManager !== 'undefined' ? DataManager.getUser() : null;
-    if (user) {
-      const avatarEl = document.querySelector('.avatar');
-      const nameEl = document.querySelector('.user-name');
-      
-      const displayName = user.name || (user.email ? user.email.split('@')[0] : 'Пользователь');
-      
-      if (avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
-      if (nameEl) nameEl.innerText = displayName;
-    }
-  </script>
+        if (!DataManager.getUser()) {
+            window.location.href = '../auth/login.html';
+        }
+        
+        // Add click handlers for upgrade buttons
+        document.querySelectorAll('.btn-upgrade').forEach(btn => {
+            btn.onclick = () => {
+                alert('Функция оплаты в разработке. Пока пользуйтесь бесплатно!');
+            };
+        });
+    </script>
 </body>
 </html>

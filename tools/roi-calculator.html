@@ -6,7 +6,7 @@
     <title>ROI калькулятор онлайн — Расчёт окупаемости инвестиций | Навырост</title>
     <meta name="description" content="Рассчитайте ROI и ROMI онлайн. Определите окупаемость инвестиций в маркетинг, проекты и оборудование. Бесплатный калькулятор возврата инвестиций с формулами.">
     <meta name="keywords" content="roi калькулятор, romi калькулятор, окупаемость инвестиций, возврат инвестиций онлайн, roi расчет">
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../css/calculators.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💰</text></svg>">
     
@@ -14,104 +14,79 @@
         .calculator-container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 120px 24px 80px;
+            padding: 0;
         }
         
         .calc-header {
-            text-align: center;
-            margin-bottom: 48px;
+            text-align: left;
+            margin-bottom: 32px;
         }
         
         .calc-header h1 {
-            font-size: 42px;
-            margin-bottom: 16px;
+            font-size: 28px;
+            margin-bottom: 8px;
         }
         
         .calc-header p {
-            font-size: 18px;
+            font-size: 14px;
             color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
+            text-align: left;
         }
         
         .calc-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin-top: 40px;
+            gap: 24px;
+            margin-top: 24px;
         }
         
         .calc-inputs,
         .calc-results {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 32px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
         }
         
         .calc-section-title {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 24px;
-        }
-        
-        .form-group {
             margin-bottom: 20px;
         }
         
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            font-size: 15px;
-            background: var(--bg-tertiary);
-            transition: all 0.2s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            background: white;
-        }
-        
-        .helper-text {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            margin-top: 4px;
-        }
-        
-        .result-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px;
+        .form-group {
             margin-bottom: 16px;
         }
         
-        .result-label {
+        .form-group label {
             font-size: 13px;
-            color: var(--text-tertiary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .result-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+            margin-bottom: 12px;
         }
         
         .result-value {
-            font-size: 32px;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            color: var(--text-primary);
+            font-size: 24px;
         }
         
         .result-value.positive {
-            color: #16A34A;
+            color: var(--status-success-text);
         }
         
         .result-value.negative {
@@ -119,150 +94,158 @@
         }
         
         .cta-block {
-            background: linear-gradient(135deg, #18181B 0%, #3F3F46 100%);
-            border-radius: 20px;
-            padding: 40px;
+            background: linear-gradient(135deg, #F4F4F5 0%, #FFFFFF 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
             text-align: center;
-            margin-top: 48px;
-            color: white;
+            margin-top: 32px;
+            color: var(--text-primary);
         }
         
         .cta-block h3 {
-            font-size: 24px;
-            margin-bottom: 12px;
+            font-size: 18px;
+            margin-bottom: 8px;
         }
         
         .cta-block p {
-            opacity: 0.8;
-            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            opacity: 1;
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .calc-layout {
                 grid-template-columns: 1fr;
-            }
-            
-            .calc-header h1 {
-                font-size: 32px;
             }
         }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="container nav-inner">
-            <a href="../index.html" class="logo">навырост<span>.</span></a>
-            
-            <button class="burger-btn" id="burger-btn" aria-label="Меню">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            
-            <div class="nav-links" id="nav-links">
-                <a href="../index.html#platform" class="nav-link">Платформа</a>
-                <a href="../tools/index.html" class="nav-link">Инструменты</a>
-                <a href="../auth/login.html" class="nav-link">Войти</a>
-                <a href="../auth/register.html" class="btn-primary">Начать бесплатно</a>
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="calculator-container">
+                <div class="calc-header">
+                    <h1>ROI калькулятор</h1>
+                    <p>Рассчитайте возврат инвестиций (ROI) и окупаемость вложений.</p>
+                </div>
+
+                <div class="calc-layout">
+                    <!-- Левая колонка: Ввод данных -->
+                    <div class="calc-inputs">
+                        <h3 class="calc-section-title">Введите данные</h3>
+                        
+                        <div class="form-group">
+                            <label>Сумма инвестиций, ₽</label>
+                            <input type="number" id="investment" class="form-input" placeholder="100000" value="100000">
+                            <div class="helper-text">Сколько вложили (маркетинг, оборудование, проект)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Выручка от инвестиций, ₽</label>
+                            <input type="number" id="revenue" class="form-input" placeholder="250000" value="250000">
+                            <div class="helper-text">Сколько заработали благодаря этим вложениям</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Расходы на реализацию, ₽</label>
+                            <input type="number" id="costs" class="form-input" placeholder="50000" value="50000">
+                            <div class="helper-text">Дополнительные затраты (производство, доставка, зарплаты)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Период (месяцев)</label>
+                            <input type="number" id="period" class="form-input" placeholder="6" value="6">
+                            <div class="helper-text">За сколько месяцев получена эта выручка</div>
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Результаты -->
+                    <div class="calc-results">
+                        <h3 class="calc-section-title">Результаты</h3>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Чистая прибыль</div>
+                            <div class="result-value" id="res_profit">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">ROI (возврат инвестиций)</div>
+                            <div class="result-value" id="res_roi">0%</div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Срок окупаемости</div>
+                            <div class="result-value" id="res_payback">-</div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Рентабельность</div>
+                            <div class="result-value" id="res_margin">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA блок -->
+                <div class="cta-block">
+                    <h3>Сохранить расчет?</h3>
+                    <p>Сохраните данные в проект для дальнейшего анализа.</p>
+                    <button class="btn-primary" onclick="saveToProject()">
+                        Сохранить в проект
+                    </button>
+                </div>
             </div>
-        </div>
-    </nav>
-
-    <div class="calculator-container">
-        <div class="calc-header">
-            <h1>ROI калькулятор</h1>
-            <p>Рассчитайте возврат инвестиций (ROI) и окупаемость вложений в маркетинг, проекты или оборудование. Узнайте за сколько месяцев окупятся ваши инвестиции.</p>
-        </div>
-
-        <div class="calc-layout">
-            <!-- Левая колонка: Ввод данных -->
-            <div class="calc-inputs">
-                <h3 class="calc-section-title">Введите данные</h3>
-                
-                <div class="form-group">
-                    <label>Сумма инвестиций, ₽</label>
-                    <input type="number" id="investment" class="form-input" placeholder="100000" value="100000">
-                    <div class="helper-text">Сколько вложили (маркетинг, оборудование, проект)</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Выручка от инвестиций, ₽</label>
-                    <input type="number" id="revenue" class="form-input" placeholder="250000" value="250000">
-                    <div class="helper-text">Сколько заработали благодаря этим вложениям</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Расходы на реализацию, ₽</label>
-                    <input type="number" id="costs" class="form-input" placeholder="50000" value="50000">
-                    <div class="helper-text">Дополнительные затраты (производство, доставка, зарплаты)</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Период (месяцев)</label>
-                    <input type="number" id="period" class="form-input" placeholder="6" value="6">
-                    <div class="helper-text">За сколько месяцев получена эта выручка</div>
-                </div>
-            </div>
-
-            <!-- Правая колонка: Результаты -->
-            <div class="calc-results">
-                <h3 class="calc-section-title">Результаты</h3>
-                
-                <div class="result-card">
-                    <div class="result-label">Чистая прибыль</div>
-                    <div class="result-value" id="res_profit">0 ₽</div>
-                </div>
-                
-                <div class="result-card">
-                    <div class="result-label">ROI (возврат инвестиций)</div>
-                    <div class="result-value" id="res_roi">0%</div>
-                </div>
-                
-                <div class="result-card">
-                    <div class="result-label">Срок окупаемости</div>
-                    <div class="result-value" id="res_payback">-</div>
-                </div>
-                
-                <div class="result-card">
-                    <div class="result-label">Рентабельность</div>
-                    <div class="result-value" id="res_margin">0%</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA блок -->
-        <div class="cta-block">
-            <h3>Хотите сохранить этот расчёт?</h3>
-            <p>Зарегистрируйтесь бесплатно и получите доступ к личному кабинету с историей всех расчётов, дашбордом проектов и экспортом в PDF.</p>
-            <a href="../auth/register.html" class="btn-primary" style="background: white; color: #18181B; display: inline-flex;">
-                Создать бесплатный аккаунт
-            </a>
-        </div>
+        </main>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">навырост.</div>
-                <div class="footer-links">
-                    <a href="../index.html#platform">Платформа</a>
-                    <a href="../tools/index.html">Инструменты</a>
-                    <a href="https://t.me/navirost_platform" target="_blank" rel="noopener">Telegram</a>
-                    <a href="mailto:hello@navirost.ru">Контакты</a>
-                </div>
-                <div class="footer-copy" style="color: var(--text-tertiary); font-size: 14px;">
-                    © 2025–2026 Навырост. Все права защищены.
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- Scripts -->
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
 
-    <script src="../assets/js/script.js"></script>
     <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
         const inputs = ['investment', 'revenue', 'costs', 'period'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculate);
         });
+
+        function formatMoney(value) {
+            return new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
 
         function calculate() {
             const investment = parseFloat(document.getElementById('investment').value) || 0;
@@ -270,17 +253,26 @@
             const costs = parseFloat(document.getElementById('costs').value) || 0;
             const period = parseFloat(document.getElementById('period').value) || 1;
 
-            // Чистая прибыль
+            // Чистая прибыль (Revenue - Costs - Investment)
+            // Note: Standard ROI formula is (Net Profit / Cost of Investment) * 100
+            // Net Profit = Total Revenue - Total Costs (including investment)
             const profit = revenue - costs - investment;
 
             // ROI (возврат инвестиций)
             const roi = investment > 0 ? ((profit / investment) * 100) : 0;
 
             // Срок окупаемости (в месяцах)
-            const monthlyProfit = (revenue - costs) / period;
-            const payback = monthlyProfit > 0 ? (investment / monthlyProfit) : 0;
+            // Assuming revenue and costs are total over the period.
+            // Monthly Profit = (Revenue - Costs) / Period
+            // Payback = Investment / Monthly Profit
+            // But this assumes costs are recurrent? 
+            // The prompt says "Period: For how many months this revenue was received".
+            // Let's assume the user enters TOTAL revenue and TOTAL operational costs for that period.
+            // So Monthly Cashflow = (Revenue - Costs) / Period.
+            const monthlyCashflow = (revenue - costs) / period;
+            const payback = monthlyCashflow > 0 ? (investment / monthlyCashflow) : 0;
 
-            // Рентабельность
+            // Рентабельность (Net Profit Margin)
             const margin = revenue > 0 ? ((profit / revenue) * 100) : 0;
 
             // Вывод результатов
@@ -299,16 +291,26 @@
             marginEl.className = 'result-value ' + (margin > 0 ? 'positive' : 'negative');
         }
 
-        function formatMoney(value) {
-            return new Intl.NumberFormat('ru-RU', {
-                style: 'currency',
-                currency: 'RUB',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(value);
-        }
-
         calculate();
+
+        function saveToProject() {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (!currentProjectId) {
+                alert('Пожалуйста, выберите проект в меню слева или создайте новый.');
+                return;
+            }
+
+            const data = {
+                investment: parseFloat(document.getElementById('investment').value) || 0,
+                revenue: parseFloat(document.getElementById('revenue').value) || 0,
+                costs: parseFloat(document.getElementById('costs').value) || 0,
+                period: parseFloat(document.getElementById('period').value) || 0,
+                roi: parseFloat(document.getElementById('res_roi').textContent.replace(/[^\d.-]/g, '')) || 0
+            };
+
+            DataManager.updateProject(currentProjectId, 'roi-calculator', data);
+            alert('Расчет сохранен в проект!');
+        }
     </script>
 </body>
 </html>

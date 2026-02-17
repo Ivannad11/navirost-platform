@@ -3,772 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная — навырост.</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <title>Личный кабинет — навырост.</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/modal.css">
-    <link rel="stylesheet" href="../assets/css/sidebar.css">
-    <style>
-        body {
-            background-color: var(--bg-secondary);
-            margin: 0;
-            padding: 0;
-        }
-
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 260px 1fr 320px; /* sidebar, контент, правая колонка */
-            gap: 24px;
-            min-height: 100vh;
-        }
-
-        /* Sidebar (Reused) */
-        .sidebar {
-            background: white;
-            border-right: 1px solid var(--border-light);
-            padding: 24px 16px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-logo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 40px;
-        }
-        .sidebar-logo span { color: var(--text-secondary); }
-
-        .nav-menu { list-style: none; flex: 1; }
-        .nav-item { margin-bottom: 8px; }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-        .nav-link.active { font-weight: 600; }
-
-        /* User Profile Redesign */
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-light);
-            cursor: pointer;
-            background: var(--bg-primary);
-            transition: all 0.2s;
-            position: relative;
-            margin-top: auto; /* прижать к низу sidebar */
-        }
-        .user-profile:hover {
-            border-color: var(--text-tertiary);
-            background: white;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .user-info { flex: 1; overflow: hidden; }
-        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-role { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
-        .user-role::before { content: '●'; color: #22C55E; font-size: 8px; }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            padding: 32px 24px;
-            background: #fafafa;
-        }
-
-        /* Стили для текстовых иконок */
-        .icon-text {
-            width: 40px;
-            height: 40px;
-            background: #f0f0f0;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: #666;
-            margin-bottom: 12px;
-        }
-
-        .stat-header {
-            margin-bottom: 8px;
-        }
-
-        .stat-title {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        .stat-desc {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .dashboard-layout {
-                grid-template-columns: 260px 1fr;
-            }
-            
-            .right-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                display: none;
-            }
-            
-            .main-content {
-                padding: 20px;
-            }
-            
-            .page-header {
-                flex-direction: row;
-                align-items: center;
-                gap: 0;
-            }
-            
-            .header-left {
-                display: none;
-            }
-            
-            .page-title {
-                text-align: left;
-            }
-        }
-
-        .profile-menu {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            width: 100%;
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 8px;
-            display: none;
-            margin-bottom: 8px;
-        }
-        .profile-menu.active { display: block; animation: slideUp 0.2s ease-out; }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-            white-space: normal; /* Разрешаем перенос текста */
-            line-height: 1.4;
-        }
-        .menu-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-        .menu-item.danger { color: #EF4444; }
-        .menu-item.danger:hover { background: #FEF2F2; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            gap: 20px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: #000;
-            text-decoration: none;
-            position: static !important;
-            z-index: 10;
-        }
-
-        .page-title {
-            flex: 1;
-            text-align: center;
-        }
-
-        .page-title h1 { font-size: 28px; margin-bottom: 4px; }
-
-        /* Burger Menu */
-        .burger-btn {
-            display: none; /* по умолчанию скрыта на десктопе */
-            background: none;
-            border: none;
-            width: 30px;
-            height: 24px;
-            position: relative;
-            cursor: pointer;
-            padding: 0;
-            z-index: 1001;
-        }
-
-        .burger-btn span {
-            display: block;
-            width: 100%;
-            height: 3px;
-            background: var(--text-primary);
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
-            border-radius: 2px;
-        }
-
-        .burger-btn span:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Анимация крестика */
-        .burger-btn.active span:nth-child(1) {
-            transform: rotate(45deg) translateY(8px);
-        }
-
-        .burger-btn.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .burger-btn.active span:nth-child(3) {
-            transform: rotate(-45deg) translateY(-8px);
-        }
-
-        .page-subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 6px;
-            max-width: 620px;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1.35fr minmax(300px, 0.65fr);
-            gap: 24px;
-            align-items: start;
-            grid-auto-rows: min-content;
-        }
-
-        .stack {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 24px;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .card-subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 0;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .ghost-link {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            border: 1px solid var(--border-light);
-            padding: 10px 12px;
-            border-radius: 12px;
-            background: var(--bg-primary);
-            transition: all 0.2s;
-        }
-
-        .ghost-link:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        /* Overview Stats */
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-            margin-bottom: 24px;
-            grid-auto-rows: minmax(140px, auto); /* все карточки минимум 140px высотой */
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 140px; /* фиксированная минимальная высота */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-.stat-card:nth-child(2) { animation-delay: 0.2s; }
-.stat-card:nth-child(3) { animation-delay: 0.3s; }
-.stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
-        
-        .stat-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 16px;
-        }
-        .bg-blue { background: #DBEAFE; color: #1D4ED8; }
-        .bg-green { background: #DCFCE7; color: #15803D; }
-        .bg-purple { background: #F3E8FF; color: #7E22CE; }
-
-        .stat-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
-        .stat-number { font-size: 28px; font-weight: 700; color: var(--text-primary); margin-top: 4px; }
-        .stat-trend { font-size: 12px; color: var(--text-tertiary); margin-top: auto; }
-
-        /* Recent Activity / Projects */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .section-title { font-size: 18px; font-weight: 600; }
-        
-        .project-list {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        
-        .project-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border-light);
-            transition: background 0.2s;
-            cursor: pointer;
-        }
-        .project-item:last-child { border-bottom: none; }
-        .project-item:hover { background: var(--bg-secondary); }
-        
-        .project-meta { display: flex; align-items: center; gap: 16px; }
-        .project-avatar {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-tertiary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .project-details div:first-child { font-weight: 600; color: var(--text-primary); }
-        .project-details div:last-child { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 40px;
-            background: linear-gradient(135deg, #FAFAFA 0%, #FFFFFF 100%);
-            border: 1px dashed var(--border-light);
-            border-radius: 20px;
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            display: block;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .empty-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .empty-desc {
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 1024px) {
-            .overview-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .burger-btn {
-                display: block; /* показываем на мобилке */
-            }
-            
-            .sidebar {
-                position: fixed;
-                left: -280px; /* спрятана за экраном */
-                top: 0;
-                height: 100vh;
-                width: 280px;
-                background: white;
-                box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-                transition: left 0.3s ease;
-                z-index: 1000;
-                border-right: 1px solid var(--border-light);
-                padding: 24px;
-                flex-direction: column;
-                overflow-y: auto;
-            }
-            
-            .sidebar.open {
-                left: 0; /* выезжает при клике на бургер */
-            }
-            
-            .overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                z-index: 999;
-            }
-            
-            .overlay.active {
-                display: block;
-            }
-            
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            
-            .page-header {
-                flex-direction: row;
-                align-items: center;
-                gap: 0;
-            }
-            
-            .overview-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .stat-card {
-                min-height: 120px; /* адаптивная высота на планшете */
-                padding: 16px;
-            }
-            
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .project-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .project-item > div:last-child {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stat-card h3 {
-                font-size: 14px; /* заголовок меньше */
-            }
-            
-            .stat-card .stat-number {
-                font-size: 24px; /* цифра меньше */
-            }
-            
-            .stat-card .stat-label {
-                font-size: 12px;
-            }
-            
-            .stat-card .stat-trend {
-                font-size: 11px;
-            }
-            
-            .stat-card {
-                min-height: 100px; /* меньше на совсем маленьких экранах */
-            }
-            
-            .stat-icon-wrapper {
-                width: 32px;
-                height: 32px;
-                font-size: 16px;
-                margin-bottom: 12px;
-            }
-            
-            .page-title h1 {
-                font-size: 20px;
-            }
-            
-            .page-subtitle {
-                font-size: 13px;
-            }
-        }
-    </style>
+    <!-- Removed legacy styles to prevent conflicts, dashboard.css is self-contained -->
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-layout">
-    <aside class="sidebar">
-        <a href="../index.html" class="sidebar-logo">навырост<span>.</span></a>
+    <div class="dashboard-container">
         
-        <ul class="nav-menu">
-            <!-- Dynamically populated by sidebar-logic.js -->
-        </ul>
-        
-        <div class="user-profile" id="userProfileBtn">
-            <div class="avatar">И</div>
-            <div class="user-info">
-                <div class="user-name">Иван Петров</div>
-                <div class="user-role">Pro Plan</div>
+        <!-- 1. Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- 2. Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <div class="welcome-text">
+                    <h1 id="greeting">Доброе утро!</h1>
+                    <div class="date-text" id="current-date">Сегодня 12 октября</div>
+                </div>
+                <button class="btn-primary" onclick="createNewProject()">
+                    <span>+</span> Новый проект
+                </button>
+            </div>
+
+            <!-- Onboarding Wizard (Visible if not completed) -->
+            <div id="onboarding-wizard" style="display: none; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 24px; margin-bottom: 32px; box-shadow: var(--shadow-md);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">🚀 Добро пожаловать в Навырост!</h2>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Давайте настроим ваш профиль за 3 простых шага.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--primary);">Шаг <span id="wizard-step-num">1</span> из 3</span>
+                        <div style="width: 100px; height: 6px; background: var(--bg-subtle); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                            <div id="wizard-progress" style="width: 33%; height: 100%; background: var(--primary); transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Profile -->
+                <div id="wizard-step-1" class="wizard-step">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Как к вам обращаться?</label>
+                            <input type="text" class="form-input" id="wiz-name" placeholder="Иван">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Название вашей компании / проекта</label>
+                            <input type="text" class="form-input" id="wiz-company" placeholder="Мой Стартап">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="btn-primary" onclick="nextStep(2)">Далее →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: First Project -->
+                <div id="wizard-step-2" class="wizard-step" style="display: none;">
+                    <p style="margin-bottom: 16px; font-size: 14px;">Создайте ваш первый проект, чтобы начать вести учет.</p>
+                    <div class="form-group">
+                        <label class="form-label">Название проекта</label>
+                        <input type="text" class="form-input" id="wiz-project" placeholder="Запуск кофейни">
+                    </div>
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                         <button class="btn-secondary" onclick="prevStep(1)">← Назад</button>
+                         <button class="btn-primary" onclick="nextStep(3)">Создать проект</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Goal -->
+                <div id="wizard-step-3" class="wizard-step" style="display: none;">
+                     <p style="margin-bottom: 16px; font-size: 14px;">Какая ваша главная цель сейчас?</p>
+                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+                         <div class="goal-card" onclick="selectGoal(this, 'start')" style="border: 1px solid var(--border-subtle); padding: 16px; border-radius: 8px; cursor: pointer; text-align: center;">
+                             <div style="font-size: 24px; margin-bottom: 8px;">🚀</div>
+                             <div style="font-size: 13px; font-weight: 500;">Запустить бизнес</div>
+                         </div>
+                         <div class="goal-card" onclick="selectGoal(this, 'grow')" style="border: 1px solid var(--border-subtle); padding: 16px; border-radius: 8px; cursor: pointer; text-align: center;">
+                             <div style="font-size: 24px; margin-bottom: 8px;">📈</div>
+                             <div style="font-size: 13px; font-weight: 500;">Масштабировать</div>
+                         </div>
+                         <div class="goal-card" onclick="selectGoal(this, 'fix')" style="border: 1px solid var(--border-subtle); padding: 16px; border-radius: 8px; cursor: pointer; text-align: center;">
+                             <div style="font-size: 24px; margin-bottom: 8px;">🔧</div>
+                             <div style="font-size: 13px; font-weight: 500;">Навести порядок</div>
+                         </div>
+                     </div>
+                     <div style="display: flex; justify-content: space-between;">
+                        <button class="btn-secondary" onclick="prevStep(2)">← Назад</button>
+                        <button class="btn-primary" onclick="finishWizard()">Завершить настройку</button>
+                   </div>
+                </div>
+            </div>
+
+            <!-- Financial Metrics (Focus) -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span>Общая выручка (План)</span>
+                        <span>💰</span>
+                    </div>
+                    <div class="metric-value" id="total-revenue">0 ₽</div>
+                    <div class="metric-trend trend-neutral">
+                        <span>—</span> Прогноз на 6 мес.
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span>Чистая прибыль (План)</span>
+                        <span>📈</span>
+                    </div>
+                    <div class="metric-value" id="total-profit">0 ₽</div>
+                    <div class="metric-trend trend-up">
+                        <span>—</span> Сумма по проектам
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span>Средняя маржинальность</span>
+                        <span>🎯</span>
+                    </div>
+                    <div class="metric-value" id="avg-margin">0%</div>
+                    <div class="metric-trend trend-neutral">
+                        <span>—</span> Целевой показатель
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="chart-container" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 24px; margin-bottom: 32px; box-shadow: var(--shadow-sm);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="font-size: 16px; font-weight: 600;">Динамика выручки (6 месяцев)</h3>
+                    <select id="chart-project-select" onchange="updateChart()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 13px;">
+                        <option value="all">Все проекты</option>
+                    </select>
+                </div>
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="section-header">
+                <div class="section-title">Активные проекты</div>
             </div>
             
-            <div class="profile-menu" id="profileMenu">
-                <div class="menu-item" onclick="window.location.href='settings.html'">⚙️ Настройки</div>
-                <div class="menu-item">💳 Подписка</div>
-                <div class="menu-item danger" onclick="logout()">🚪 Выйти</div>
+            <div class="projects-grid" id="projects-container">
+                <!-- Populated by JS -->
             </div>
-        </div>
-    </aside>
+        </main>
 
-    <main class="main-content">
-        <div class="page-header">
-            <button id="burger-menu" class="burger-btn" aria-label="Открыть меню">
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
-            <div class="header-left">
-                <a href="home.html" class="logo">навырост.</a>
+        <!-- 3. Right Panel -->
+        <aside class="right-sidebar">
+            <!-- AI Advisor Widget -->
+            <div id="ai-widget" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); border-radius: 16px; padding: 20px; color: white; margin-bottom: 24px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -10px; right: -10px; font-size: 60px; opacity: 0.1;">🤖</div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span style="font-size: 18px;">✨</span>
+                    <span style="font-weight: 600; font-size: 14px;">AI Советник</span>
+                </div>
+                <div id="ai-content" style="font-size: 13px; line-height: 1.5; margin-bottom: 16px;">
+                    Анализирую ваши данные...
+                </div>
+                <button onclick="refreshAdvice()" style="background: rgba(255,255,255,0.2); border: none; padding: 6px 12px; border-radius: 6px; color: white; font-size: 11px; cursor: pointer; transition: background 0.2s;">
+                    Обновить совет
+                </button>
             </div>
-            <div class="page-title">
-                <h1>Доброе утро, <span id="user-name">Гость</span>!</h1>
-                <div class="page-subtitle">Вот что происходит с вашими проектами.</div>
-            </div>
-            <button class="btn-primary" onclick="createNewProject()">+ Новый проект</button>
-        </div>
 
-        <div class="overview-grid">
-            <div class="stat-card">
-                <div class="stat-icon-wrapper bg-blue">🚀</div>
-                <div>
-                    <div class="stat-label">Активные проекты</div>
-                    <div class="stat-number" id="totalProjects">0</div>
-                </div>
-                <div class="stat-trend">Все системы в норме</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon-wrapper bg-green">💰</div>
-                <div>
-                    <div class="stat-label">Общая выручка (План)</div>
-                    <div class="stat-number" id="totalRevenue">0 ₽</div>
-                </div>
-                <div class="stat-trend">Прогноз на 6 месяцев</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon-wrapper bg-purple">📈</div>
-                <div>
-                    <div class="stat-label">Прибыль (План)</div>
-                    <div class="stat-number" id="totalProfit">0 ₽</div>
-                </div>
-                <div class="stat-trend">Сумма по всем проектам</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon-wrapper bg-blue">🎯</div>
-                <div>
-                    <div class="stat-label">Средняя маржа</div>
-                    <div class="stat-number" id="avgMargin">0 ₽</div>
-                </div>
-                <div class="stat-trend">Если заполнена юнит-экономика</div>
-            </div>
-        </div>
-
-        <div class="content-grid">
-            <section class="stack">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Проекты</div>
-                            <div class="card-subtitle">Быстрый переход к расчетам и финансовой модели</div>
+            <!-- Onboarding Widget -->
+            <div id="onboarding-widget">
+                <div class="widget-title">Прогресс настройки</div>
+                <div class="progress-widget">
+                    <div class="progress-header">
+                        <span>Заполнение профиля</span>
+                        <span id="onboarding-percent">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="onboarding-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="checklist">
+                        <div class="check-item" id="step-project">
+                            <div class="check-circle"></div>
+                            <span>Создать первый проект</span>
                         </div>
-                        <button class="btn-create-project ghost-link">+ Создать</button>
+                        <div class="check-item" id="step-unit">
+                            <div class="check-circle"></div>
+                            <span>Рассчитать юнит-экономику</span>
+                        </div>
+                        <div class="check-item" id="step-profile">
+                            <div class="check-circle"></div>
+                            <span>Заполнить данные</span>
+                        </div>
                     </div>
-                    <div id="projectsContainer">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <aside class="right-sidebar">
-        <div class="card" id="onboardingWidget" style="display:none;">
-            <div class="card-header" style="margin-bottom: 12px;">
-                <div>
-                    <div class="card-title">Прогресс</div>
-                    <div class="card-subtitle">Соберите профиль и сделайте первый расчет</div>
-                </div>
-                <div style="font-size: 13px; color: var(--text-tertiary);" id="onboardingPercent">0%</div>
-            </div>
-            <div style="height:6px; background:var(--bg-tertiary); border-radius:3px; overflow:hidden; margin-bottom:16px;">
-                <div id="onboardingBar" style="height:100%; width:0%; background:var(--text-primary); transition:width 0.5s;"></div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr; gap:10px;">
-                <div class="menu-item" id="stepProject" style="border:1px solid var(--border-light);">1️⃣ Создать проект</div>
-                <div class="menu-item" id="stepUnit" style="border:1px solid var(--border-light);">2️⃣ Посчитать юнит-экономику</div>
-                <div class="menu-item" id="stepSettings" style="border:1px solid var(--border-light);">3️⃣ Заполнить профиль</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <div class="card-title">Быстрый доступ</div>
-                    <div class="card-subtitle">Калькуляторы и ресурсы без привязки к проекту</div>
                 </div>
             </div>
-            <div class="dashboard-grid" id="quickAccessGrid" style="margin-top: 0; grid-template-columns: 1fr; gap: 12px;">
-                <!-- Dynamically populated by JS -->
-            </div>
-        </div>
-    </aside>
-</div>
 
+            <!-- Quick Actions -->
+            <div>
+                <div class="widget-title">Быстрый доступ</div>
+                <div class="quick-links">
+                    <a href="tools/hourly-rate.html" class="quick-link-card">
+                        <span>⏱️</span>
+                        <div>
+                            <div style="font-weight: 500; font-size: 13px;">Почасовая ставка</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">Калькулятор фрилансера</div>
+                        </div>
+                    </a>
+                    <a href="tools/roi-calculator.html" class="quick-link-card">
+                        <span>📉</span>
+                        <div>
+                            <div style="font-weight: 500; font-size: 13px;">ROI Калькулятор</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">Окупаемость рекламы</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Scripts -->
     <script src="../assets/js/data-manager.js"></script>
     <script src="../assets/js/app-config.js"></script>
     <script src="../assets/js/sidebar-logic.js"></script>
     <script src="../assets/js/modal.js"></script>
+    
     <script>
-        // Auth check
-        if (!localStorage.getItem('user')) {
-            window.location.href = '../auth/login.html';
-        }
-        
-        function logout() {
-            localStorage.removeItem('user');
-            window.location.href = '../index.html';
-        }
-
-        // Profile Menu Toggle
-        const profileBtn = document.getElementById('userProfileBtn');
-        const profileMenu = document.getElementById('profileMenu');
-        
-        profileBtn.addEventListener('click', (e) => {
-            if (e.target.closest('.profile-menu')) return;
-            profileMenu.classList.toggle('active');
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
         });
 
-        document.addEventListener('click', (e) => {
-            if (!profileBtn.contains(e.target)) {
-                profileMenu.classList.remove('active');
+        function initDashboard() {
+            // 1. User & Header
+            const user = DataManager.getUser();
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
             }
-        });
+
+            const hours = new Date().getHours();
+            const greeting = hours < 12 ? 'Доброе утро' : (hours < 18 ? 'Добрый день' : 'Добрый вечер');
+            const name = user.name || 'Предприниматель';
+            document.getElementById('greeting').innerText = `${greeting}, ${name}!`;
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('ru-RU', options);
+
+            // Note: Sidebar profile is handled by sidebar-logic.js now
+
+            // 2. Load Projects & Metrics
+            const projects = DataManager.getProjects();
+            renderProjects(projects);
+            calculateMetrics(projects);
+            // renderSidebarProjects(projects); // Removed, handled by sidebar-logic.js
+            
+            // 3. Onboarding
+            updateOnboarding(user);
+
+            // 4. AI Advisor
+            initAI();
+        }
+
+        function initAI() {
+            if (window.AIAdvisor) {
+                refreshAdvice();
+            } else {
+                // Wait for script load
+                setTimeout(initAI, 500);
+            }
+        }
+
+        function refreshAdvice() {
+            const projects = DataManager.getProjects();
+            const content = document.getElementById('ai-content');
+            
+            // Simple animation
+            content.style.opacity = 0.5;
+            
+            setTimeout(() => {
+                let advice = '';
+                if (projects.length > 0) {
+                    // Analyze first project for MVP
+                    const insights = AIAdvisor.analyzeProject(projects[0]);
+                    if (insights.length > 0) {
+                        const i = insights[Math.floor(Math.random() * insights.length)];
+                        advice = `<strong>${i.title}</strong><br>${i.text}`;
+                    } else {
+                         advice = AIAdvisor.getDailyTip();
+                    }
+                } else {
+                    advice = AIAdvisor.getDailyTip();
+                }
+                
+                content.innerHTML = advice;
+                content.style.opacity = 1;
+            }, 300);
+        }
+
+        function renderProjects(projects) {
+            const container = document.getElementById('projects-container');
+            
+            if (!projects || projects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 48px 24px; background: var(--bg-surface); border: 1px dashed var(--border-strong); border-radius: 12px;">
+                        <span class="empty-icon" style="font-size: 32px; display: block; margin-bottom: 16px;">🌱</span>
+                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Нет активных проектов</h3>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">Создайте проект, чтобы начать вести финансовый учет.</p>
+                        <button class="btn-primary" onclick="createNewProject()">Создать проект</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            projects.forEach(p => {
+                // Determine Status based on data presence
+                const hasData = p.unitData || p.pnlData;
+                const status = hasData ? 'В работе' : 'Черновик';
+                const statusClass = hasData ? 'status-active' : '';
+                
+                // Get Revenue/Profit for Preview
+                const revenue = p.stats.revenue ? DataManager.formatMoney(p.stats.revenue) : '—';
+                const profit = p.stats.profit ? DataManager.formatMoney(p.stats.profit) : '—';
+
+                html += `
+                    <div class="project-card" onclick="openProject('${p.id}')">
+                        <div class="project-top">
+                            <div class="project-icon">🚀</div>
+                            <div class="project-status ${statusClass}">${status}</div>
+                        </div>
+                        <div class="project-name">${p.name}</div>
+                        <div class="project-meta">Обновлен: ${DataManager.formatDate(p.updated)}</div>
+                        
+                        <div class="project-stats">
+                            <div class="stat-group">
+                                <span class="stat-label">Выручка (План)</span>
+                                <span class="stat-num">${revenue}</span>
+                            </div>
+                            <div class="stat-group" style="text-align: right;">
+                                <span class="stat-label">Прибыль</span>
+                                <span class="stat-num">${profit}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderSidebarProjects(projects) {
+            const container = document.getElementById('sidebar-projects');
+            let html = '';
+            projects.forEach(p => {
+                html += `
+                    <a href="#" onclick="openProject('${p.id}')" class="nav-link">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong);"></span>
+                        ${p.name}
+                    </a>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function calculateMetrics(projects) {
+            let totalRev = 0;
+            let totalProfit = 0;
+            let totalMargin = 0;
+            let count = 0;
+
+            projects.forEach(p => {
+                // Check stats object or root properties depending on structure consistency
+                const rev = p.stats?.revenue || 0;
+                const prof = p.stats?.profit || 0;
+                const marg = p.stats?.margin || 0;
+
+                totalRev += rev;
+                totalProfit += prof;
+                
+                if (marg > 0) {
+                    totalMargin += marg;
+                    count++;
+                }
+            });
+
+            const avgMargin = count > 0 ? Math.round(totalMargin / count) : 0;
+
+            document.getElementById('total-revenue').innerText = DataManager.formatMoney(totalRev);
+            document.getElementById('total-profit').innerText = DataManager.formatMoney(totalProfit);
+            document.getElementById('avg-margin').innerText = avgMargin + '%';
+        }
+
+        function updateOnboarding(user) {
+            const ob = user.onboarding || {};
+            let completed = 0;
+            const total = 3;
+
+            if (ob.projectCreated) {
+                completed++;
+                document.getElementById('step-project').classList.add('done');
+            }
+            if (ob.unitCalc) {
+                completed++;
+                document.getElementById('step-unit').classList.add('done');
+            }
+            if (user.company) { // Assuming profile filled if company set
+                completed++;
+                document.getElementById('step-profile').classList.add('done');
+            }
+
+            const pct = Math.round((completed / total) * 100);
+            document.getElementById('onboarding-percent').innerText = pct + '%';
+            document.getElementById('onboarding-bar').style.width = pct + '%';
+            
+            if (pct === 100) {
+                // Optional: Hide widget or show success message
+                document.querySelector('.widget-title').innerText = '🎉 Все готово!';
+            }
+        }
 
         function createNewProject() {
             Modal.prompt(
                 'Новый проект', 
-                'Введите название проекта (например, "Кофейня"):', 
+                'Введите название проекта:', 
                 (name) => {
                     const project = DataManager.createProject(name);
-                    renderHome();
-                    // Update sidebar as well
-                    if (window.renderSidebar) window.renderSidebar();
+                    initDashboard(); // Reload data
                 }
             );
         }
@@ -778,369 +453,202 @@
             window.location.href = 'project.html';
         }
 
-        function openQuickTool(type) {
-            DataManager.setCurrentProjectId(null); // Clear project context
-            // Find url from config
-            const module = AppConfig.modules.find(m => m.id === type);
-            if (module) window.location.href = module.url;
+        let revenueChartInstance = null;
+
+        function initChart(projects) {
+            // Populate selector
+            const selector = document.getElementById('chart-project-select');
+            selector.innerHTML = '<option value="all">Все проекты</option>';
+            projects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = p.name;
+                selector.appendChild(opt);
+            });
+
+            renderChartData(projects);
         }
 
-        function renderQuickAccess() {
-            const grid = document.getElementById('quickAccessGrid');
-            if (!grid) return;
+        function updateChart() {
+            const projects = DataManager.getProjects();
+            const selectedId = document.getElementById('chart-project-select').value;
             
-            grid.innerHTML = '';
+            let filtered = projects;
+            if (selectedId !== 'all') {
+                filtered = projects.filter(p => p.id === selectedId);
+            }
+            renderChartData(filtered);
+        }
+
+        function renderChartData(projects) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
             
-            // Filter modules that should show on home
-            const quickModules = AppConfig.modules.filter(m => m.showInHome && m.category !== 'main');
+            // Aggregate Data (Month 1-6)
+            const months = ['Месяц 1', 'Месяц 2', 'Месяц 3', 'Месяц 4', 'Месяц 5', 'Месяц 6'];
+            let datasets = [];
+
+            // If "All", we sum up or show multiple lines?
+            // Let's show Total Revenue and Total Net Profit bars
             
-            quickModules.forEach(m => {
-                const el = document.createElement('div');
-                el.className = 'stat-card';
-                el.style.cursor = 'pointer';
-                el.onclick = () => {
-                    if (m.category === 'tools') openQuickTool(m.id);
-                    else window.location.href = m.url;
-                };
-                
-                // Текстовые иконки вместо эмодзи
-                let iconText = '';
-                if (m.id === 'unit') iconText = 'UE';
-                else if (m.id === 'pnl') iconText = 'P&L';
-                else if (m.id === 'hourly-rate') iconText = 'HR';
-                else if (m.id === 'roi-calculator') iconText = 'ROI';
-                else if (m.id === 'break-even') iconText = 'BE';
-                else iconText = m.id.substring(0, 2).toUpperCase();
-                
-                el.innerHTML = `
-                    <div class="stat-header">
-                        <span class="stat-title">${m.category === 'tools' ? 'Калькулятор' : 'Библиотека'}</span>
-                    </div>
-                    <div class="icon-text">${iconText}</div>
-                    <div>
-                        <div class="stat-label">${m.title}</div>
-                        <div class="stat-desc">${m.desc}</div>
-                    </div>
-                `;
-                
-                grid.appendChild(el);
+            let totalRevenue = [0,0,0,0,0,0];
+            let totalProfit = [0,0,0,0,0,0];
+
+            projects.forEach(p => {
+                if (p.pnlData && p.pnlData.details && p.pnlData.details.revenue) {
+                    p.pnlData.details.revenue.forEach((val, i) => {
+                        if (i < 6) totalRevenue[i] += val;
+                    });
+                    // We don't have granular profit per month in simple storage yet, 
+                    // only total profit. But if we had, we would sum it here.
+                    // Let's just plot Revenue for now as we have the array.
+                }
+            });
+
+            // Destroy previous
+            if (revenueChartInstance) revenueChartInstance.destroy();
+
+            revenueChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Выручка (Revenue)',
+                        data: totalRevenue,
+                        borderColor: '#18181B', // var(--text-primary)
+                        backgroundColor: 'rgba(24, 24, 27, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
             });
         }
 
-        function showLoading(containerId) {
-            const container = document.getElementById(containerId);
-            if (container) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
-                        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
-                        <div>Загрузка...</div>
-                    </div>
-                `;
-            }
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        function renderHome() {
-            showLoading('projectsContainer');
-            renderQuickAccess();
+        // --- Wizard Logic ---
+        let selectedGoal = null;
+
+        function checkWizardStatus(user) {
+            // Force hide for now as requested
+            document.getElementById('onboarding-wizard').style.display = 'none';
+            return;
+
+            /* 
+            // Original Logic (Commented out)
             const projects = DataManager.getProjects();
-            const container = document.getElementById('projectsContainer');
-            const user = DataManager.getUser();
-            const subtitleEl = document.getElementById('pageSubtitle');
-            if (subtitleEl) {
-                const hours = new Date().getHours();
-                const greeting = hours < 12 ? 'Доброе утро' : (hours < 18 ? 'Добрый день' : 'Добрый вечер');
-                const name = user && user.name ? user.name : (user && user.email ? user.email.split('@')[0] : 'друг');
-                subtitleEl.innerText = `${greeting}, ${name}! Вот что происходит с вашими проектами.`;
-            }
+            const wizard = document.getElementById('onboarding-wizard');
             
-            // Stats
-            document.getElementById('totalProjects').innerText = projects.length;
-            const totalRev = projects.reduce((sum, p) => sum + (p.stats.revenue || 0), 0);
-            document.getElementById('totalRevenue').innerText = DataManager.formatMoney(totalRev);
-
-            const totalProfit = projects.reduce((sum, p) => sum + (p.stats.profit || 0), 0);
-            document.getElementById('totalProfit').innerText = DataManager.formatMoney(totalProfit);
-
-            const margins = projects.map(p => (p.stats.margin || 0)).filter(v => !!v);
-            const avgMargin = margins.length ? Math.round(margins.reduce((a, b) => a + b, 0) / margins.length) : 0;
-            document.getElementById('avgMargin').innerText = DataManager.formatMoney(avgMargin);
-
-            // Onboarding Logic
-            if (user && user.onboarding) {
-                const stepProjectEl = document.getElementById('stepProject');
-                const stepUnitEl = document.getElementById('stepUnit');
-                const stepSettingsEl = document.getElementById('stepSettings');
-
-                if (stepProjectEl) {
-                    stepProjectEl.style.opacity = '1';
-                    stepProjectEl.style.cursor = 'default';
-                    stepProjectEl.onclick = null;
-                    stepProjectEl.innerHTML = '1️⃣ Создать проект';
-                }
-                if (stepUnitEl) {
-                    stepUnitEl.style.opacity = '1';
-                    stepUnitEl.style.cursor = 'default';
-                    stepUnitEl.onclick = null;
-                    stepUnitEl.innerHTML = '2️⃣ Посчитать юнит-экономику';
-                }
-                if (stepSettingsEl) {
-                    stepSettingsEl.style.opacity = '1';
-                    stepSettingsEl.style.cursor = 'default';
-                    stepSettingsEl.onclick = null;
-                    stepSettingsEl.innerHTML = '3️⃣ Заполнить профиль';
-                }
-
-                const ob = user.onboarding;
-                let steps = 0;
-                if (ob.projectCreated) {
-                    steps++;
-                    if (stepProjectEl) {
-                        stepProjectEl.style.opacity = '0.5';
-                        stepProjectEl.innerHTML += '<div style="color:#10B981; margin-top:4px;">✓ Готово</div>';
-                    }
-                }
-                if (ob.unitCalc) {
-                    steps++;
-                    if (stepUnitEl) {
-                        stepUnitEl.style.opacity = '0.5';
-                        stepUnitEl.innerHTML += '<div style="color:#10B981; margin-top:4px;">✓ Готово</div>';
-                    }
-                }
-                // Check if profile is filled (simple check)
-                if (user.company) {
-                    steps++;
-                    if (stepSettingsEl) {
-                        stepSettingsEl.style.opacity = '0.5';
-                        stepSettingsEl.innerText = '3️⃣ Профиль заполнен';
-                    }
-                } else {
-                    // Make settings step clickable
-                    if (stepSettingsEl) {
-                        stepSettingsEl.style.cursor = 'pointer';
-                        stepSettingsEl.onclick = () => window.location.href = 'settings.html';
-                    }
-                }
-
-                const pct = Math.round((steps / 3) * 100);
-                document.getElementById('onboardingPercent').innerText = pct + '%';
-                document.getElementById('onboardingBar').style.width = pct + '%';
-                
-                // Show widget if not complete
-                if (pct < 100) {
-                    document.getElementById('onboardingWidget').style.display = 'block';
-                }
-            }
-
-            if (projects.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="empty-icon">🌱</span>
-                        <div class="empty-title">Начните свой первый бизнес</div>
-                        <div class="empty-desc">Создайте проект, чтобы рассчитать юнит-экономику и построить финансовую модель.</div>
-                        <button class="btn-create-project btn-primary" style="padding: 14px 32px; font-size: 15px;">
-    🚀 Создать первый проект
-</button>
-                    </div>
-                `;
+            if (localStorage.getItem('wizard_completed') === 'true') {
+                wizard.style.display = 'none';
                 return;
             }
 
-            let html = '<div class="project-list">';
-            projects.forEach(p => {
-                const status = p.unitData || p.pnlData ? 'В работе' : 'Черновик';
-                const statusColor = p.unitData || p.pnlData ? '#DCFCE7' : '#F1F5F9';
-                const statusText = p.unitData || p.pnlData ? '#166534' : '#64748B';
-
-                html += `
-                    <div class="project-item" onclick="openProject('${p.id}')">
-                        <div class="project-meta">
-                            <div class="project-avatar">🚀</div>
-                            <div class="project-details">
-                                <div>${p.name}</div>
-                                <div>Обновлен ${DataManager.formatDate(p.updated)}</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 24px;">
-                            <div style="text-align: right;">
-                                <div style="font-size: 13px; color: var(--text-tertiary);">Выручка</div>
-                                <div style="font-weight: 600;">${DataManager.formatMoney(p.stats.revenue || 0)}</div>
-                            </div>
-                            <span style="padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; background: ${statusColor}; color: ${statusText};">${status}</span>
-                            <span style="color: var(--text-tertiary);">→</span>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
+            if (projects.length === 0 || !user.company) {
+                wizard.style.display = 'block';
+                if (user.name) document.getElementById('wiz-name').value = user.name;
+                if (user.company) document.getElementById('wiz-company').value = user.company;
+            }
+            */
         }
 
-        document.addEventListener('DOMContentLoaded', renderHome);
-
-        function updateDashboard() {
-            // Пробуем получить проекты из DataManager или localStorage
-            let projects = [];
-            try {
-                if (typeof DataManager !== 'undefined' && DataManager.getProjects) {
-                    projects = DataManager.getProjects() || [];
-                } else {
-                    projects = JSON.parse(localStorage.getItem('projects') || '[]');
-                }
-            } catch (e) {
-                projects = JSON.parse(localStorage.getItem('projects') || '[]');
-            }
+        function nextStep(step) {
+            const btn = event.target;
             
-            // Активные проекты
-            const totalProjectsEl = document.getElementById('totalProjects');
-            if (totalProjectsEl) {
-                totalProjectsEl.innerText = projects.length;
-            }
-            
-            // Общая выручка (план) — сумма по всем проектам
-            let totalRevenue = 0;
-            let totalProfit = 0;
-            let totalMargin = 0;
-            let projectsWithMargin = 0;
-            
-            projects.forEach(project => {
-                // Проверяем обе возможные структуры данных
-                let projectData = null;
+            // Validate Step 1
+            if (step === 2) {
+                const name = document.getElementById('wiz-name').value;
+                const company = document.getElementById('wiz-company').value;
+                if (!name) { Modal.showToast('Пожалуйста, введите имя', 'error'); return; }
                 
-                // Структура DataManager (project.unitData или project.unit)
-                if (project.unitData) {
-                    projectData = project.unitData;
-                } else if (project.unit) {
-                    projectData = project.unit;
-                }
-                // Структура localStorage (project.unitEconomics)
-                else if (project.unitEconomics) {
-                    projectData = project.unitEconomics;
-                }
+                // Save profile data
+                const user = DataManager.getUser();
+                user.name = name;
+                user.company = company;
+                DataManager.saveUser(user);
+                Modal.showToast('Профиль сохранен');
+            }
+
+            // Validate Step 2
+            if (step === 3) {
+                const projName = document.getElementById('wiz-project').value;
+                if (!projName) { Modal.showToast('Пожалуйста, введите название проекта', 'error'); return; }
                 
-                if (projectData) {
-                    totalRevenue += projectData.revenue || 0;
-                    totalProfit += projectData.profit || 0;
-                    
-                    if (projectData.margin) {
-                        totalMargin += projectData.margin;
-                        projectsWithMargin++;
-                    }
-                }
-            });
-            
-            const totalRevenueEl = document.getElementById('totalRevenue');
-            if (totalRevenueEl) {
-                if (typeof DataManager !== 'undefined' && DataManager.formatMoney) {
-                    totalRevenueEl.innerText = DataManager.formatMoney(totalRevenue);
-                } else {
-                    totalRevenueEl.innerText = totalRevenue.toLocaleString('ru-RU') + ' ₽';
-                }
+                Modal.setLoading(btn, true);
+                
+                // Create Project (simulate delay)
+                setTimeout(() => {
+                    DataManager.createProject(projName);
+                    renderProjects(DataManager.getProjects()); 
+                    Modal.setLoading(btn, false);
+                    proceedToStep(step);
+                    Modal.showToast('Проект создан');
+                }, 600);
+                return; // Stop here, proceed in callback
             }
-            
-            const totalProfitEl = document.getElementById('totalProfit');
-            if (totalProfitEl) {
-                if (typeof DataManager !== 'undefined' && DataManager.formatMoney) {
-                    totalProfitEl.innerText = DataManager.formatMoney(totalProfit);
-                } else {
-                    totalProfitEl.innerText = totalProfit.toLocaleString('ru-RU') + ' ₽';
-                }
-            }
-            
-            const avgMarginEl = document.getElementById('avgMargin');
-            if (avgMarginEl) {
-                const avgMargin = projectsWithMargin > 0 ? Math.round(totalMargin / projectsWithMargin) : 0;
-                if (typeof DataManager !== 'undefined' && DataManager.formatMoney) {
-                    avgMarginEl.innerText = DataManager.formatMoney(avgMargin);
-                } else {
-                    avgMarginEl.innerText = avgMargin.toLocaleString('ru-RU') + ' ₽';
-                }
-            }
+
+            proceedToStep(step);
         }
 
-        // Обновляем дашборд при загрузке страницы
-        updateDashboard();
-
-        // Update user profile display
-        const user = DataManager.getUser();
-        if (user) {
-            const avatarEl = document.querySelector('.avatar');
-            const nameEl = document.querySelector('.user-name');
+        function proceedToStep(step) {
+            // UI Transition
+            document.querySelectorAll('.wizard-step').forEach(el => el.style.display = 'none');
+            document.getElementById(`wizard-step-${step}`).style.display = 'block';
             
-            // Определяем имя: либо из user.name, либо из email
-            const displayName = user.name || (user.email ? user.email.split('@')[0] : 'Пользователь');
+            // Progress
+            document.getElementById('wizard-step-num').innerText = step;
+            document.getElementById('wizard-progress').style.width = (step / 3 * 100) + '%';
+        }
+
+
+        function prevStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.style.display = 'none');
+            document.getElementById(`wizard-step-${step}`).style.display = 'block';
+            document.getElementById('wizard-step-num').innerText = step;
+            document.getElementById('wizard-progress').style.width = (step / 3 * 100) + '%';
+        }
+
+        function selectGoal(el, goal) {
+            document.querySelectorAll('.goal-card').forEach(c => c.style.borderColor = 'var(--border-subtle)');
+            document.querySelectorAll('.goal-card').forEach(c => c.style.background = 'transparent');
             
-            if (avatarEl) {
-                avatarEl.textContent = displayName.charAt(0).toUpperCase();
-            }
-            if (nameEl) {
-                nameEl.textContent = displayName;
-            }
+            el.style.borderColor = 'var(--primary)';
+            el.style.background = 'var(--bg-subtle)';
+            selectedGoal = goal;
         }
 
-        // Отображение имени пользователя из localStorage
-        const userName = localStorage.getItem('userName');
-        const userEmail = localStorage.getItem('userEmail');
-
-        if (userName) {
-            document.getElementById('user-name').innerText = userName;
-        } else if (userEmail) {
-            const namePart = userEmail.split('@')[0];
-            document.getElementById('user-name').innerText = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        function finishWizard() {
+            localStorage.setItem('wizard_completed', 'true');
+            document.getElementById('onboarding-wizard').style.display = 'none';
+            // Refresh dashboard
+            initDashboard();
         }
 
-        // Проверка авторизации (опционально, пока без backend):
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-        if (!isLoggedIn) {
-            // Если не залогинен — редирект на логин (закомментируй пока, чтобы можно было тестировать без авторизации)
-            // window.location.href = '/auth/login.html';
-        }
-
-        // Burger Menu Functionality
-        const burger = document.getElementById('burger-menu');
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.createElement('div');
-        overlay.className = 'overlay';
-        document.body.appendChild(overlay);
-
-        burger.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-            burger.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            burger.classList.remove('active');
-        });
-
-        // Create Project Button Handler
-        document.querySelectorAll('.btn-create-project').forEach(button => {
-            button.addEventListener('click', () => {
-                const projectName = prompt('Название проекта:');
-                if (projectName) {
-                    // Временно: записываем проект в localStorage
-                    const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-                    const newProject = {
-                        id: Date.now(),
-                        name: projectName,
-                        created: new Date().toISOString(),
-                        unitEconomics: {},
-                        pnl: {},
-                        roi: {}
-                    };
-                    projects.push(newProject);
-                    localStorage.setItem('projects', JSON.stringify(projects));
-                    localStorage.setItem('currentProject', newProject.id);
-                    
-                    // Обновляем виджеты перед редиректом
-                    updateDashboard();
-                    
-                    // Редирект на юнит-экономику с параметром проекта
-                    window.location.href = 'tools/unit-economics.html?project=' + newProject.id;
-                }
-            });
-        });
+        // Add check to init
+        const originalInit = initDashboard;
+        initDashboard = function() {
+            originalInit(); // Call original logic
+            const user = DataManager.getUser();
+            if (user) checkWizardStatus(user);
+        };
     </script>
 </body>
 </html>

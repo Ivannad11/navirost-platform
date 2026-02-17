@@ -108,6 +108,54 @@ const Modal = {
     prompt(title, body, onConfirm) {
         this.show({ title, body, input: 'Введите значение...', onConfirm });
     }
+    // --- Toast Notifications ---
+    
+    toastContainer: null,
+
+    showToast(message, type = 'success') { // success, error, info
+        if (!this.toastContainer) {
+            this.toastContainer = document.createElement('div');
+            this.toastContainer.className = 'toast-container';
+            document.body.appendChild(this.toastContainer);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let icon = '✅';
+        if (type === 'error') icon = '❌';
+        if (type === 'info') icon = 'ℹ️';
+
+        toast.innerHTML = `<span class="toast-icon">${icon}</span> ${message}`;
+        
+        this.toastContainer.appendChild(toast);
+
+        // Auto remove
+        setTimeout(() => {
+            toast.style.animation = 'toastFadeOut 0.3s forwards';
+            setTimeout(() => {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, 3000);
+    },
+
+    // --- Loading States ---
+    
+    setLoading(btnElement, isLoading, originalText = '') {
+        if (isLoading) {
+            btnElement.classList.add('btn-loading');
+            btnElement.dataset.originalText = btnElement.innerText;
+            // Preserve width to avoid jump
+            btnElement.style.minWidth = btnElement.offsetWidth + 'px';
+            btnElement.innerHTML = '<span class="spinner"></span> Загрузка...';
+            btnElement.disabled = true;
+        } else {
+            btnElement.classList.remove('btn-loading');
+            btnElement.innerHTML = originalText || btnElement.dataset.originalText || 'OK';
+            btnElement.style.minWidth = '';
+            btnElement.disabled = false;
+        }
+    }
 };
 
 window.Modal = Modal;

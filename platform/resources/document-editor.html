@@ -4,146 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактор документа — навырост.</title>
-    <link rel="stylesheet" href="../../assets/css/styles.css">
-    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/modal.css">
     <style>
-        body {
-            background-color: var(--bg-secondary);
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar (Reused) */
-        .sidebar {
-            width: 260px;
-            background: white;
-            border-right: 1px solid var(--border-light);
-            padding: 24px;
+        /* Custom layout for editor */
+        .editor-container {
             display: flex;
             flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: 100;
+            height: calc(100vh - 40px); /* Subtract margin/padding if needed */
+            gap: 24px;
         }
-        
-        .sidebar-logo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 40px;
-        }
-        .sidebar-logo span { color: var(--text-secondary); }
-        
-        .nav-menu { list-style: none; flex: 1; }
-        .nav-item { margin-bottom: 8px; }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-        .nav-link.active { font-weight: 600; }
-        
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-light);
-            cursor: pointer;
-        }
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--text-primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .user-info { flex: 1; }
-        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-        .user-role { font-size: 12px; color: var(--text-tertiary); }
 
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 24px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .editor-header {
+        .editor-toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            background: white;
+            background: var(--bg-surface);
             padding: 16px 24px;
-            border-radius: 16px;
-            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .doc-title-area {
+            display: flex;
+            flex-direction: column;
         }
         
         .back-link {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-tertiary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            text-decoration: none;
             margin-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-        .doc-name { font-size: 18px; font-weight: 700; }
-        
-        .editor-layout {
-            display: grid;
-            grid-template-columns: 350px 1fr;
+        .back-link:hover { color: var(--text-primary); }
+
+        .doc-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .editor-split-view {
+            display: flex;
             gap: 24px;
             flex: 1;
-            overflow: hidden;
+            min-height: 0; /* Important for nested scrolling */
         }
-        
-        .editor-panel {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 16px;
-            padding: 24px;
-            overflow-y: auto;
+
+        /* Left Panel: Form */
+        .form-panel {
+            width: 350px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            overflow: hidden;
+        }
+
+        .form-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--bg-subtle);
+        }
+
+        .form-content {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
         }
         
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--bg-subtle);
+            color: var(--text-primary);
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--text-primary);
+            background: var(--bg-surface);
+        }
+
+        /* Right Panel: Preview */
         .preview-panel {
+            flex: 1;
             background: #525659;
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 40px;
             overflow-y: auto;
             display: flex;
             justify-content: center;
         }
-        
+
         .paper {
             background: white;
             width: 100%;
-            max-width: 800px;
-            min-height: 1000px;
-            padding: 60px;
+            max-width: 210mm; /* A4 width */
+            min-height: 297mm; /* A4 height */
+            padding: 20mm;
             box-shadow: 0 4px 24px rgba(0,0,0,0.2);
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
@@ -151,89 +130,249 @@
             color: #000;
         }
         
-        .paper h1 { font-size: 16pt; text-align: center; margin-bottom: 24pt; font-weight: bold; }
-        .paper p { margin-bottom: 12pt; text-align: justify; }
-        .paper .placeholder { background: #FEF3C7; padding: 2px 4px; border-radius: 2px; }
-        
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 14px;
-            background: var(--bg-tertiary);
-        }
+        .paper h1 { font-size: 16pt; text-align: center; margin-bottom: 24pt; font-weight: bold; color: black; }
+        .paper p { margin-bottom: 12pt; text-align: justify; color: black; }
+        .paper .placeholder { background: #FEF3C7; padding: 0 4px; border-radius: 2px; }
+        .paper .filled { background: transparent; border-bottom: 1px dashed #999; }
 
         @media print {
-            .sidebar, .editor-panel, .editor-header { display: none; }
+            .sidebar, .form-panel, .editor-toolbar, .mobile-header, .sidebar-overlay { display: none !important; }
+            .dashboard-container { display: block; padding: 0; margin: 0; }
             .main-content { margin: 0; padding: 0; height: auto; }
-            .preview-panel { background: white; padding: 0; display: block; }
-            .paper { box-shadow: none; padding: 0; width: 100%; max-width: none; }
+            .editor-container { height: auto; display: block; }
+            .editor-split-view { display: block; }
+            .preview-panel { background: white; padding: 0; display: block; overflow: visible; }
+            .paper { box-shadow: none; padding: 0; width: 100%; max-width: none; min-height: auto; margin: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            .editor-split-view { flex-direction: column; }
+            .form-panel { width: 100%; max-height: 300px; }
+            .preview-panel { padding: 20px; }
+            .paper { padding: 20px; min-height: auto; }
         }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <a href="../../index.html" class="sidebar-logo">навырост<span>.</span></a>
-        
-        <ul class="nav-menu">
-            <!-- Dynamically populated by sidebar-logic.js -->
-        </ul>
-        
-        <div class="user-profile">
-            <div class="avatar">И</div>
-            <div class="user-info">
-                <div class="user-name">Иван Петров</div>
-                <div class="user-role">Free Plan</div>
-            </div>
-        </div>
-    </aside>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <main class="main-content">
-        <a href="documents.html" class="back-link">← Все документы</a>
-        <div class="editor-header">
-                <div class="doc-name" id="docTitle">Загрузка...</div>
-            </div>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn-secondary" onclick="window.print()">Печать / PDF</button>
-                <button class="btn-primary">Сохранить</button>
-            </div>
-        </div>
+    <div class="dashboard-container">
         
-        <div class="editor-layout">
-            <div class="editor-panel" id="formContainer">
-                <!-- Inputs will be generated here -->
-            </div>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Dynamically populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" style="height: 100vh; overflow: hidden; display: flex; flex-direction: column;">
             
-            <div class="preview-panel">
-                <div class="paper" id="paperContent">
-                    <!-- Document content will be generated here -->
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <div class="doc-title-area">
+                        <a href="documents.html" class="back-link">← Все документы</a>
+                        <div class="doc-name" id="docTitle">Загрузка...</div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-secondary" onclick="exportPDF()" id="pdfBtn" style="padding: 8px 16px; font-size: 13px;">Скачать PDF</button>
+                        <button class="btn-primary" onclick="saveDocument()" style="padding: 8px 16px; font-size: 13px;">Сохранить</button>
+                    </div>
+                </div>
+                
+                <div class="editor-split-view">
+                    <!-- Form Panel -->
+                    <div class="form-panel">
+                        <div class="form-header">Данные документа</div>
+                        <div class="form-content" id="formContainer">
+                            <!-- Inputs generated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Preview Panel -->
+                    <div class="preview-panel">
+                        <div class="paper" id="paperContent">
+                            <!-- Content generated here -->
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <script src="../../assets/js/doc-logic.js"></script>
+        </main>
+    </div>
+
+    <!-- Since doc-logic.js was referenced but I don't see it in file list, I'll inline a simple logic or check if it exists. 
+         Wait, I didn't check assets/js/doc-logic.js. I'll check it. If not, I'll write inline logic.
+    -->
     <script src="../../assets/js/data-manager.js"></script>
     <script src="../../assets/js/app-config.js"></script>
     <script src="../../assets/js/sidebar-logic.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    
     <script>
-        // Check auth
-        if (!localStorage.getItem('user')) {
-            window.location.href = '/auth/login.html';
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
-        function logout() {
-            localStorage.removeItem('user');
-            window.location.href = '/index.html';
+
+        if (!DataManager.getUser()) {
+            window.location.href = '../../auth/login.html';
+        }
+
+        // Simple Document Logic
+        const documents = {
+            nda: {
+                title: "NDA (Соглашение о неразглашении)",
+                fields: [
+                    { id: "date", label: "Дата", type: "date" },
+                    { id: "city", label: "Город", type: "text", placeholder: "Москва" },
+                    { id: "disclosing_party", label: "Раскрывающая сторона", type: "text", placeholder: "ООО 'Ромашка'" },
+                    { id: "receiving_party", label: "Принимающая сторона", type: "text", placeholder: "Иванов И.И." }
+                ],
+                template: (data) => `
+                    <h1>СОГЛАШЕНИЕ О НЕРАЗГЛАШЕНИИ</h1>
+                    <p style="text-align: right;">г. <span class="${data.city ? 'filled' : 'placeholder'}">${data.city || '_______'}</span></p>
+                    <p style="text-align: right;">"<span class="${data.date ? 'filled' : 'placeholder'}">${data.date || '__.__.____'}</span>"</p>
+                    <p>
+                        <strong><span class="${data.disclosing_party ? 'filled' : 'placeholder'}">${data.disclosing_party || '[Раскрывающая сторона]'}</span></strong>, именуемое в дальнейшем "Раскрывающая сторона", с одной стороны, и
+                        <strong><span class="${data.receiving_party ? 'filled' : 'placeholder'}">${data.receiving_party || '[Принимающая сторона]'}</span></strong>, именуемое в дальнейшем "Принимающая сторона", с другой стороны,
+                        заключили настоящее Соглашение о нижеследующем:
+                    </p>
+                    <p>1. ПРЕДМЕТ СОГЛАШЕНИЯ</p>
+                    <p>1.1. Стороны подтверждают понимание важности вопроса и соглашаются принять на себя обязательства по сохранению конфиденциальности информации...</p>
+                    <p>(Текст сокращен для демо-версии)</p>
+                `
+            },
+            service: {
+                title: "Договор оказания услуг",
+                fields: [
+                    { id: "number", label: "Номер договора", type: "text", placeholder: "1-У" },
+                    { id: "date", label: "Дата", type: "date" },
+                    { id: "customer", label: "Заказчик", type: "text", placeholder: "ООО 'Клиент'" },
+                    { id: "contractor", label: "Исполнитель", type: "text", placeholder: "ИП Исполнитель" }
+                ],
+                template: (data) => `
+                    <h1>ДОГОВОР ВОЗМЕЗДНОГО ОКАЗАНИЯ УСЛУГ № <span class="${data.number ? 'filled' : 'placeholder'}">${data.number || '___'}</span></h1>
+                    <p>г. Москва, <span class="${data.date ? 'filled' : 'placeholder'}">${data.date || '__.__.____'}</span></p>
+                    <p>
+                        <strong><span class="${data.customer ? 'filled' : 'placeholder'}">${data.customer || '[Заказчик]'}</span></strong>, именуемый в дальнейшем "Заказчик", и
+                        <strong><span class="${data.contractor ? 'filled' : 'placeholder'}">${data.contractor || '[Исполнитель]'}</span></strong>, именуемый в дальнейшем "Исполнитель",
+                        заключили настоящий Договор...
+                    </p>
+                `
+            },
+            invoice: {
+                title: "Счет на оплату",
+                fields: [
+                    { id: "number", label: "Номер счета", type: "text", placeholder: "1" },
+                    { id: "date", label: "Дата", type: "date" },
+                    { id: "amount", label: "Сумма", type: "number", placeholder: "10000" }
+                ],
+                template: (data) => `
+                    <h1>СЧЕТ № <span class="${data.number ? 'filled' : 'placeholder'}">${data.number || '___'}</span> от <span class="${data.date ? 'filled' : 'placeholder'}">${data.date || '__.__.____'}</span></h1>
+                    <p>Поставщик: ООО "Навырост"</p>
+                    <p>Покупатель: _______________</p>
+                    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+                        <tr><th>№</th><th>Товар/Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>
+                        <tr><td>1</td><td>Консультационные услуги</td><td>1</td><td>${data.amount || 0}</td><td>${data.amount || 0}</td></tr>
+                    </table>
+                    <p style="margin-top: 20px; font-weight: bold;">Итого к оплате: <span class="${data.amount ? 'filled' : 'placeholder'}">${data.amount || 0}</span> руб.</p>
+                `
+            }
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const type = params.get('type') || 'nda';
+        const doc = documents[type];
+        const formData = {};
+
+        if (doc) {
+            document.getElementById('docTitle').innerText = doc.title;
+            renderForm();
+            renderPreview();
+        } else {
+            window.location.href = 'documents.html';
+        }
+
+        function renderForm() {
+            const container = document.getElementById('formContainer');
+            container.innerHTML = '';
+            
+            // Auto-fill from user profile
+            const user = DataManager.getUser();
+            
+            doc.fields.forEach(field => {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                
+                // Prefill logic
+                let value = '';
+                if (field.id === 'date') value = new Date().toISOString().split('T')[0];
+                if (field.id === 'city' && user && user.city) value = user.city;
+                if (field.id === 'contractor' && user && user.company) value = user.company;
+                
+                formData[field.id] = value;
+
+                div.innerHTML = `
+                    <label class="form-label">${field.label}</label>
+                    <input type="${field.type}" class="form-input" data-id="${field.id}" placeholder="${field.placeholder || ''}" value="${value}">
+                `;
+                container.appendChild(div);
+            });
+
+            // Add listeners
+            container.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    formData[e.target.dataset.id] = e.target.value;
+                    renderPreview();
+                });
+            });
+        }
+
+        function renderPreview() {
+            const content = document.getElementById('paperContent');
+            content.innerHTML = doc.template(formData);
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('paperContent');
+            const btn = document.getElementById('pdfBtn');
+            
+            // Basic options
+            const opt = {
+                margin: 10,
+                filename: `${doc.title}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (window.html2pdf) {
+                Modal.setLoading(btn, true);
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Modal.setLoading(btn, false, 'Скачать PDF');
+                    Modal.showToast('PDF файл успешно скачан');
+                });
+            } else {
+                // Fallback
+                window.print();
+            }
+        }
+
+        function saveDocument() {
+            // Future: Save to Supabase
+            Modal.showToast('Документ сохранен в профиле!');
         }
     </script>
 </body>

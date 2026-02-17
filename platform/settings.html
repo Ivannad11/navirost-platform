@@ -4,52 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройки — навырост.</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
-    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/modal.css">
     <style>
-        body {
-            background-color: var(--bg-secondary);
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-        
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-        .page-title h1 { font-size: 28px; margin-bottom: 4px; }
-
         .settings-container {
-            max-width: 600px;
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 32px;
+            max-width: 700px;
+            margin: 0 auto;
         }
 
         .settings-section {
-            margin-bottom: 32px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
         }
-        .settings-section:last-child { margin-bottom: 0; }
 
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             margin-bottom: 20px;
             padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-primary);
         }
 
         .form-group { margin-bottom: 20px; }
+        .form-group:last-child { margin-bottom: 0; }
+        
         .form-label {
             display: block;
             font-size: 13px;
@@ -57,106 +40,195 @@
             color: var(--text-secondary);
             margin-bottom: 8px;
         }
+        
         .form-input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            font-size: 15px;
-            background: var(--bg-tertiary);
+            padding: 10px 12px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-subtle);
             transition: all 0.2s;
+            color: var(--text-primary);
         }
+        
         .form-input:focus {
             outline: none;
             border-color: var(--text-primary);
-            background: white;
+            background: var(--bg-surface);
         }
+        
         .form-help {
             font-size: 12px;
             color: var(--text-tertiary);
             margin-top: 6px;
         }
 
-        @media (max-width: 1024px) {
-            .sidebar { width: 80px; padding: 24px 12px; }
-            .nav-link span:last-child, .user-info, .sidebar-logo span, .nav-arrow { display: none; }
-            .main-content { margin-left: 80px; }
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-subtle);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid transparent;
+        }
+        
+        .project-item:hover {
+            border-color: var(--border-subtle);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #EF4444;
+            border: 1px solid transparent;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-danger:hover {
+            background: #FEF2F2;
+        }
+
+        #toast {
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background: var(--text-primary); 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            display: none; 
+            animation: slideUp 0.3s; 
+            z-index: 3000;
+            font-size: 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <a href="../index.html" class="sidebar-logo">навырост<span>.</span></a>
-        <ul class="nav-menu">
-            <!-- Populated by sidebar-logic.js -->
-        </ul>
-        <div class="user-profile" id="userProfileBtn">
-            <div class="avatar"></div>
-            <div class="user-info">
-                <div class="user-name"></div>
-                <div class="user-role"></div>
-            </div>
-        </div>
-    </aside>
-
-    <main class="main-content">
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Настройки профиля</h1>
-                <p class="text-secondary">Управляйте своими данными и подпиской</p>
-            </div>
-            <button class="btn-primary" onclick="saveSettings()">Сохранить изменения</button>
-        </div>
-
-        <div class="settings-container">
-            <div class="settings-section">
-                <div class="section-title">Личные данные</div>
-                <div class="form-group">
-                    <label class="form-label">Ваше Имя (ФИО)</label>
-                    <input type="text" class="form-input" id="userName" placeholder="Иванов Иван Иванович">
-                    <div class="form-help">Будет использоваться для подписи в документах</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="userEmail" placeholder="name@company.com">
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="section-title">Данные компании</div>
-                <div class="form-group">
-                    <label class="form-label">Название компании / ИП</label>
-                    <input type="text" class="form-input" id="userCompany" placeholder="ИП Иванов И.И.">
-                    <div class="form-help">Автоматически подставится в поле "Исполнитель" или "Заказчик"</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Город</label>
-                    <input type="text" class="form-input" id="userCity" placeholder="Москва">
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="section-title">Мои проекты</div>
-                <div id="projectsList" class="form-group">
-                    <!-- Projects will be populated here -->
-                </div>
-                <button type="button" class="btn-secondary" onclick="addNewProject()" style="margin-top: 12px;">+ Добавить проект</button>
-            </div>
-        </div>
-    </main>
-
-    <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#10B981; color:white; padding:12px 24px; border-radius:12px; display:none; animation: slideUp 0.3s; z-index: 3000;">
-        Настройки сохранены!
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <div class="welcome-text">
+                    <h1 style="font-size: 24px; font-weight: 600;">Настройки профиля</h1>
+                    <div class="date-text">Управляйте своими данными и подпиской</div>
+                </div>
+                <button class="btn-primary" onclick="saveSettings()">
+                    Сохранить изменения
+                </button>
+            </div>
+
+            <div class="settings-container">
+                <!-- Personal Info -->
+                <div class="settings-section">
+                    <div class="section-title">Личные данные</div>
+                    <div class="form-group">
+                        <label class="form-label">Ваше Имя (ФИО)</label>
+                        <input type="text" class="form-input" id="userName" placeholder="Иванов Иван Иванович">
+                        <div class="form-help">Будет использоваться для подписи в документах</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="userEmail" placeholder="name@company.com">
+                    </div>
+                </div>
+
+                <!-- Company Info -->
+                <div class="settings-section">
+                    <div class="section-title">Данные компании</div>
+                    <div class="form-group">
+                        <label class="form-label">Название компании / ИП</label>
+                        <input type="text" class="form-input" id="userCompany" placeholder="ИП Иванов И.И.">
+                        <div class="form-help">Автоматически подставится в поле "Исполнитель" или "Заказчик"</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Город</label>
+                        <input type="text" class="form-input" id="userCity" placeholder="Москва">
+                    </div>
+                </div>
+
+                <!-- Database Connection -->
+                <div class="settings-section">
+                    <div class="section-title">Подключение базы данных (Supabase)</div>
+                    <div class="form-group">
+                        <label class="form-label">Project URL</label>
+                        <input type="text" class="form-input" id="sbUrl" placeholder="https://xyz.supabase.co">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key (anon/public)</label>
+                        <input type="password" class="form-input" id="sbKey" placeholder="eyJ...">
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+                        <button type="button" class="btn-secondary" onclick="saveDatabaseSettings()" style="border: 1px solid var(--border-strong); padding: 8px 16px; border-radius: 8px; background: white; cursor: pointer; font-size: 13px;">
+                            Сохранить подключение
+                        </button>
+                        <button type="button" class="btn-primary" onclick="syncDatabase()" id="syncBtn" style="padding: 8px 16px; border-radius: 8px; font-size: 13px;">
+                            Синхронизировать
+                        </button>
+                    </div>
+                    <div id="dbStatus" style="margin-top: 12px; font-size: 13px; color: var(--text-tertiary);"></div>
+                </div>
+
+                <!-- Projects Management -->
+                <div class="settings-section">
+                    <div class="section-title">Управление проектами</div>
+                    <div id="projectsList" class="form-group">
+                        <!-- Projects will be populated here -->
+                    </div>
+                    <button type="button" class="btn-secondary" onclick="addNewProject()" style="margin-top: 16px; border: 1px solid var(--border-strong); padding: 8px 16px; border-radius: 8px; background: white; cursor: pointer; font-size: 13px;">
+                        + Добавить проект
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast">Настройки сохранены!</div>
 
     <script src="../assets/js/data-manager.js"></script>
     <script src="../assets/js/app-config.js"></script>
     <script src="../assets/js/sidebar-logic.js"></script>
     <script src="../assets/js/modal.js"></script>
+    
     <script>
-        if (!localStorage.getItem('user')) {
-            window.location.href = '/auth/login.html';
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        // Auth check
+        if (!DataManager.getUser()) {
+            window.location.href = '../auth/login.html';
         }
 
         function loadSettings() {
@@ -166,16 +238,75 @@
                 document.getElementById('userEmail').value = user.email || '';
                 document.getElementById('userCompany').value = user.company || '';
                 document.getElementById('userCity').value = user.city || '';
-
-                // Update sidebar
-                const userProfile = document.getElementById('userProfileBtn');
-                userProfile.querySelector('.user-name').textContent = user.name;
-                userProfile.querySelector('.user-role').textContent = user.plan || 'Free Plan';
-                userProfile.querySelector('.avatar').textContent = user.name ? user.name.charAt(0).toUpperCase() : '';
-
-                // Load projects
+                
                 loadProjects();
+                loadDatabaseSettings();
             }
+        }
+
+        function loadDatabaseSettings() {
+            const url = localStorage.getItem('sb_url');
+            const key = localStorage.getItem('sb_key');
+            if (url) document.getElementById('sbUrl').value = url;
+            if (key) document.getElementById('sbKey').value = key;
+            
+            if (window.SupabaseService && window.SupabaseService.isConnected()) {
+                document.getElementById('dbStatus').innerText = '✅ Подключено к Supabase';
+                document.getElementById('dbStatus').style.color = '#166534';
+            } else {
+                document.getElementById('dbStatus').innerText = '⚪️ Не подключено';
+            }
+        }
+
+        function saveDatabaseSettings() {
+            const url = document.getElementById('sbUrl').value.trim();
+            const key = document.getElementById('sbKey').value.trim();
+            
+            if (url && key) {
+                localStorage.setItem('sb_url', url);
+                localStorage.setItem('sb_key', key);
+                
+                // Try to init
+                if (window.SupabaseService && window.SupabaseService.init()) {
+                    document.getElementById('dbStatus').innerText = '✅ Подключено';
+                    document.getElementById('dbStatus').style.color = '#166534';
+                    showToast('Подключение успешно!');
+                } else {
+                    document.getElementById('dbStatus').innerText = '❌ Ошибка подключения';
+                    document.getElementById('dbStatus').style.color = '#DC2626';
+                    showToast('Ошибка инициализации Supabase');
+                }
+            }
+        }
+
+        async function syncDatabase() {
+            const btn = document.getElementById('syncBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Синхронизация...';
+            btn.disabled = true;
+            
+            try {
+                if (window.DataManager && window.DataManager.syncWithDatabase) {
+                    await window.DataManager.syncWithDatabase();
+                    showToast('Синхронизация завершена!');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast('DataManager не готов');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка синхронизации');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
         }
 
         function loadProjects() {
@@ -184,19 +315,17 @@
             projectsList.innerHTML = '';
 
             if (projects.length === 0) {
-                projectsList.innerHTML = '<div style="color: var(--text-tertiary); font-size: 14px;">Нет проектов</div>';
+                projectsList.innerHTML = '<div style="color: var(--text-tertiary); font-size: 13px; font-style: italic;">Нет активных проектов</div>';
             } else {
                 projects.forEach(project => {
                     const projectItem = document.createElement('div');
-                    projectItem.className = 'form-group';
+                    projectItem.className = 'project-item';
                     projectItem.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-tertiary); border-radius: 8px;">
-                            <div>
-                                <div style="font-weight: 500;">${project.name}</div>
-                                <div style="font-size: 12px; color: var(--text-tertiary);">ID: ${project.id}</div>
-                            </div>
-                            <button type="button" class="btn-secondary" onclick="deleteProject('${project.id}')" style="font-size: 12px; padding: 6px 12px;">Удалить</button>
+                        <div>
+                            <div style="font-weight: 500; font-size: 14px; color: var(--text-primary);">${project.name}</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">Обновлен: ${DataManager.formatDate(project.updated)}</div>
                         </div>
+                        <button type="button" class="btn-danger" onclick="deleteProject('${project.id}')">Удалить</button>
                     `;
                     projectsList.appendChild(projectItem);
                 });
@@ -204,22 +333,22 @@
         }
 
         function addNewProject() {
-            const projectName = prompt('Введите название проекта:');
-            if (projectName && projectName.trim()) {
-                DataManager.createProject(projectName.trim());
-                loadProjects();
-                // Refresh sidebar if it exists
-                if (window.renderSidebar) window.renderSidebar();
-            }
+            Modal.prompt('Новый проект', 'Введите название проекта:', (name) => {
+                if (name) {
+                    DataManager.createProject(name);
+                    loadProjects();
+                    // Refresh sidebar
+                    renderSidebar();
+                }
+            });
         }
 
         function deleteProject(projectId) {
-            if (confirm('Вы уверены, что хотите удалить этот проект?')) {
+            Modal.confirm('Удалить проект?', 'Вы уверены? Это действие нельзя отменить.', () => {
                 DataManager.deleteProject(projectId);
                 loadProjects();
-                // Refresh sidebar if it exists
-                if (window.renderSidebar) window.renderSidebar();
-            }
+                renderSidebar();
+            });
         }
 
         function saveSettings() {
@@ -235,8 +364,9 @@
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 2000);
             
-            // Refresh sidebar name if changed
-            if (window.renderSidebar) window.renderSidebar();
+            // Update sidebar profile immediately
+            const sidebarName = document.querySelector('.sidebar .user-name');
+            if (sidebarName) sidebarName.textContent = user.name;
         }
 
         document.addEventListener('DOMContentLoaded', loadSettings);

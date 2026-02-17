@@ -30,21 +30,10 @@
         </div>
     </div>
 
+    <script src="../assets/js/data-manager.js"></script>
     <script>
     (function() {
       'use strict';
-      
-      // Проверка поддержки localStorage
-      function isLocalStorageAvailable() {
-        try {
-          const test = '__test__';
-          localStorage.setItem(test, test);
-          localStorage.removeItem(test);
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
       
       const form = document.querySelector('form');
       if (!form) return;
@@ -56,61 +45,46 @@
         const emailInput = document.querySelector('input[type="email"]');
         const passwordInput = document.querySelector('input[type="password"]');
         
-        if (!emailInput || !passwordInput) {
-          console.error('Форма не найдена');
-          return;
-        }
+        if (!emailInput || !passwordInput) return;
         
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
         
-        console.log('Login attempt:', { email: email ? 'yes' : 'no', password: password ? 'yes' : 'no' });
-        
         if (!email || !password) {
-          // Вместо alert используем текстовое сообщение
-          let errorMsg = document.getElementById('error-message');
-          if (!errorMsg) {
-            errorMsg = document.createElement('div');
-            errorMsg.id = 'error-message';
-            errorMsg.style.color = 'red';
-            errorMsg.style.marginTop = '10px';
-            errorMsg.style.textAlign = 'center';
-            form.appendChild(errorMsg);
-          }
-          errorMsg.innerText = 'Пожалуйста, заполните все поля';
+          alert('Пожалуйста, заполните все поля');
           return;
         }
         
-        // Проверка localStorage
-        if (isLocalStorageAvailable()) {
-          try {
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('isLoggedIn', 'true');
-            console.log('localStorage saved');
-          } catch (e) {
-            console.error('localStorage error:', e);
-          }
+        // Mock Login: Create a user profile
+        // In a real app, we would verify credentials here.
+        // For now, we simulate a successful login by creating/updating the user profile.
+        
+        // Check if we already have this user in DataManager (simulate persistence)
+        // Since we are logging in, we might want to fetch from Supabase if we had a backend login.
+        // But for this static demo, we just create a session.
+        
+        const user = {
+            name: email.split('@')[0], // Use part of email as name if not known
+            email: email,
+            company: '',
+            plan: 'Free',
+            onboarding: {
+                projectCreated: false,
+                unitCalc: false
+            }
+        };
+
+        // If DataManager is loaded, use it
+        if (window.DataManager) {
+            DataManager.saveUser(user);
+            console.log('User saved via DataManager');
         } else {
-          console.warn('localStorage недоступен (Private Mode?)');
+            // Fallback (should not happen if script is loaded)
+            localStorage.setItem('navirost_user_profile', JSON.stringify(user));
         }
-        
-        // Редирект с использованием абсолютного пути
-        const currentPath = window.location.pathname;
-        const basePath = currentPath.includes('/navirost-platform/') 
-          ? '/navirost-platform' 
-          : '';
-        
-        const targetUrl = basePath + '/platform/home.html';
-        
-        console.log('Redirecting to:', targetUrl);
-        
-        // Используем replace вместо href (чтобы не добавлять в историю)
-        window.location.replace(targetUrl);
-        
-        // Fallback через setTimeout (на случай если replace не сработал)
-        setTimeout(function() {
-          window.location.href = targetUrl;
-        }, 100);
+
+        // Redirect
+        window.location.href = '../platform/home.html';
       });
     })();
     </script>

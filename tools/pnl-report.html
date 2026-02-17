@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P&L Калькулятор онлайн — Прогноз прибылей и убытков | Навырост</title>
+    <meta name="description" content="Бесплатный P&L калькулятор (отчет о прибылях и убытках). Спрогнозируйте доходы, расходы и кассовые разрывы на 6 месяцев вперед.">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../css/calculators.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💰</text></svg>">
+    <style>
+        .calculator-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        /* Dashboard overrides */
+        .calc-header {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+        
+        .calc-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .calc-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .pnl-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            overflow-x: auto;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+            width: 200px;
+            position: sticky;
+            left: 0;
+            background: var(--bg-surface);
+            z-index: 10;
+            border-right: 1px solid var(--border-subtle);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            text-transform: uppercase;
+            padding-bottom: 16px;
+        }
+
+        .row-header {
+            font-weight: 500;
+        }
+
+        .row-total {
+            font-weight: 700;
+            background: var(--bg-subtle);
+        }
+        .row-total td:first-child { background: var(--bg-subtle); }
+
+        .input-cell {
+            width: 90px;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            text-align: right;
+            font-family: inherit;
+            font-size: 13px;
+            background: transparent;
+            transition: all 0.2s;
+        }
+        .input-cell:hover, .input-cell:focus {
+            background: var(--bg-subtle);
+            border-color: var(--border-subtle);
+            outline: none;
+        }
+
+        .cta-block {
+            background: linear-gradient(135deg, #F4F4F5 0%, #FFFFFF 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+        
+        .cta-block h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .cta-block p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container { padding-top: 0; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="calculator-container">
+                <div class="calc-header">
+                    <h1>P&L Калькулятор</h1>
+                    <p>Прогноз прибылей и убытков на 6 месяцев.</p>
+                </div>
+
+                <div class="pnl-container">
+                    <div class="form-group" style="margin-bottom: 20px; max-width: 300px;">
+                        <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display:block;">Налоговый режим:</label>
+                        <select id="tax-regime" class="form-input" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-subtle); background: var(--bg-surface);">
+                            <option value="usn-6">УСН 6% (Доходы)</option>
+                            <option value="usn-15">УСН 15% (Доходы минус расходы)</option>
+                        </select>
+                    </div>
+                    <table id="pnlTable">
+                        <thead>
+                            <tr>
+                                <th>Статья</th>
+                                <th>Месяц 1</th>
+                                <th>Месяц 2</th>
+                                <th>Месяц 3</th>
+                                <th>Месяц 4</th>
+                                <th>Месяц 5</th>
+                                <th>Месяц 6</th>
+                                <th>Итого</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Revenue -->
+                            <tr>
+                                <td class="row-header">Выручка</td>
+                                <td><input type="number" class="input-cell revenue" value="0"></td>
+                                <td><input type="number" class="input-cell revenue" value="0"></td>
+                                <td><input type="number" class="input-cell revenue" value="0"></td>
+                                <td><input type="number" class="input-cell revenue" value="0"></td>
+                                <td><input type="number" class="input-cell revenue" value="0"></td>
+                                <td><input type="number" class="input-cell revenue" value="0"></td>
+                                <td class="row-sum">0</td>
+                            </tr>
+                            
+                            <!-- COGS -->
+                            <tr>
+                                <td class="row-header">Себестоимость</td>
+                                <td><input type="number" class="input-cell cogs" value="0"></td>
+                                <td><input type="number" class="input-cell cogs" value="0"></td>
+                                <td><input type="number" class="input-cell cogs" value="0"></td>
+                                <td><input type="number" class="input-cell cogs" value="0"></td>
+                                <td><input type="number" class="input-cell cogs" value="0"></td>
+                                <td><input type="number" class="input-cell cogs" value="0"></td>
+                                <td class="row-sum">0</td>
+                            </tr>
+
+                            <!-- Gross Profit -->
+                            <tr class="row-total">
+                                <td>Валовая прибыль</td>
+                                <td class="gp">0</td>
+                                <td class="gp">0</td>
+                                <td class="gp">0</td>
+                                <td class="gp">0</td>
+                                <td class="gp">0</td>
+                                <td class="gp">0</td>
+                                <td class="gp-total">0</td>
+                            </tr>
+
+                            <!-- OPEX Header -->
+                            <tr>
+                                <td colspan="8" style="text-align: left; font-size: 11px; font-weight: 600; color: var(--text-tertiary); padding-top: 24px; text-transform: uppercase;">Расходы (OPEX)</td>
+                            </tr>
+
+                            <!-- Marketing -->
+                            <tr>
+                                <td class="row-header">Маркетинг</td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td class="row-sum">0</td>
+                            </tr>
+
+                            <!-- Salaries -->
+                            <tr>
+                                <td class="row-header">Зарплаты</td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td class="row-sum">0</td>
+                            </tr>
+
+                            <!-- Rent/Other -->
+                            <tr>
+                                <td class="row-header">Аренда и прочее</td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td><input type="number" class="input-cell opex" value="0"></td>
+                                <td class="row-sum">0</td>
+                            </tr>
+
+                            <!-- Taxes -->
+                            <tr class="row-subtotal">
+                                <td>Налоги</td>
+                                <td class="tax">0</td>
+                                <td class="tax">0</td>
+                                <td class="tax">0</td>
+                                <td class="tax">0</td>
+                                <td class="tax">0</td>
+                                <td class="tax">0</td>
+                                <td class="row-sum">0</td>
+                            </tr>
+
+                            <!-- Net Profit -->
+                            <tr class="row-total" style="border-top: 2px solid var(--border-strong);">
+                                <td>Чистая прибыль</td>
+                                <td class="net">0</td>
+                                <td class="net">0</td>
+                                <td class="net">0</td>
+                                <td class="net">0</td>
+                                <td class="net">0</td>
+                                <td class="net">0</td>
+                                <td class="net-total">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cta-block">
+                    <h3>Действия с отчетом</h3>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                        <button class="btn-secondary" onclick="exportPDF()" id="pdfBtn" style="border: 1px solid var(--border-strong); padding: 8px 16px; border-radius: 8px; background: white; cursor: pointer; font-size: 13px;">
+                            Скачать PDF
+                        </button>
+                        <button class="btn-primary" onclick="saveToProject()">
+                            Сохранить в проект
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        function formatMoney(num) {
+            return new Intl.NumberFormat('ru-RU').format(Math.round(num || 0));
+        }
+
+        function updateRowSums() {
+            const inputRows = document.querySelectorAll('tr:has(.input-cell)');
+            inputRows.forEach(row => {
+                const inputs = row.querySelectorAll('.input-cell');
+                const sumCell = row.querySelector('.row-sum');
+                if (inputs.length > 0 && sumCell) {
+                    const sum = Array.from(inputs).reduce((s, input) => s + (parseFloat(input.value) || 0), 0);
+                    sumCell.textContent = formatMoney(sum);
+                }
+            });
+        }
+
+        function calculatePnL() {
+            const taxRegime = document.getElementById('tax-regime').value;
+            const months = 6;
+            const revenue = [];
+            const cogs = [];
+            const opex = [];
+            
+            // Collect inputs
+            for (let i = 0; i < months; i++) {
+                revenue[i] = parseFloat(document.querySelectorAll('.revenue')[i]?.value || 0);
+                cogs[i] = parseFloat(document.querySelectorAll('.cogs')[i]?.value || 0);
+                
+                // Opex Sum
+                let monthOpex = 0;
+                const opexRows = [
+                    document.querySelectorAll('.opex')[i], // Marketing
+                    document.querySelectorAll('.opex')[i + 6], // Salaries
+                    document.querySelectorAll('.opex')[i + 12] // Rent
+                ];
+                
+                opexRows.forEach(input => {
+                    monthOpex += parseFloat(input?.value || 0);
+                });
+                opex[i] = monthOpex;
+            }
+            
+            let totalRevenue = 0;
+            let totalGrossProfit = 0;
+            let totalOpex = 0;
+            let totalTaxes = 0;
+            let totalNetProfit = 0;
+            
+            for (let i = 0; i < months; i++) {
+                const grossProfit = revenue[i] - cogs[i];
+                
+                let tax = 0;
+                if (taxRegime === 'usn-6') {
+                    tax = revenue[i] * 0.06;
+                } else if (taxRegime === 'usn-15') {
+                    const taxableIncome = revenue[i] - cogs[i] - opex[i];
+                    tax = taxableIncome > 0 ? taxableIncome * 0.15 : 0;
+                }
+                
+                const netProfit = grossProfit - opex[i] - tax;
+                
+                document.querySelectorAll('.gp')[i].textContent = formatMoney(grossProfit);
+                document.querySelectorAll('.tax')[i].textContent = formatMoney(tax);
+                document.querySelectorAll('.net')[i].textContent = formatMoney(netProfit);
+                
+                totalRevenue += revenue[i];
+                totalGrossProfit += grossProfit;
+                totalOpex += opex[i];
+                totalTaxes += tax;
+                totalNetProfit += netProfit;
+            }
+            
+            document.querySelector('.gp-total').textContent = formatMoney(totalGrossProfit);
+            document.querySelectorAll('.tax')[6].textContent = formatMoney(totalTaxes);
+            document.querySelector('.net-total').textContent = formatMoney(totalNetProfit);
+            
+            updateRowSums();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', calculatePnL);
+            });
+            document.getElementById('tax-regime').addEventListener('change', calculatePnL);
+            
+            // Load Data
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (currentProjectId) {
+                const project = DataManager.getProject(currentProjectId);
+                if (project && project.pnlData) {
+                    const d = project.pnlData;
+                    if (d.revenue) d.revenue.forEach((val, i) => {
+                        if(document.querySelectorAll('.revenue')[i]) document.querySelectorAll('.revenue')[i].value = val;
+                    });
+                    if (d.cogs) d.cogs.forEach((val, i) => {
+                        if(document.querySelectorAll('.cogs')[i]) document.querySelectorAll('.cogs')[i].value = val;
+                    });
+                    // Opex logic is tricky because we flattened it in storage vs UI rows
+                    // Assuming we didn't store granular opex before, or need to adapt.
+                    // For now, let's assume we don't have granular opex data structure yet, 
+                    // or we just save totals. 
+                    // Let's implement simple saving first.
+                }
+            }
+            
+            calculatePnL();
+        });
+
+        function saveToProject() {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (!currentProjectId) {
+                Modal.showToast('Выберите проект для сохранения', 'error');
+                return;
+            }
+
+            // ... (rest of logic)
+            // Capture arrays
+            const months = 6;
+            const revenueArr = [];
+            const cogsArr = [];
+            
+            for(let i=0; i<months; i++) {
+                revenueArr.push(parseFloat(document.querySelectorAll('.revenue')[i]?.value || 0));
+                cogsArr.push(parseFloat(document.querySelectorAll('.cogs')[i]?.value || 0));
+            }
+
+            const totalRevenue = revenueArr.reduce((a,b) => a+b, 0);
+            const totalNetProfit = parseFloat(document.querySelector('.net-total').textContent.replace(/[^\d.-]/g, '')) || 0;
+
+            const data = {
+                revenue: revenueArr,
+                cogs: cogsArr,
+                totalRevenue: totalRevenue,
+                profit: totalNetProfit
+            };
+            
+            DataManager.updateProject(currentProjectId, 'pnl', {
+                revenue: totalRevenue, 
+                profit: totalNetProfit, 
+                details: data
+            });
+            
+            Modal.showToast('P&L отчет сохранен!');
+        }
+
+        function exportPDF() {
+            const element = document.querySelector('.pnl-container');
+            const btn = document.getElementById('pdfBtn');
+            const originalOverflow = element.style.overflowX;
+            
+            // Temporary fix for PDF scroll
+            element.style.overflowX = 'visible';
+            
+            const opt = {
+                margin: 10,
+                filename: 'PnL_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            if (window.html2pdf) {
+                Modal.setLoading(btn, true);
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Modal.setLoading(btn, false, 'Скачать PDF');
+                    Modal.showToast('PDF файл скачан');
+                    element.style.overflowX = originalOverflow;
+                });
+            } else {
+                Modal.showToast('Библиотека PDF не загружена', 'error');
+                element.style.overflowX = originalOverflow;
+            }
+        }
+    </script>
+</body>
+</html>
