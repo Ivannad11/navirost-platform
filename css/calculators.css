@@ -1,0 +1,61 @@
+/* Общие стили для всех калькуляторов */
+* {
+  box-sizing: border-box;
+}
+
+input[type="number"],
+input[type="text"],
+input[type="email"],
+select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px; /* важно: iOS не зумил при 16px+ */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+button {
+  padding: 14px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Общие стили для калькуляторов на мобилке */
+@media (max-width: 768px) {
+  input[type="number"],
+  input[type="text"],
+  input[type="email"],
+  select {
+    font-size: 16px; /* чтобы iOS не зумил */
+    box-sizing: border-box;
+  }
+  
+  button {
+    width: 100%;
+  }
+  
+  .result-card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .result-value {
+    font-size: 20px; /* читаемый размер */
+  }
+  
+  /* Таблицы (для P&L) */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table th,
+  table td {
+    font-size: 12px;
+    padding: 8px 4px;
+    white-space: nowrap;
+  }
+}

@@ -16,7 +16,7 @@
 
         /* Sidebar (Reused) */
         .sidebar {
-            width: 260px;
+            width: 280px;
             background: white;
             border-right: 1px solid var(--border-light);
             padding: 24px;
@@ -130,7 +130,7 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 260px;
+            margin-left: 280px;
             flex: 1;
             padding: 40px;
         }
@@ -143,6 +143,46 @@
         }
         .page-title h1 { font-size: 28px; margin-bottom: 4px; }
 
+        /* Burger Menu */
+        .burger-btn {
+            display: none; /* по умолчанию скрыта на десктопе */
+            background: none;
+            border: none;
+            width: 30px;
+            height: 24px;
+            position: relative;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .burger-btn span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: var(--text-primary);
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .burger-btn span:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Анимация крестика */
+        .burger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(8px);
+        }
+
+        .burger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-8px);
+        }
+
         .page-subtitle {
             color: var(--text-secondary);
             font-size: 14px;
@@ -152,9 +192,10 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: 1.35fr 0.65fr;
+            grid-template-columns: 1.35fr minmax(300px, 0.65fr);
             gap: 24px;
             align-items: start;
+            grid-auto-rows: min-content;
         }
 
         .stack {
@@ -224,6 +265,7 @@
             flex-direction: column;
             justify-content: space-between;
             height: 140px;
+            min-height: 140px;
             transition: transform 0.2s, box-shadow 0.2s;
             opacity: 0;
             transform: translateY(20px);
@@ -350,29 +392,54 @@
         }
 
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
+            .burger-btn {
+                display: block; /* показываем на мобилке */
             }
             
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--border-light);
-                padding: 16px 20px;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
+                position: fixed;
+                left: -280px; /* спрятана за экраном */
+                top: 0;
+                height: 100vh;
+                width: 280px;
+                background: white;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+                transition: left 0.3s ease;
+                z-index: 1000;
+                border-right: 1px solid var(--border-light);
+                padding: 24px;
+                flex-direction: column;
+                overflow-y: auto;
             }
             
-            .nav-menu {
+            .sidebar.open {
+                left: 0; /* выезжает при клике на бургер */
+            }
+            
+            .overlay {
                 display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+            
+            .overlay.active {
+                display: block;
             }
             
             .main-content {
                 margin-left: 0;
-                padding: 24px 20px;
+                padding: 20px;
+            }
+            
+            .page-header {
+                flex-direction: row;
+                align-items: center;
+                gap: 0;
             }
             
             .overview-grid {
@@ -382,18 +449,12 @@
             
             .stat-card {
                 height: auto;
+                min-height: 120px;
                 padding: 20px;
             }
             
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .page-header .btn-primary {
-                width: 100%;
-                justify-content: center;
+            .content-grid {
+                grid-template-columns: 1fr;
             }
             
             .project-item {
@@ -405,6 +466,43 @@
             .project-item > div:last-child {
                 width: 100%;
                 justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-card h3 {
+                font-size: 14px; /* заголовок меньше */
+            }
+            
+            .stat-card .stat-number {
+                font-size: 24px; /* цифра меньше */
+            }
+            
+            .stat-card .stat-label {
+                font-size: 12px;
+            }
+            
+            .stat-card .stat-trend {
+                font-size: 11px;
+            }
+            
+            .stat-card {
+                min-height: 100px; /* меньше на совсем маленьких экранах */
+            }
+            
+            .stat-icon-wrapper {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .page-title h1 {
+                font-size: 20px;
+            }
+            
+            .page-subtitle {
+                font-size: 13px;
             }
         }
     </style>
@@ -435,9 +533,14 @@
 
     <main class="main-content">
         <div class="page-header">
+            <button id="burger-menu" class="burger-btn" aria-label="Открыть меню">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
             <div class="page-title">
-                <h1>Главная</h1>
-                <div class="page-subtitle" id="pageSubtitle">Загрузка...</div>
+                <h1>Доброе утро, <span id="user-name"></span>Гость</span>!</h1>
+                <div class="page-subtitle">Вот что происходит с вашими проектами.</div>
             </div>
             <button class="btn-primary" onclick="createNewProject()">+ Новый проект</button>
         </div>
@@ -485,7 +588,7 @@
                             <div class="card-title">Проекты</div>
                             <div class="card-subtitle">Быстрый переход к расчетам и финансовой модели</div>
                         </div>
-                        <a class="ghost-link" href="#" onclick="createNewProject()">+ Создать</a>
+                        <button class="btn-create-project ghost-link">+ Создать</button>
                     </div>
                     <div id="projectsContainer">
                         <!-- Populated by JS -->
@@ -721,7 +824,7 @@
                         <span class="empty-icon">🌱</span>
                         <div class="empty-title">Начните свой первый бизнес</div>
                         <div class="empty-desc">Создайте проект, чтобы рассчитать юнит-экономику и построить финансовую модель.</div>
-                        <button class="btn-primary" onclick="createNewProject()" style="padding: 14px 32px; font-size: 15px;">
+                        <button class="btn-create-project btn-primary" style="padding: 14px 32px; font-size: 15px;">
     🚀 Создать первый проект
 </button>
                     </div>
@@ -761,6 +864,89 @@
 
         document.addEventListener('DOMContentLoaded', renderHome);
 
+        function updateDashboard() {
+            // Пробуем получить проекты из DataManager или localStorage
+            let projects = [];
+            try {
+                if (typeof DataManager !== 'undefined' && DataManager.getProjects) {
+                    projects = DataManager.getProjects() || [];
+                } else {
+                    projects = JSON.parse(localStorage.getItem('projects') || '[]');
+                }
+            } catch (e) {
+                projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            }
+            
+            // Активные проекты
+            const totalProjectsEl = document.getElementById('totalProjects');
+            if (totalProjectsEl) {
+                totalProjectsEl.innerText = projects.length;
+            }
+            
+            // Общая выручка (план) — сумма по всем проектам
+            let totalRevenue = 0;
+            let totalProfit = 0;
+            let totalMargin = 0;
+            let projectsWithMargin = 0;
+            
+            projects.forEach(project => {
+                // Проверяем обе возможные структуры данных
+                let projectData = null;
+                
+                // Структура DataManager (project.unitData или project.unit)
+                if (project.unitData) {
+                    projectData = project.unitData;
+                } else if (project.unit) {
+                    projectData = project.unit;
+                }
+                // Структура localStorage (project.unitEconomics)
+                else if (project.unitEconomics) {
+                    projectData = project.unitEconomics;
+                }
+                
+                if (projectData) {
+                    totalRevenue += projectData.revenue || 0;
+                    totalProfit += projectData.profit || 0;
+                    
+                    if (projectData.margin) {
+                        totalMargin += projectData.margin;
+                        projectsWithMargin++;
+                    }
+                }
+            });
+            
+            const totalRevenueEl = document.getElementById('totalRevenue');
+            if (totalRevenueEl) {
+                if (typeof DataManager !== 'undefined' && DataManager.formatMoney) {
+                    totalRevenueEl.innerText = DataManager.formatMoney(totalRevenue);
+                } else {
+                    totalRevenueEl.innerText = totalRevenue.toLocaleString('ru-RU') + ' ₽';
+                }
+            }
+            
+            const totalProfitEl = document.getElementById('totalProfit');
+            if (totalProfitEl) {
+                if (typeof DataManager !== 'undefined' && DataManager.formatMoney) {
+                    totalProfitEl.innerText = DataManager.formatMoney(totalProfit);
+                } else {
+                    totalProfitEl.innerText = totalProfit.toLocaleString('ru-RU') + ' ₽';
+                }
+            }
+            
+            const avgMarginEl = document.getElementById('avgMargin');
+            if (avgMarginEl) {
+                const avgMargin = projectsWithMargin > 0 ? Math.round(totalMargin / projectsWithMargin) : 0;
+                if (typeof DataManager !== 'undefined' && DataManager.formatMoney) {
+                    avgMarginEl.innerText = DataManager.formatMoney(avgMargin);
+                } else {
+                    avgMarginEl.innerText = avgMargin.toLocaleString('ru-RU') + ' ₽';
+                }
+            }
+        }
+
+        // Обновляем дашборд при загрузке страницы
+        updateDashboard();
+
         // Update user profile display
         const user = DataManager.getUser();
         if (user) {
@@ -777,6 +963,71 @@
                 nameEl.textContent = displayName;
             }
         }
+
+        // Отображение имени пользователя из localStorage
+        const userName = localStorage.getItem('userName');
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (userName) {
+            document.getElementById('user-name').innerText = userName;
+        } else if (userEmail) {
+            const namePart = userEmail.split('@')[0];
+            document.getElementById('user-name').innerText = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        }
+
+        // Проверка авторизации (опционально, пока без backend):
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (!isLoggedIn) {
+            // Если не залогинен — редирект на логин (закомментируй пока, чтобы можно было тестировать без авторизации)
+            // window.location.href = '/auth/login.html';
+        }
+
+        // Burger Menu Functionality
+        const burger = document.getElementById('burger-menu');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        document.body.appendChild(overlay);
+
+        burger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+            burger.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            burger.classList.remove('active');
+        });
+
+        // Create Project Button Handler
+        document.querySelectorAll('.btn-create-project').forEach(button => {
+            button.addEventListener('click', () => {
+                const projectName = prompt('Название проекта:');
+                if (projectName) {
+                    // Временно: записываем проект в localStorage
+                    const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+                    const newProject = {
+                        id: Date.now(),
+                        name: projectName,
+                        created: new Date().toISOString(),
+                        unitEconomics: {},
+                        pnl: {},
+                        roi: {}
+                    };
+                    projects.push(newProject);
+                    localStorage.setItem('projects', JSON.stringify(projects));
+                    localStorage.setItem('currentProject', newProject.id);
+                    
+                    // Обновляем виджеты перед редиректом
+                    updateDashboard();
+                    
+                    // Редирект на юнит-экономику с параметром проекта
+                    window.location.href = './tools/unit-economics.html?project=' + newProject.id;
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -33,18 +33,18 @@
                 <span>или с email</span>
             </div>
             
-            <form id="registerForm" onsubmit="handleRegister(event)">
+            <form>
                 <div class="form-group">
                     <label>Имя</label>
-                    <input type="text" id="userName" class="form-input" required placeholder="Иван" autocomplete="given-name">
+                    <input type="text" name="name" class="form-input" required placeholder="Иван" autocomplete="given-name">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="userEmail" class="form-input" required placeholder="ivan@example.com" autocomplete="email">
+                    <input type="email" class="form-input" required placeholder="ivan@example.com" autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label>Пароль</label>
-                    <input type="password" id="userPassword" class="form-input" required placeholder="Минимум 8 символов" minlength="8" autocomplete="new-password">
+                    <input type="password" class="form-input" required placeholder="Минимум 8 символов" minlength="8" autocomplete="new-password">
                     <div class="input-hint">Минимум 8 символов</div>
                 </div>
 
@@ -85,55 +85,28 @@
         </div>
     </div>
 
-    <script src="../assets/js/data-manager.js"></script>
     <script>
-        function handleGoogleAuth() {
-            // Mock Google Auth - в будущем здесь будет реальная интеграция
-            alert('Google авторизация будет доступна в следующей версии');
-            // TODO: Integrate Google OAuth
-        }
-
-        function handleRegister(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('userName').value;
-            const email = document.getElementById('userEmail').value;
-            
-            // Save basic user data
-            const user = { 
-                name: name, 
-                email: email, 
-                company: '', 
-                city: '', 
-                plan: 'Free',
-                registeredAt: new Date().toISOString(),
-                onboarding: { 
-                    completed: false,
-                    currentStep: 0,
-                    projectCreated: false, 
-                    unitCalc: false, 
-                    docGenerated: false 
-                } 
-            };
-            
-            DataManager.saveUser(user);
-            
-            // Redirect to onboarding instead of home
-            window.location.href = './onboarding.html';
-        }
+    document.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
         
-        // Check if already logged in
-        if (DataManager.getUser()) {
-            const user = DataManager.getUser();
-            // If onboarding not completed, redirect there
-            if (!user.onboarding || !user.onboarding.completed) {
-               // Temporarily redirect to home (onboarding coming next)
-                window.location.href = '../platform/home.html';
-            } else {
-                window.location.href = '../platform/home.html';
-            }
+        const name = document.querySelector('input[name="name"]').value;
+        const email = document.querySelector('input[type="email"]').value;
+        const password = document.querySelector('input[type="password"]').value;
+        const agree = document.querySelector('input[type="checkbox"]').checked;
+        
+        if (name && email && password && agree) {
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            window.location.href = '/platform/home.html';
+        } else if (!agree) {
+            alert('Необходимо согласие с условиями использования');
+        } else {
+            alert('Заполните все поля');
         }
-    </script>
+    });
+</script>
 </body>
 </html>
 

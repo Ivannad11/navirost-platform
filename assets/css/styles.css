@@ -377,6 +377,17 @@ nav {
     background: var(--bg-secondary);
 }
 
+.btn-link {
+    color: #666;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 16px;
+}
+
+.btn-link:hover {
+    color: #000;
+}
+
 /* Stats Section (Clean Grid) */
 .stats-grid {
     display: grid;
@@ -523,6 +534,25 @@ nav {
 .step-card:hover {
     transform: translateY(-4px);
     border-color: var(--text-primary);
+}
+
+.step-card.coming-soon {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.step-card.coming-soon .badge {
+    background: #f0f0f0;
+    color: #666;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.step-card.coming-soon:hover {
+    transform: none;
+    border-color: var(--border-light);
 }
 
 .step-num {
@@ -757,7 +787,6 @@ footer {
     }
 }
 
-<<<<<<< HEAD
 /* Бургер-меню */
 .burger-btn {
     display: none;
@@ -1225,11 +1254,7 @@ animation: countUp 0.6s ease-out forwards;
     top: 50%;
     width: 100%;
     height: 1px;
-<<<<<<< HEAD
-    background: var(--border);
-=======
     background: var(--border-light);
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .divider span {
@@ -1240,20 +1265,14 @@ animation: countUp 0.6s ease-out forwards;
     color: var(--text-tertiary);
 }
 
-<<<<<<< HEAD
 /* Input Hints */
-=======
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .input-hint {
     font-size: 12px;
     color: var(--text-tertiary);
     margin-top: 6px;
 }
 
-<<<<<<< HEAD
 /* Checkbox Group */
-=======
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .checkbox-group {
     margin-bottom: 24px;
 }
@@ -1266,10 +1285,7 @@ animation: countUp 0.6s ease-out forwards;
     color: var(--text-secondary);
     cursor: pointer;
     margin: 0;
-<<<<<<< HEAD
-=======
     font-weight: normal;
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -1281,24 +1297,16 @@ animation: countUp 0.6s ease-out forwards;
 }
 
 .checkbox-label a {
-<<<<<<< HEAD
-    color: var(--primary);
-    text-decoration: none;
-=======
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 500;
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .checkbox-label a:hover {
     text-decoration: underline;
 }
 
-<<<<<<< HEAD
 /* Auth Benefits */
-=======
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 .auth-benefits {
     margin-top: 24px;
     padding: 16px;
@@ -1321,7 +1329,6 @@ animation: countUp 0.6s ease-out forwards;
     flex-shrink: 0;
 }
 
-<<<<<<< HEAD
 /* Responsive */
 @media (max-width: 640px) {
     .auth-card {
@@ -1333,11 +1340,9 @@ animation: countUp 0.6s ease-out forwards;
     }
 }
 
-=======
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
-/* ============================================
+/* ==
    ONBOARDING STYLES
-   ============================================ */
+   == */
 
 .onboarding-container {
     min-height: 100vh;
@@ -1378,10 +1383,7 @@ animation: countUp 0.6s ease-out forwards;
     background: white;
     border-radius: 999px;
     transition: width 0.3s ease;
-<<<<<<< HEAD
-=======
     width: 0;
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .progress-text {
@@ -1398,24 +1400,14 @@ animation: countUp 0.6s ease-out forwards;
 
 .onboarding-step {
     display: none;
-<<<<<<< HEAD
     animation: fadeIn 0.3s ease;
-=======
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .onboarding-step.active {
     display: block;
-<<<<<<< HEAD
 }
 
 @keyframes fadeIn {
-=======
-    animation: fadeInUp 0.4s ease;
-}
-
-@keyframes fadeInUp {
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -1487,11 +1479,7 @@ animation: countUp 0.6s ease-out forwards;
 .option-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-<<<<<<< HEAD
-    border-color: var(--primary);
-=======
     border-color: #667eea;
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 }
 
 .option-icon {
@@ -1529,17 +1517,12 @@ animation: countUp 0.6s ease-out forwards;
     color: white;
 }
 
-<<<<<<< HEAD
-/* Responsive */
-@media (max-width: 768px) {
-=======
 /* Responsive Onboarding */
 @media (max-width: 768px) {
     .onboarding-container {
         padding: 16px;
     }
 
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     .step-header h1 {
         font-size: 24px;
     }
@@ -1547,19 +1530,12 @@ animation: countUp 0.6s ease-out forwards;
     .btn-back {
         position: static;
         margin-bottom: 24px;
-<<<<<<< HEAD
-=======
         display: inline-flex;
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
     }
 
     .options-grid {
         grid-template-columns: 1fr;
     }
-<<<<<<< HEAD
-}
-
-=======
     
     .option-card {
         padding: 20px;
@@ -1589,5 +1565,4 @@ animation: countUp 0.6s ease-out forwards;
         width: 100%;
     }
 }
->>>>>>> e6311534fc30c9e1d77ccd4ae82c9820e7873e09
 

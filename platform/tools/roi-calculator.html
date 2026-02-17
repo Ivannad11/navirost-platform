@@ -6,6 +6,7 @@
     <title>ROI Калькулятор — навырост.</title>
     <link rel="stylesheet" href="../../assets/css/styles.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../css/calculators.css">
 </head>
 <body>
     <div class="app-container">
@@ -70,18 +71,23 @@
                     <div class="card-body">
                         <div id="results" style="display: none;">
                             <div class="metric-card">
-                                <div class="metric-label">ROI (Return on Investment)</div>
+                                <div class="metric-label">Чистая прибыль</div>
+                                <div class="metric-value" id="totalProfit">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">ROI</div>
                                 <div class="metric-value" id="roiPercentage">—</div>
+                            </div>
+
+                            <div class="metric-card">
+                                <div class="metric-label">Годовой ROI</div>
+                                <div class="metric-value" id="annualRoi">—</div>
                             </div>
 
                             <div class="metric-card">
                                 <div class="metric-label">Срок окупаемости</div>
                                 <div class="metric-value" id="paybackPeriod">—</div>
-                            </div>
-
-                            <div class="metric-card">
-                                <div class="metric-label">Чистая прибыль за весь период</div>
-                                <div class="metric-value" id="totalProfit">—</div>
                             </div>
 
                             <div class="metric-card">
@@ -125,22 +131,34 @@
             const annualExpenses = parseFloat(document.getElementById('annualExpenses').value) || 0;
             const investmentPeriod = parseFloat(document.getElementById('investmentPeriod').value) || 0;
 
-            // Calculations
-            const annualProfit = annualRevenue - annualExpenses;
-            const totalProfit = annualProfit * investmentPeriod;
-            const totalRevenue = annualRevenue * investmentPeriod;
-            const roi = ((totalProfit - initialInvestment) / initialInvestment) * 100;
-            const paybackYears = initialInvestment / annualProfit;
+            // 1. Чистый доход в год = Ежегодный доход - Ежегодные расходы
+            const annualNetIncome = annualRevenue - annualExpenses;
+            
+            // 2. Общий доход за период = Чистый доход в год × Срок (лет)
+            const totalIncome = annualNetIncome * investmentPeriod;
+            
+            // 3. Чистая прибыль = Общий доход - Первоначальная инвестиция
+            const netProfit = totalIncome - initialInvestment;
+            
+            // 4. ROI = (Чистая прибыль / Первоначальная инвестиция) × 100%
+            const roi = initialInvestment > 0 ? (netProfit / initialInvestment) * 100 : 0;
+            
+            // 5. Годовой ROI = ROI / Срок (лет)
+            const annualRoi = investmentPeriod > 0 ? roi / investmentPeriod : 0;
+            
+            // 6. Срок окупаемости = Первоначальная инвестиция / Чистый доход в год (в годах)
+            const paybackYears = annualNetIncome > 0 ? initialInvestment / annualNetIncome : 0;
 
             // Display results
             document.getElementById('results').style.display = 'block';
             document.getElementById('noResults').style.display = 'none';
 
+            document.getElementById('totalProfit').textContent = '₽' + Math.round(netProfit).toLocaleString();
             document.getElementById('roiPercentage').textContent = roi.toFixed(1) + '%';
+            document.getElementById('annualRoi').textContent = annualRoi.toFixed(1) + '%';
             document.getElementById('paybackPeriod').textContent = paybackYears.toFixed(1) + ' лет';
-            document.getElementById('totalProfit').textContent = '₽' + Math.round(totalProfit).toLocaleString();
-            document.getElementById('totalRevenue').textContent = '₽' + Math.round(totalRevenue).toLocaleString();
-            document.getElementById('annualProfit').textContent = '₽' + Math.round(annualProfit).toLocaleString();
+            document.getElementById('totalRevenue').textContent = '₽' + Math.round(totalIncome).toLocaleString();
+            document.getElementById('annualProfit').textContent = '₽' + Math.round(annualNetIncome).toLocaleString();
 
             // ROI Analysis
             let analysisText = '';

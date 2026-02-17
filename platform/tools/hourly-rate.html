@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор точки безубыточности онлайн — Расчёт BEP | Навырост</title>
-    <meta name="description" content="Рассчитайте точку безубыточности вашего бизнеса. Узнайте сколько единиц товара нужно продать чтобы покрыть все расходы. Бесплатный онлайн-калькулятор.">
-    <meta name="keywords" content="точка безубыточности калькулятор, break even point, bep расчет, безубыточность онлайн">
+    <title>Калькулятор почасовой ставки — Расчёт для фрилансеров | Навырост</title>
+    <meta name="description" content="Рассчитайте сколько брать за час работы с учётом налогов, расходов и желаемого дохода. Калькулятор почасовой ставки для фрилансеров и консультантов.">
+    <meta name="keywords" content="калькулятор почасовой ставки, расчет ставки фрилансера, сколько брать за час, hourly rate calculator">
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../css/calculators.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚖️</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📊</text></svg>">
     
     <style>
         .calculator-container {
@@ -110,16 +110,6 @@
             color: var(--text-primary);
         }
         
-        .error-message {
-            background: #FEF2F2;
-            border: 1px solid #FCA5A5;
-            border-radius: 12px;
-            padding: 20px;
-            color: #DC2626;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
         .cta-block {
             background: linear-gradient(135deg, #18181B 0%, #3F3F46 100%);
             border-radius: 20px;
@@ -172,8 +162,8 @@
 
     <div class="calculator-container">
         <div class="calc-header">
-            <h1>Калькулятор точки безубыточности</h1>
-            <p>Узнайте сколько единиц товара или услуг нужно продать, чтобы покрыть все расходы и выйти в ноль. Рассчитайте точку безубыточности (BEP) для вашего бизнеса.</p>
+            <h1>Калькулятор почасовой ставки</h1>
+            <p>Рассчитайте сколько брать за час работы с учётом налогов, расходов и желаемого дохода. Для фрилансеров, консультантов и подрядчиков.</p>
         </div>
 
         <div class="calc-layout">
@@ -182,21 +172,32 @@
                 <h3 class="calc-section-title">Введите данные</h3>
                 
                 <div class="form-group">
-                    <label>Цена продажи за единицу, ₽</label>
-                    <input type="number" id="price" class="form-input" placeholder="1000" value="1000">
-                    <div class="helper-text">Сколько стоит 1 товар/услуга для клиента</div>
+                    <label>Желаемый доход в месяц, ₽</label>
+                    <input type="number" id="desiredIncome" class="form-input" placeholder="150000" value="150000">
+                    <div class="helper-text">Сколько хотите получать на руки</div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Переменные затраты на единицу, ₽</label>
-                    <input type="number" id="variableCost" class="form-input" placeholder="400" value="400">
-                    <div class="helper-text">Себестоимость, упаковка, доставка на 1 единицу</div>
+                    <label>Рабочих часов в месяц</label>
+                    <input type="number" id="workingHours" class="form-input" placeholder="160" value="160">
+                    <div class="helper-text">Обычно 160 часов (8 часов × 20 рабочих дней)</div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Постоянные расходы в месяц, ₽</label>
-                    <input type="number" id="fixedCosts" class="form-input" placeholder="150000" value="150000">
-                    <div class="helper-text">Аренда, зарплаты, коммуналка, налоги</div>
+                    <label>Бизнес-расходы в месяц, ₽</label>
+                    <input type="number" id="businessExpenses" class="form-input" placeholder="30000" value="30000">
+                    <div class="helper-text">Программы, реклама, образование, оборудование</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Налоговая ставка (%)</label>
+                    <select id="taxRate" class="form-input">
+                        <option value="6">УСН Доходы 6%</option>
+                        <option value="15">УСН Доходы-Расходы 15%</option>
+                        <option value="13">НДФЛ 13% (самозанятый)</option>
+                        <option value="4">Самозанятый 4% (физлица)</option>
+                    </select>
+                    <div class="helper-text">Выберите ваш налоговый режим</div>
                 </div>
             </div>
 
@@ -204,9 +205,27 @@
             <div class="calc-results">
                 <h3 class="calc-section-title">Результаты</h3>
                 
-                <div id="results-container">
-                    <!-- Заполняется JS -->
+                <div class="result-card">
+                    <div class="result-label">Минимальная почасовая ставка</div>
+                    <div class="result-value" id="res_hourlyRate">0 ₽/час</div>
                 </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Необходимая выручка в месяц</div>
+                    <div class="result-value" id="res_totalRevenue">0 ₽</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Налоги в месяц</div>
+                    <div class="result-value" id="res_taxes">0 ₽</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Чистый доход на руки</div>
+                    <div class="result-value" id="res_netIncome">0 ₽</div>
+                </div>
+                
+                <button id="save-calculation" class="btn-primary" style="width: 100%; margin-top: 20px;">Сохранить расчёт</button>
             </div>
         </div>
 
@@ -239,61 +258,36 @@
 
     <script src="../assets/js/script.js"></script>
     <script>
-        const inputs = ['price', 'variableCost', 'fixedCosts'];
+        const inputs = ['desiredIncome', 'workingHours', 'businessExpenses', 'taxRate'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculate);
+            document.getElementById(id).addEventListener('change', calculate);
         });
 
         function calculate() {
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            const variableCost = parseFloat(document.getElementById('variableCost').value) || 0;
-            const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) || 0;
+            const desiredIncome = parseFloat(document.getElementById('desiredIncome').value) || 0;
+            const workingHours = parseFloat(document.getElementById('workingHours').value) || 1;
+            const businessExpenses = parseFloat(document.getElementById('businessExpenses').value) || 0;
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 6;
 
-            const resultsContainer = document.getElementById('results-container');
+            // ПРАВИЛЬНАЯ формула для УСН (по замечанию Gemini)
+            // Выручка = (Желаемый доход + Расходы) / (1 - Налог%)
+            const totalRevenueNeeded = (desiredIncome + businessExpenses) / (1 - taxRate / 100);
 
-            // Маржинальная прибыль с единицы
-            const contributionMargin = price - variableCost;
+            // Почасовая ставка
+            const hourlyRate = totalRevenueNeeded / workingHours;
 
-            // Проверка что маржа положительная
-            if (contributionMargin <= 0) {
-                resultsContainer.innerHTML = `
-                    <div class="error-message">
-                        <strong>⚠️ Ошибка:</strong> Вы продаете в убыток с каждой единицы товара.<br><br>
-                        Цена продажи должна быть больше переменных затрат.<br>
-                        Текущая маржа: ${formatMoney(contributionMargin)} (должна быть > 0)
-                    </div>
-                `;
-                return;
-            }
+            // Налоги
+            const taxes = totalRevenueNeeded * (taxRate / 100);
 
-            // Точка безубыточности в единицах
-            const breakEvenUnits = Math.ceil(fixedCosts / contributionMargin);
-
-            // Точка безубыточности в рублях
-            const breakEvenRevenue = breakEvenUnits * price;
+            // Чистый доход (проверка)
+            const netIncome = totalRevenueNeeded - taxes - businessExpenses;
 
             // Вывод результатов
-            resultsContainer.innerHTML = `
-                <div class="result-card">
-                    <div class="result-label">Маржинальная прибыль</div>
-                    <div class="result-value">${formatMoney(contributionMargin)}</div>
-                </div>
-                
-                <div class="result-card">
-                    <div class="result-label">Точка безубыточности</div>
-                    <div class="result-value">${breakEvenUnits} ед.</div>
-                </div>
-                
-                <div class="result-card">
-                    <div class="result-label">Выручка для безубыточности</div>
-                    <div class="result-value">${formatMoney(breakEvenRevenue)}</div>
-                </div>
-                
-                <div class="result-card">
-                    <div class="result-label">Запас прочности</div>
-                    <div class="result-value">${((contributionMargin / price) * 100).toFixed(1)}%</div>
-                </div>
-            `;
+            document.getElementById('res_hourlyRate').textContent = Math.ceil(hourlyRate) + ' ₽/час';
+            document.getElementById('res_totalRevenue').textContent = formatMoney(totalRevenueNeeded);
+            document.getElementById('res_taxes').textContent = formatMoney(taxes);
+            document.getElementById('res_netIncome').textContent = formatMoney(netIncome);
         }
 
         function formatMoney(value) {
@@ -306,6 +300,11 @@
         }
 
         calculate();
+
+        // Обработчик кнопки сохранения
+        document.getElementById('save-calculation').addEventListener('click', () => {
+            alert('Функция сохранения пока в разработке. Backend будет подключен позже.');
+        });
     </script>
 </body>
 </html>

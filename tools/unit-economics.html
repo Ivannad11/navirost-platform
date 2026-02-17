@@ -7,6 +7,7 @@
     <meta name="description" content="Рассчитайте юнит-экономику вашего бизнеса за 2 минуты. Определите LTV (пожизненную ценность клиента), CAC (стоимость привлечения), маржинальность и ROMI. Бесплатный онлайн-калькулятор.">
     <meta name="keywords" content="юнит экономика калькулятор, LTV CAC расчет, маржинальность клиента, unit economics онлайн, калькулятор ltv">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../css/calculators.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔢</text></svg>">
     
     <style>
@@ -180,7 +181,7 @@
                 
                 <div class="form-group">
                     <label>Средний чек (цена продажи), ₽</label>
-                    <input type="number" id="price" class="form-input" placeholder="1000" value="1000">
+                    <input type="number" id="average-check" class="form-input" placeholder="1000" value="1000">
                     <div class="helper-text">Сколько клиент платит за одну покупку</div>
                 </div>
                 
@@ -215,27 +216,27 @@
                 
                 <div class="result-card">
                     <div class="result-label">Маржа с 1 продажи</div>
-                    <div class="result-value" id="res_margin">0 ₽</div>
+                    <div class="result-value" id="result-cm">0 ₽</div>
                 </div>
                 
                 <div class="result-card">
                     <div class="result-label">LTV (прибыль за все покупки)</div>
-                    <div class="result-value" id="res_ltv">0 ₽</div>
+                    <div class="result-value" id="result-ltv">0 ₽</div>
                 </div>
                 
                 <div class="result-card">
                     <div class="result-label">Прибыль с клиента</div>
-                    <div class="result-value" id="res_profit">0 ₽</div>
+                    <div class="result-value" id="result-lifetime-profit">0 ₽</div>
                 </div>
                 
                 <div class="result-card">
                     <div class="result-label">ROMI (возврат инвестиций)</div>
-                    <div class="result-value" id="res_romi">0%</div>
+                    <div class="result-value" id="result-romi">0%</div>
                 </div>
                 
                 <div class="result-card">
                     <div class="result-label">Окупаемость с</div>
-                    <div class="result-value" id="res_payback">-</div>
+                    <div class="result-value" id="result-payback">-</div>
                 </div>
             </div>
         </div>
@@ -269,62 +270,36 @@
 
     <script src="../assets/js/script.js"></script>
     <script>
-        // Автоматический расчёт при изменении полей
-        const inputs = ['price', 'cogs', 'acquiring', 'apc', 'cac'];
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', calculate);
-        });
-
-        function calculate() {
+        function calculateUnitEconomics() {
             // Получаем данные
-            const price = parseFloat(document.getElementById('price').value) || 0;
+            const averageCheck = parseFloat(document.getElementById('average-check').value) || 0;
             const cogs = parseFloat(document.getElementById('cogs').value) || 0;
             const acquiring = parseFloat(document.getElementById('acquiring').value) || 0;
             const apc = parseFloat(document.getElementById('apc').value) || 1;
             const cac = parseFloat(document.getElementById('cac').value) || 0;
 
-            // Расчёт маржи с одной продажи (Contribution Margin)
-            const acquiringAmount = price * (acquiring / 100);
-            const contributionMargin = price - cogs - acquiringAmount;
-
-            // Расчёт LTV (прибыль за все покупки клиента)
-            const ltv = contributionMargin * apc;
-
-            // Прибыль с клиента (Lifetime Profit)
+            // Расчеты по правильным формулам
+            const cm = averageCheck - cogs - (averageCheck * acquiring / 100);
+            const ltv = cm * apc;
             const lifetimeProfit = ltv - cac;
-
-            // ROMI (возврат инвестиций в маркетинг)
-            const romi = cac > 0 ? ((ltv - cac) / cac * 100) : 0;
-
-            // Окупаемость (с какой покупки клиент начинает приносить прибыль)
-            const payback = contributionMargin > 0 ? Math.ceil(cac / contributionMargin) : 0;
+            const romi = cac > 0 ? ((lifetimeProfit / cac) * 100).toFixed(1) : '—';
+            const payback = cm > 0 ? Math.ceil(cac / cm) : '—';
 
             // Вывод результатов
-            document.getElementById('res_margin').textContent = formatMoney(contributionMargin);
-            document.getElementById('res_ltv').textContent = formatMoney(ltv);
-            
-            const profitEl = document.getElementById('res_profit');
-            profitEl.textContent = formatMoney(lifetimeProfit);
-            profitEl.className = 'result-value ' + (lifetimeProfit > 0 ? 'positive' : 'negative');
-            
-            const romiEl = document.getElementById('res_romi');
-            romiEl.textContent = romi.toFixed(1) + '%';
-            romiEl.className = 'result-value ' + (romi > 0 ? 'positive' : 'negative');
-            
-            document.getElementById('res_payback').textContent = payback > 0 ? payback + '-й покупки' : 'Не окупается';
+            document.getElementById('result-cm').innerText = cm.toFixed(0) + ' ₽';
+            document.getElementById('result-ltv').innerText = ltv.toFixed(0) + ' ₽';
+            document.getElementById('result-lifetime-profit').innerText = lifetimeProfit.toFixed(0) + ' ₽';
+            document.getElementById('result-romi').innerText = romi === '—' ? '—' : romi + '%';
+            document.getElementById('result-payback').innerText = payback === '—' ? '—' : payback + ' покупок';
         }
 
-        function formatMoney(value) {
-            return new Intl.NumberFormat('ru-RU', {
-                style: 'currency',
-                currency: 'RUB',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(value);
-        }
+        // Привязка к событиям
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', calculateUnitEconomics);
+        });
 
-        // Первоначальный расчёт
-        calculate();
+        // Первоначальный расчет
+        calculateUnitEconomics();
     </script>
 </body>
 </html>

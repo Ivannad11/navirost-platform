@@ -6,6 +6,7 @@
     <title>Калькулятор Юнит-экономики — навырост.</title>
     <link rel="stylesheet" href="../../assets/css/styles.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../css/calculators.css">
     <style>
         body {
             background-color: var(--bg-secondary);
@@ -353,6 +354,18 @@
                         <span class="res-label">ROMI</span>
                         <span class="res-val" id="res_romi">0%</span>
                     </div>
+                    <div class="result-row">
+                        <span class="res-label">Клиентов за месяц</span>
+                        <span class="res-val" id="res_customers">0</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="res-label">Выручка за месяц</span>
+                        <span class="res-val highlight" id="res_revenue">0 ₽</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="res-label">Чистая прибыль за месяц</span>
+                        <span class="res-val highlight" id="res_net_profit">0 ₽</span>
+                    </div>
                     
                     <div class="verdict" id="verdict_text">
                         Заполните данные слева, чтобы увидеть результат.
@@ -437,30 +450,40 @@
             const conv_lead = parseFloat(document.getElementById('conv_lead').value) || 0;
             const conv_sale = parseFloat(document.getElementById('conv_sale').value) || 0;
             
-            // Расчет CAC
-            const leads = Math.floor(clicks * (conv_lead / 100));
-            const customers = Math.floor(leads * (conv_sale / 100));
-            const cac = customers > 0 ? marketing_budget / customers : 0;
+            // 1. CAC = Бюджет / (Клики × (C1/100) × (C2/100))
+            const cac = (clicks * (conv_lead/100) * (conv_sale/100)) > 0 ? 
+                marketing_budget / (clicks * (conv_lead/100) * (conv_sale/100)) : 0;
             
-            // Расчет маржи с одной продажи (Contribution Margin)
-            const acquiringAmount = price * (acquiring / 100);
-            const contributionMargin = price - cogs - acquiringAmount;
+            // 2. Маржа с 1 продажи: CM = Средний чек - Себестоимость - (Средний чек × Эквайринг / 100)
+            const cm = price - cogs - (price * acquiring / 100);
             
-            // Расчет LTV (прибыль за все покупки клиента)
-            const ltv = contributionMargin * apc;
+            // 3. LTV = CM × APC
+            const ltv = cm * apc;
             
-            // Прибыль с клиента (Lifetime Profit)
-            const lifetimeProfit = ltv - cac;
+            // 4. Прибыль с клиента: Profit = LTV - CAC
+            const profit = ltv - cac;
             
-            // ROMI (возврат инвестиций в маркетинг)
-            const romi = cac > 0 ? ((ltv - cac) / cac * 100) : 0;
+            // 5. ROMI = (Profit / CAC) × 100% (если CAC > 0)
+            const romi = cac > 0 ? (profit / cac) * 100 : 0;
+            
+            // 6. Выручка за месяц:
+            const customers = clicks * (conv_lead/100) * (conv_sale/100);
+            const revenue = customers * price * apc;
+            
+            // 7. Чистая прибыль за месяц:
+            const netProfit = customers * profit;
             
             // Вывод результатов
             document.getElementById('res_cac').textContent = cac.toFixed(0) + ' ₽';
-            document.getElementById('res_margin').textContent = contributionMargin.toFixed(2) + ' ₽';
+            document.getElementById('res_margin').textContent = cm.toFixed(2) + ' ₽';
             document.getElementById('res_ltv').textContent = ltv.toFixed(2) + ' ₽';
-            document.getElementById('res_profit').textContent = lifetimeProfit.toFixed(2) + ' ₽';
+            document.getElementById('res_profit').textContent = profit.toFixed(2) + ' ₽';
             document.getElementById('res_romi').textContent = romi.toFixed(1) + '%';
+            
+            // Вывод дополнительных результатов
+            document.getElementById('res_customers').textContent = customers.toFixed(0);
+            document.getElementById('res_revenue').textContent = revenue.toFixed(0) + ' ₽';
+            document.getElementById('res_net_profit').textContent = netProfit.toFixed(0) + ' ₽';
             
             // Вердикт
             const verdictEl = document.getElementById('verdict_text');
@@ -518,7 +541,16 @@
             setTimeout(() => t.style.display = 'none', 2000);
         }
 
-        // ... (rest of functions) ...
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            calc(); // Первоначальный расчет
+            
+            // Привязка событий ко всем полям ввода
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', calc);
+            });
+        });
     </script>
 </body>
 </html>

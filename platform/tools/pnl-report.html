@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../assets/css/styles.css">
     <link rel="stylesheet" href="../../assets/css/modal.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../css/calculators.css">
     <style>
         body {
             background-color: var(--bg-secondary);
@@ -202,11 +203,10 @@
         
         <div class="pnl-container">
             <div class="form-group" style="margin-bottom: 20px;">
-                <label>Налоговая ставка (%)</label>
-                <select id="taxRate" class="form-input" onchange="calculateAndDisplayPnl()">
-                    <option value="6">УСН Доходы 6%</option>
-                    <option value="15">УСН Доходы минус расходы 15%</option>
-                    <option value="13">НДФЛ 13%</option>
+                <label>Налоговый режим:</label>
+                <select id="tax-regime" class="form-input">
+                    <option value="usn-6">УСН 6% (Доходы)</option>
+                    <option value="usn-15">УСН 15% (Доходы минус расходы)</option>
                 </select>
             </div>
             <table id="pnlTable">
@@ -426,8 +426,8 @@
             });
         }
 
-        function calculateAndDisplayPnl() {
-            const taxRate = parseFloat(document.getElementById('taxRate').value) || 6;
+        function calculatePnL() {
+            const taxRegime = document.getElementById('tax-regime').value;
             
             // Get values for each month
             const months = 6;
@@ -452,22 +452,28 @@
                 // Gross Profit = Revenue - COGS
                 const grossProfit = revenue[i] - cogs[i];
                 
-                // Taxes (УСН 6% от revenue)
-                const taxes = revenue[i] * (taxRate / 100);
+                // Taxes calculation based on regime
+                let tax = 0;
+                if (taxRegime === 'usn-6') {
+                    tax = revenue[i] * 0.06;
+                } else if (taxRegime === 'usn-15') {
+                    const taxableIncome = revenue[i] - cogs[i] - opex[i];
+                    tax = taxableIncome > 0 ? taxableIncome * 0.15 : 0;
+                }
                 
                 // Net Profit = Gross Profit - Opex - Taxes
-                const netProfit = grossProfit - opex[i] - taxes;
+                const netProfit = grossProfit - opex[i] - tax;
                 
                 // Update table cells
                 document.querySelectorAll('.gp')[i].textContent = formatMoney(grossProfit);
-                document.querySelectorAll('.tax')[i].textContent = formatMoney(taxes);
+                document.querySelectorAll('.tax')[i].textContent = formatMoney(tax);
                 document.querySelectorAll('.net')[i].textContent = formatMoney(netProfit);
                 
                 // Accumulate totals
                 totalRevenue += revenue[i];
                 totalGrossProfit += grossProfit;
                 totalOpex += opex[i];
-                totalTaxes += taxes;
+                totalTaxes += tax;
                 totalNetProfit += netProfit;
             }
             
@@ -487,7 +493,7 @@
         }
 
         function recalc() {
-            return calculateAndDisplayPnl();
+            return calculatePnL();
         }
 
         function savePnl() {
@@ -522,11 +528,11 @@
             init();
             
             // Add event listeners for auto-recalculation
-            const inputs = document.querySelectorAll('.input-cell');
-            inputs.forEach(input => {
-                input.addEventListener('input', recalc);
-                input.addEventListener('change', recalc);
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', calculatePnL);
             });
+            
+            document.getElementById('tax-regime').addEventListener('change', calculatePnL);
         });
     </script>
 </body>
