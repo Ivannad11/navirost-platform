@@ -56,61 +56,25 @@
 </head>
 <body>
 
-    <nav class="navbar">
-    <div class="container">
-        <a href="./index.html" class="nav-brand">Навырост.</a>
-        
-        <button class="burger-btn" id="burger-btn" aria-label="Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        
-        <div class="nav-links" id="nav-links">
-            <a href="#platform" class="nav-link">Платформа</a>
-            
-            <div class="nav-dropdown">
-                <a href="#tools" class="nav-link">Инструменты ▼</a>
-                <div class="dropdown-menu">
-                    <a href="./tools/unit-economics.html" class="dropdown-item">
-                        <span class="dropdown-icon">🔢</span>
-                        <div>
-                            <div class="dropdown-title">Юнит-экономика</div>
-                            <div class="dropdown-desc">LTV, CAC, маржинальность</div>
-                        </div>
-                    </a>
-                    <a href="./tools/roi-calculator.html" class="dropdown-item">
-                        <span class="dropdown-icon">💰</span>
-                        <div>
-                            <div class="dropdown-title">ROI калькулятор</div>
-                            <div class="dropdown-desc">Окупаемость инвестиций</div>
-                        </div>
-                    </a>
-                    <a href="./tools/break-even.html" class="dropdown-item">
-                        <span class="dropdown-icon">⚖️</span>
-                        <div>
-                            <div class="dropdown-title">Точка безубыточности</div>
-                            <div class="dropdown-desc">Расчет break-even</div>
-                        </div>
-                    </a>
-                    <a href="./tools/hourly-rate.html" class="dropdown-item">
-                        <span class="dropdown-icon">📊</span>
-                        <div>
-                            <div class="dropdown-title">Почасовая ставка</div>
-                            <div class="dropdown-desc">Для фрилансеров</div>
-                        </div>
-                    </a>
-                    <div class="dropdown-separator"></div>
-                    <a href="./tools/index.html" class="dropdown-item-all">Все инструменты →</a>
-                </div>
-            </div>
-            
-            <a href="./auth/login.html" class="nav-link">Войти</a>
-            <a href="platform/home.html" class="btn-link">Демо кабинета</a>
-            <a href="./auth/register.html" class="btn-primary">Начать бесплатно</a>
-        </div>
-    </div>
-</nav>
+    <header class="main-header">
+  <div class="header-container">
+    <div class="logo">навырост.</div>
+    
+    <nav class="main-nav">
+      <a href="#platform">Платформа</a>
+      <a href="#tools">Инструменты</a>
+      <a href="auth/login.html" class="link-login">Войти</a>
+      <button onclick="window.location.href='auth/register.html'" class="btn-primary">Начать бесплатно</button>
+    </nav>
+    
+    <!-- Бургер-меню для мобилки -->
+    <button class="burger-menu" id="burger-mobile">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
 
     <section class="hero">
         <div class="container hero-content">
@@ -433,5 +397,114 @@
     </footer>
 
     <script src="./assets/js/script.js"></script>
+    
+    <style>
+    .main-header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      z-index: 1000;
+      padding: 16px 0;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 32px; /* отступы между пунктами */
+    }
+
+    .main-nav a {
+      color: #666;
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.2s ease;
+    }
+
+    .main-nav a:hover {
+      color: #000;
+    }
+
+    .link-login {
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: #000;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: #333;
+    }
+
+    .burger-menu {
+      display: none; /* скрыт на десктопе */
+    }
+
+    /* Мобилка */
+    @media (max-width: 768px) {
+      .main-nav {
+        display: none; /* прячем меню на мобилке */
+      }
+      
+      .burger-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .burger-menu span {
+        width: 24px;
+        height: 3px;
+        background: #000;
+      }
+      
+      /* Когда бургер открыт — показываем меню */
+      .main-nav.mobile-open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        gap: 16px;
+      }
+    }
+    </style>
+    
+    <script>
+    document.getElementById('burger-mobile').addEventListener('click', function() {
+      document.querySelector('.main-nav').classList.toggle('mobile-open');
+    });
+    </script>
 </body>
 </html>
