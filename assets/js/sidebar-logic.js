@@ -54,7 +54,7 @@ function renderSidebar() {
             link.onclick = (e) => {
                 e.preventDefault();
                 DataManager.setCurrentProjectId(p.id);
-                window.location.href = '/platform/project.html';
+                window.location.href = 'project.html';
             };
             subMenu.appendChild(link);
         });
@@ -82,9 +82,43 @@ function renderSidebar() {
     projectsGroup.appendChild(subMenu);
     navMenu.appendChild(projectsGroup);
 
-    // 3. Tools
+    // 3. Calculators (Accordion)
     const toolModules = AppConfig.modules.filter(m => m.category === 'tools' && m.showInSidebar);
-    toolModules.forEach(m => navMenu.appendChild(createNavItem(m)));
+    if (toolModules.length > 0) {
+        const calculatorsGroup = document.createElement('li');
+        calculatorsGroup.className = 'nav-group';
+        
+        const calcHeader = document.createElement('div');
+        calcHeader.className = 'nav-group-header';
+        calcHeader.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span>🔢</span>
+                <span>Калькуляторы</span>
+            </div>
+            <span class="nav-arrow">▼</span>
+        `;
+        calcHeader.onclick = () => calculatorsGroup.classList.toggle('open');
+        
+        const calcSubMenu = document.createElement('div');
+        calcSubMenu.className = 'nav-sub-menu';
+        
+        toolModules.forEach(m => {
+            const link = document.createElement('a');
+            link.href = m.url;
+            link.className = 'nav-sub-link';
+            
+            let isActive = false;
+            if (window.location.pathname.includes(m.url)) isActive = true;
+            if (isActive) link.classList.add('active');
+            
+            link.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${isActive ? '#3B82F6' : '#CBD5E1'};"></span> ${m.icon} ${m.title}`;
+            calcSubMenu.appendChild(link);
+        });
+        
+        calculatorsGroup.appendChild(calcHeader);
+        calculatorsGroup.appendChild(calcSubMenu);
+        navMenu.appendChild(calculatorsGroup);
+    }
 
     // 4. Resources
     const resModules = AppConfig.modules.filter(m => m.category === 'resources' && m.showInSidebar);
@@ -107,7 +141,7 @@ function renderSidebar() {
             userProfile.className = 'user-profile';
             navMenu.parentElement.appendChild(userProfile);
         }
-        userProfile.onclick = () => window.location.href = '/platform/settings.html';
+        userProfile.onclick = () => window.location.href = 'settings.html';
         userProfile.innerHTML = `
             <div class="avatar">${user.name ? user.name.charAt(0).toUpperCase() : ''}</div>
             <div class="user-info">
