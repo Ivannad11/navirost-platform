@@ -31,24 +31,88 @@
     </div>
 
     <script>
-    document.querySelector('form').addEventListener('submit', (e) => {
+    (function() {
+      'use strict';
+      
+      // Проверка поддержки localStorage
+      function isLocalStorageAvailable() {
+        try {
+          const test = '__test__';
+          localStorage.setItem(test, test);
+          localStorage.removeItem(test);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      
+      const form = document.querySelector('form');
+      if (!form) return;
+      
+      form.addEventListener('submit', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         
-        const email = document.querySelector('input[type="email"]').value;
-        const password = document.querySelector('input[type="password"]').value;
+        const emailInput = document.querySelector('input[type="email"]');
+        const passwordInput = document.querySelector('input[type="password"]');
         
-        // Пока backend нет — просто проверяем, что поля заполнены
-        if (email && password) {
-            // Временно: записываем email в localStorage (чтобы показать в ЛК "Добро пожаловать, {email}")
+        if (!emailInput || !passwordInput) {
+          console.error('Форма не найдена');
+          return;
+        }
+        
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        console.log('Login attempt:', { email: email ? 'yes' : 'no', password: password ? 'yes' : 'no' });
+        
+        if (!email || !password) {
+          // Вместо alert используем текстовое сообщение
+          let errorMsg = document.getElementById('error-message');
+          if (!errorMsg) {
+            errorMsg = document.createElement('div');
+            errorMsg.id = 'error-message';
+            errorMsg.style.color = 'red';
+            errorMsg.style.marginTop = '10px';
+            errorMsg.style.textAlign = 'center';
+            form.appendChild(errorMsg);
+          }
+          errorMsg.innerText = 'Пожалуйста, заполните все поля';
+          return;
+        }
+        
+        // Проверка localStorage
+        if (isLocalStorageAvailable()) {
+          try {
             localStorage.setItem('userEmail', email);
             localStorage.setItem('isLoggedIn', 'true');
-            
-            // Редирект в ЛК
-            window.location.href = '../platform/home.html';
+            console.log('localStorage saved');
+          } catch (e) {
+            console.error('localStorage error:', e);
+          }
         } else {
-            alert('Заполните все поля');
+          console.warn('localStorage недоступен (Private Mode?)');
         }
-    });
-</script>
+        
+        // Редирект с использованием абсолютного пути
+        const currentPath = window.location.pathname;
+        const basePath = currentPath.includes('/navirost-platform/') 
+          ? '/navirost-platform' 
+          : '';
+        
+        const targetUrl = basePath + '/platform/home.html';
+        
+        console.log('Redirecting to:', targetUrl);
+        
+        // Используем replace вместо href (чтобы не добавлять в историю)
+        window.location.replace(targetUrl);
+        
+        // Fallback через setTimeout (на случай если replace не сработал)
+        setTimeout(function() {
+          window.location.href = targetUrl;
+        }, 100);
+      });
+    })();
+    </script>
 </body>
 </html>
