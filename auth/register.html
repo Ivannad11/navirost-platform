@@ -86,98 +86,100 @@
     </div>
 
     <script>
-    (function() {
-      'use strict';
-      
-      // Проверка поддержки localStorage
-      function isLocalStorageAvailable() {
-        try {
-          const test = '__test__';
-          localStorage.setItem(test, test);
-          localStorage.removeItem(test);
-          return true;
-        } catch (e) {
-          return false;
-        }
+(function() {
+  'use strict';
+  
+  function isLocalStorageAvailable() {
+    try {
+      const test = '__test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  const form = document.querySelector('form');
+  if (!form) return;
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const nameInput = document.querySelector('input[name="name"]');
+    const emailInput = document.querySelector('input[type="email"]');
+    const passwordInput = document.querySelector('input[type="password"]');
+    const agreeCheckbox = document.querySelector('input[type="checkbox"]');
+    
+    if (!nameInput || !emailInput || !passwordInput || !agreeCheckbox) {
+      console.error('Форма не найдена');
+      return;
+    }
+    
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const agree = agreeCheckbox.checked;
+    
+    console.log('Register attempt:', { 
+      name: name ? 'yes' : 'no', 
+      email: email ? 'yes' : 'no', 
+      password: password ? 'yes' : 'no',
+      agree: agree 
+    });
+    
+    let errorMsg = document.getElementById('error-message');
+    if (!errorMsg) {
+      errorMsg = document.createElement('div');
+      errorMsg.id = 'error-message';
+      errorMsg.style.color = 'red';
+      errorMsg.style.marginTop = '10px';
+      errorMsg.style.textAlign = 'center';
+      form.appendChild(errorMsg);
+    }
+    
+    if (!name || !email || !password) {
+      errorMsg.innerText = 'Пожалуйста, заполните все поля';
+      return;
+    }
+    
+    if (!agree) {
+      errorMsg.innerText = 'Необходимо согласие с условиями использования';
+      return;
+    }
+    
+    errorMsg.innerText = '';
+    
+    if (isLocalStorageAvailable()) {
+      try {
+        localStorage.setItem('userName', name);
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('isLoggedIn', 'true');
+        console.log('localStorage saved');
+      } catch (e) {
+        console.error('localStorage error:', e);
       }
-      
-      const form = document.querySelector('form');
-      if (!form) return;
-      
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const nameInput = document.querySelector('input[name="name"]');
-        const emailInput = document.querySelector('input[type="email"]');
-        const passwordInput = document.querySelector('input[type="password"]');
-        const agreeInput = document.querySelector('input[type="checkbox"]');
-        
-        if (!nameInput || !emailInput || !passwordInput || !agreeInput) {
-          console.error('Форма не найдена');
-          return;
-        }
-        
-        const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
-        const agree = agreeInput.checked;
-        
-        console.log('Register attempt:', { name: name ? 'yes' : 'no', email: email ? 'yes' : 'no', password: password ? 'yes' : 'no', agree: agree });
-        
-        if (!name || !email || !password || !agree) {
-          // Вместо alert используем текстовое сообщение
-          let errorMsg = document.getElementById('error-message');
-          if (!errorMsg) {
-            errorMsg = document.createElement('div');
-            errorMsg.id = 'error-message';
-            errorMsg.style.color = 'red';
-            errorMsg.style.marginTop = '10px';
-            errorMsg.style.textAlign = 'center';
-            form.appendChild(errorMsg);
-          }
-          
-          if (!agree) {
-            errorMsg.innerText = 'Необходимо согласие с условиями использования';
-          } else {
-            errorMsg.innerText = 'Пожалуйста, заполните все поля';
-          }
-          return;
-        }
-        
-        // Проверка localStorage
-        if (isLocalStorageAvailable()) {
-          try {
-            localStorage.setItem('userName', name);
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('isLoggedIn', 'true');
-            console.log('localStorage saved');
-          } catch (e) {
-            console.error('localStorage error:', e);
-          }
-        } else {
-          console.warn('localStorage недоступен (Private Mode?)');
-        }
-        
-        // Редирект с использованием абсолютного пути
-        const currentPath = window.location.pathname;
-        const basePath = currentPath.includes('/navirost-platform/') 
-          ? '/navirost-platform' 
-          : '';
-        
-        const targetUrl = basePath + '/platform/home.html';
-        
-        console.log('Redirecting to:', targetUrl);
-        
-        // Используем replace вместо href (чтобы не добавлять в историю)
-        window.location.replace(targetUrl);
-        
-        // Fallback через setTimeout (на случай если replace не сработал)
-        setTimeout(function() {
-          window.location.href = targetUrl;
-        }, 100);
-      });
-    })();
-    </script>
+    } else {
+      console.warn('localStorage недоступен');
+    }
+    
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.includes('/navirost-platform/') 
+      ? '/navirost-platform' 
+      : '';
+    
+    const targetUrl = basePath + '/platform/home.html';
+    
+    console.log('Redirecting to:', targetUrl);
+    
+    window.location.replace(targetUrl);
+    
+    setTimeout(function() {
+      window.location.href = targetUrl;
+    }, 100);
+  });
+})();
+</script>
 </body>
 </html>
