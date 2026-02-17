@@ -1566,3 +1566,245 @@ animation: countUp 0.6s ease-out forwards;
     }
 }
 
+/* Шапка главной страницы */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex: 1;
+}
+
+.main-nav > a {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.main-nav > a:hover {
+  opacity: 0.6;
+}
+
+/* Выпадающее меню Инструменты */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.dropdown-trigger:hover {
+  opacity: 0.6;
+}
+
+.dropdown-trigger svg {
+  transition: transform 0.2s;
+}
+
+.dropdown:hover .dropdown-trigger svg {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  padding: 8px;
+  min-width: 280px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  pointer-events: none;
+}
+
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.tool-item:hover {
+  background: #f5f5f5;
+}
+
+.tool-icon {
+  font-size: 32px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tool-info {
+  flex: 1;
+}
+
+.tool-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 2px 0;
+}
+
+.tool-desc {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.dropdown-footer {
+  margin-top: 4px;
+  padding: 12px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.dropdown-footer a {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.dropdown-footer a:hover {
+  opacity: 0.6;
+}
+
+/* Кнопки в шапке */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-link {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.btn-link:hover {
+  opacity: 0.6;
+}
+
+.btn-primary {
+  background: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: #333;
+  transform: translateY(-1px);
+}
+
+/* Бургер меню */
+.burger-menu {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.burger-menu span {
+  width: 24px;
+  height: 2px;
+  background: #000;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+/* Адаптация для планшетов */
+@media (max-width: 1024px) {
+  .header-container {
+    padding: 16px 20px;
+  }
+  
+  .main-nav {
+    gap: 24px;
+  }
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+  .main-nav,
+  .header-actions {
+    display: none;
+  }
+  
+  .burger-menu {
+    display: flex;
+  }
+}
+
