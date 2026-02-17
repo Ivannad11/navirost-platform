@@ -86,6 +86,17 @@ const AppConfig = {
             showInProject: false
         },
         { 
+            id: 'pricing', 
+            title: 'Тарифы', 
+            icon: '💎', 
+            url: 'pricing.html', 
+            desc: 'Выберите подходящий тариф',
+            category: 'resources',
+            showInSidebar: true,
+            showInHome: false,
+            showInProject: false
+        },
+        { 
             id: 'settings', 
             title: 'Настройки', 
             icon: '⚙️', 
