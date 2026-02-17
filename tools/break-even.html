@@ -137,7 +137,7 @@
     </div>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -303,13 +303,13 @@
             const currentProjectId = DataManager.getCurrentProjectId();
             if (currentProjectId) {
                 const project = DataManager.getProject(currentProjectId);
-                // Assuming we might store this data. 
-                // Currently DataManager handles 'unit' and 'pnl'.
-                // 'break-even' might need custom handling or just generic storage if DataManager allows.
-                // Looking at DataManager, it has updateProject(id, type, data).
-                // It only explicitly handles 'unit' and 'pnl' for stats updating.
-                // But it might store other types in a generic way?
-                // Let's check DataManager again.
+                if (project && project.breakEvenData) {
+                    const d = project.breakEvenData;
+                    if(d.price) document.getElementById('price').value = d.price;
+                    if(d.variableCost) document.getElementById('variableCost').value = d.variableCost;
+                    if(d.fixedCosts) document.getElementById('fixedCosts').value = d.fixedCosts;
+                    calculate();
+                }
             }
         });
     </script>

@@ -4,552 +4,371 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор Юнит-экономики — навырост.</title>
-    <link rel="stylesheet" href="../../assets/css/styles.css">
-    <link rel="stylesheet" href="../../assets/css/sidebar.css">
-    <link rel="stylesheet" href="../css/calculators.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../platform/css/calculators.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔢</text></svg>">
+    
     <style>
-        body {
-            background-color: var(--bg-secondary);
-            display: flex;
-            min-height: 100vh;
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0; 
         }
         
-        /* Sidebar (Reused) */
-        .sidebar {
-            width: 260px;
-            background: white;
-            border-right: 1px solid var(--border-light);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: 100;
-        }
-        
-        .sidebar-logo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 40px;
-        }
-        .sidebar-logo span { color: var(--text-secondary); }
-        
-        .nav-menu { list-style: none; flex: 1; }
-        .nav-item { margin-bottom: 8px; }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-        .nav-link.active { font-weight: 600; }
-        
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-light);
-            cursor: pointer;
-        }
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--text-primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .user-info { flex: 1; }
-        .user-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-        .user-role { font-size: 12px; color: var(--text-tertiary); }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-        
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .calc-header {
+            text-align: left;
             margin-bottom: 32px;
         }
-        .page-title h1 { font-size: 28px; margin-bottom: 4px; }
-
-        /* Calculator Layout */
-        .calc-grid {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 32px;
-        }
-
-        .calc-panel {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 32px;
-        }
-
-        .calc-section {
-            margin-bottom: 32px;
-        }
-        .calc-section:last-child { margin-bottom: 0; }
         
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .section-title span {
-            width: 24px; height: 24px;
-            background: var(--bg-tertiary);
-            border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; color: var(--text-secondary);
-        }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
+        .calc-header h1 {
+            font-size: 28px;
             margin-bottom: 8px;
         }
-
-        .input-wrapper {
-            position: relative;
-        }
-        .input-wrapper input {
-            width: 100%;
-            padding: 12px 16px;
-            padding-right: 40px;
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 15px;
-            color: var(--text-primary);
-            background: var(--bg-tertiary);
-            transition: all 0.2s;
-        }
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
-        }
-        .input-suffix {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-tertiary);
-            font-size: 13px;
-            pointer-events: none;
-        }
-
-        /* Results Panel */
-        .results-sticky {
-            position: sticky;
-            top: 40px;
-        }
-
-        .result-card {
-            background: var(--text-primary);
-            color: white;
-            border-radius: 20px;
-            padding: 32px;
-            margin-bottom: 20px;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .result-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
+        
+        .calc-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 100%;
+            margin: 0;
+            text-align: left;
         }
         
-        .res-label {
-            font-size: 13px;
-            color: rgba(255,255,255,0.6);
+        .calc-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
         }
-        .res-val {
+        
+        .calc-inputs,
+        .calc-results {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .calc-section-title {
             font-size: 16px;
             font-weight: 600;
+            margin-bottom: 20px;
         }
-        .res-val.highlight {
-            font-size: 24px;
-            color: #4ADE80; /* Green-400 */
+        
+        .form-group {
+            margin-bottom: 16px;
         }
-        .res-val.bad {
-            color: #F87171; /* Red-400 */
-        }
-
-        .verdict {
-            margin-top: 24px;
-            padding: 16px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
+        
+        .form-group label {
             font-size: 13px;
-            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .result-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .result-value {
+            font-size: 24px;
+        }
+        
+        .cta-block {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 32px;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #F4F4F5 0%, #FFFFFF 100%);
+        }
+        
+        .cta-block h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .cta-block p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            opacity: 1;
         }
 
         @media (max-width: 1024px) {
-            .calc-grid { grid-template-columns: 1fr; }
-            .sidebar { width: 80px; padding: 24px 12px; }
-            .nav-link span:last-child, .user-info, .sidebar-logo span { display: none; }
-            .main-content { margin-left: 80px; }
+            .calc-layout {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <a href="../home.html" class="sidebar-logo">навырост<span>.</span></a>
-        
-        <ul class="nav-menu">
-            <!-- Dynamically populated by sidebar-logic.js -->
-        </ul>
-        
-        <div class="user-profile">
-            <div class="avatar">И</div>
-            <div class="user-info">
-                <div class="user-name">Иван Петров</div>
-                <div class="user-role">Free Plan</div>
-            </div>
-        </div>
-    </aside>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <main class="main-content">
-        <div class="page-header">
-            <div class="page-title">
-                <h1 id="calcTitle">Юнит-экономика</h1>
-                <p class="text-secondary" id="calcSub">Расчет прибыльности одной продажи</p>
-            </div>
-            <button class="btn-secondary" onclick="resetCalc()">Сбросить</button>
-        </div>
+    <div class="dashboard-container no-sidebar-right">
         
-        <div class="calc-grid">
-            <div class="calc-panel">
-                <div class="calc-section">
-                    <div class="section-title"><span>1</span> Привлечение (Marketing)</div>
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>Бюджет на рекламу</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="marketing_budget" value="50000" oninput="calc()">
-                                <span class="input-suffix">₽</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Количество кликов/переходов</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="clicks" value="2500" oninput="calc()">
-                                <span class="input-suffix">шт</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Конверсия в заявку (C1)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="conv_lead" value="5" step="0.1" oninput="calc()">
-                                <span class="input-suffix">%</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Конверсия в продажу (C2)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="conv_sale" value="20" step="0.1" oninput="calc()">
-                                <span class="input-suffix">%</span>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <div class="calculator-container">
+                <div class="calc-header">
+                    <h1>Калькулятор юнит-экономики</h1>
+                    <p>Рассчитайте LTV, CAC, маржинальность и срок окупаемости.</p>
                 </div>
 
-                <div class="calc-section">
-                    <div class="section-title"><span>2</span> Продажа (Sales)</div>
-                    <div class="input-grid">
-                        <div class="input-group">
-                            <label>Средний чек (Price)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="price" value="5000" oninput="calc()">
-                                <span class="input-suffix">₽</span>
-                            </div>
+                <div class="calc-layout">
+                    <!-- Левая колонка: Ввод данных -->
+                    <div class="calc-inputs">
+                        <h3 class="calc-section-title">Введите данные</h3>
+                        
+                        <div class="form-group">
+                            <label>Средний чек (цена продажи), ₽</label>
+                            <input type="number" id="average-check" class="form-input" placeholder="1000" value="1000">
+                            <div class="helper-text">Сколько клиент платит за одну покупку</div>
                         </div>
-                        <div class="input-group">
-                            <label>Себестоимость товара (COGS)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="cogs" value="2000" oninput="calc()">
-                                <span class="input-suffix">₽</span>
-                            </div>
+                        
+                        <div class="form-group">
+                            <label>Себестоимость (COGS), ₽</label>
+                            <input type="number" id="cogs" class="form-input" placeholder="400" value="400">
+                            <div class="helper-text">Затраты на производство/закупку товара</div>
                         </div>
+                        
                         <div class="form-group">
                             <label>Эквайринг (%)</label>
-                            <input type="number" id="acquiring" class="form-input" placeholder="1-3" value="2" step="0.1" oninput="calc()">
-                            <div class="helper-text">Комиссия платежной системы (обычно 1.5-3%)</div>
+                            <input type="number" id="acquiring" class="form-input" placeholder="2" value="2" step="0.1">
+                            <div class="helper-text">Комиссия платёжной системы (обычно 1.5-3%)</div>
                         </div>
-                        <div class="input-group">
-                            <label>Повторные покупки (APC)</label>
-                            <div class="input-wrapper">
-                                <input type="number" id="apc" value="1" step="0.1" oninput="calc()">
-                                <span class="input-suffix">раз</span>
-                            </div>
+                        
+                        <div class="form-group">
+                            <label>Среднее количество покупок (APC)</label>
+                            <input type="number" id="apc" class="form-input" placeholder="5" value="5">
+                            <div class="helper-text">Сколько раз клиент покупает за всю жизнь</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Стоимость привлечения клиента (CAC), ₽</label>
+                            <input type="number" id="cac" class="form-input" placeholder="800" value="800">
+                            <div class="helper-text">Сколько тратите на маркетинг чтобы привлечь 1 клиента</div>
                         </div>
                     </div>
+
+                    <!-- Правая колонка: Результаты -->
+                    <div class="calc-results">
+                        <h3 class="calc-section-title">Результаты</h3>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Маржа с 1 продажи</div>
+                            <div class="result-value" id="result-cm">0 ₽</div>
+                            <div id="tip-margin" style="font-size: 11px; margin-top: 4px; display: none;"></div>
+                        </div>
+
+                        <!-- Chart -->
+                        <div style="height: 180px; margin-bottom: 24px;">
+                            <canvas id="unitChart"></canvas>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">LTV (прибыль за все покупки)</div>
+                            <div class="result-value" id="result-ltv">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Прибыль с клиента</div>
+                            <div class="result-value" id="result-lifetime-profit">0 ₽</div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">ROMI (возврат инвестиций)</div>
+                            <div class="result-value" id="result-romi">0%</div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Окупаемость с</div>
+                            <div class="result-value" id="result-payback">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-block" id="save-cta">
+                    <h3>Сохранить в проект?</h3>
+                    <p>Выберите проект, чтобы сохранить расчеты и отслеживать динамику.</p>
+                    <button class="btn-primary" onclick="saveToProject()">
+                        Сохранить результат
+                    </button>
                 </div>
             </div>
 
-            <div class="results-sticky">
-                <div class="result-card">
-                    <div class="result-row">
-                        <span class="res-label">Стоимость клиента (CAC)</span>
-                        <span class="res-val" id="res_cac">0 ₽</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">Маржа с 1 продажи</span>
-                        <span class="res-val" id="res_margin">0 ₽</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">LTV (прибыль за все покупки)</span>
-                        <span class="res-val" id="res_ltv">0 ₽</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">Прибыль с клиента</span>
-                        <span class="res-val" id="res_profit">0 ₽</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">ROMI</span>
-                        <span class="res-val" id="res_romi">0%</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">Клиентов за месяц</span>
-                        <span class="res-val" id="res_customers">0</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">Выручка за месяц</span>
-                        <span class="res-val highlight" id="res_revenue">0 ₽</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="res-label">Чистая прибыль за месяц</span>
-                        <span class="res-val highlight" id="res_net_profit">0 ₽</span>
-                    </div>
-                    
-                    <div class="verdict" id="verdict_text">
-                        Заполните данные слева, чтобы увидеть результат.
-                    </div>
-                </div>
-                
-                <div class="calc-panel" style="padding: 24px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Итого за месяц:</div>
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                        <span style="color: var(--text-secondary);">Выручка</span>
-                        <span style="font-weight: 600;" id="total_revenue">0 ₽</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                        <span style="color: var(--text-secondary);">Чистая прибыль</span>
-                        <span style="font-weight: 600;" id="total_profit">0 ₽</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#10B981; color:white; padding:12px 24px; border-radius:12px; display:none; animation: slideUp 0.3s; z-index: 3000;">
-        Сохранено!
+        </main>
     </div>
 
+    <!-- Scripts -->
     <script src="../../assets/js/data-manager.js"></script>
     <script src="../../assets/js/app-config.js"></script>
     <script src="../../assets/js/sidebar-logic.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    
     <script>
-        // Auth check
-        if (!localStorage.getItem('user')) {
-            window.location.href = '../auth/login.html';
-        }
-        function logout() {
-            localStorage.removeItem('user');
-            window.location.href = '../home.html';
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        let currentProject = null;
-
-        function init() {
-            const pid = DataManager.getCurrentProjectId();
-            if (pid) {
-                currentProject = DataManager.getProject(pid);
-                if (currentProject) {
-                    document.getElementById('calcTitle').innerText = `${currentProject.name}: Юнит-экономика`;
-                    document.getElementById('calcSub').innerText = 'Автосохранение отключено. Нажмите "Сохранить"';
-                    
-                    // Add Save Button
-                    const header = document.querySelector('.page-header');
-                    if (!document.getElementById('saveBtn')) {
-                        const btn = document.createElement('button');
-                        btn.id = 'saveBtn';
-                        btn.className = 'btn-primary';
-                        btn.style.marginLeft = '12px';
-                        btn.innerText = 'Сохранить изменения';
-                        btn.onclick = saveProjectData;
-                        header.appendChild(btn);
-                    }
-
-                    if (currentProject.unitData) {
-                        loadData(currentProject.unitData);
-                    }
-                }
-            } else {
-                document.getElementById('calcTitle').innerText = `Быстрый расчет`;
-                document.getElementById('calcSub').innerText = 'Данные не сохраняются в проект';
-            }
-            calc();
+        // Auth Check
+        if (!DataManager.getUser()) {
+            window.location.href = '../../auth/login.html';
         }
 
-        // ... (loadData function) ...
-
-        function calc() {
+        function calculateUnitEconomics() {
             // Получаем данные
-            const price = parseFloat(document.getElementById('price').value) || 0;
+            const averageCheck = parseFloat(document.getElementById('average-check').value) || 0;
             const cogs = parseFloat(document.getElementById('cogs').value) || 0;
-            const acquiring = parseFloat(document.getElementById('acquiring').value) || 2;
+            const acquiring = parseFloat(document.getElementById('acquiring').value) || 0;
             const apc = parseFloat(document.getElementById('apc').value) || 1;
-            const marketing_budget = parseFloat(document.getElementById('marketing_budget').value) || 0;
-            const clicks = parseFloat(document.getElementById('clicks').value) || 0;
-            const conv_lead = parseFloat(document.getElementById('conv_lead').value) || 0;
-            const conv_sale = parseFloat(document.getElementById('conv_sale').value) || 0;
-            
-            // 1. CAC = Бюджет / (Клики × (C1/100) × (C2/100))
-            const cac = (clicks * (conv_lead/100) * (conv_sale/100)) > 0 ? 
-                marketing_budget / (clicks * (conv_lead/100) * (conv_sale/100)) : 0;
-            
-            // 2. Маржа с 1 продажи: CM = Средний чек - Себестоимость - (Средний чек × Эквайринг / 100)
-            const cm = price - cogs - (price * acquiring / 100);
-            
-            // 3. LTV = CM × APC
+            const cac = parseFloat(document.getElementById('cac').value) || 0;
+
+            // Расчеты по правильным формулам
+            const cm = averageCheck - cogs - (averageCheck * acquiring / 100);
             const ltv = cm * apc;
-            
-            // 4. Прибыль с клиента: Profit = LTV - CAC
-            const profit = ltv - cac;
-            
-            // 5. ROMI = (Profit / CAC) × 100% (если CAC > 0)
-            const romi = cac > 0 ? (profit / cac) * 100 : 0;
-            
-            // 6. Выручка за месяц:
-            const customers = clicks * (conv_lead/100) * (conv_sale/100);
-            const revenue = customers * price * apc;
-            
-            // 7. Чистая прибыль за месяц:
-            const netProfit = customers * profit;
-            
+            const lifetimeProfit = ltv - cac;
+            const romi = cac > 0 ? ((lifetimeProfit / cac) * 100).toFixed(1) : '—';
+            const payback = cm > 0 ? Math.ceil(cac / cm) : '—';
+
             // Вывод результатов
-            document.getElementById('res_cac').textContent = cac.toFixed(0) + ' ₽';
-            document.getElementById('res_margin').textContent = cm.toFixed(2) + ' ₽';
-            document.getElementById('res_ltv').textContent = ltv.toFixed(2) + ' ₽';
-            document.getElementById('res_profit').textContent = profit.toFixed(2) + ' ₽';
-            document.getElementById('res_romi').textContent = romi.toFixed(1) + '%';
+            document.getElementById('result-cm').innerText = Math.round(cm) + ' ₽';
+            document.getElementById('result-ltv').innerText = Math.round(ltv) + ' ₽';
+            document.getElementById('result-lifetime-profit').innerText = Math.round(lifetimeProfit) + ' ₽';
+            document.getElementById('result-romi').innerText = romi === '—' ? '—' : romi + '%';
+            document.getElementById('result-payback').innerText = payback === '—' ? '—' : payback + ' покупок';
             
-            // Вывод дополнительных результатов
-            document.getElementById('res_customers').textContent = customers.toFixed(0);
-            document.getElementById('res_revenue').textContent = revenue.toFixed(0) + ' ₽';
-            document.getElementById('res_net_profit').textContent = netProfit.toFixed(0) + ' ₽';
+            updateChart(averageCheck, cogs, (averageCheck * acquiring / 100), cm);
             
-            // Вердикт
-            const verdictEl = document.getElementById('verdict_text');
-            if (customers === 0) {
-                verdictEl.textContent = 'Заполните данные слева, чтобы увидеть результат.';
-            } else if (romi < 100) {
-                verdictEl.textContent = '❌ Модель убыточна. Повысьте цену или снизьте CAC.';
-            } else if (romi < 200) {
-                verdictEl.textContent = '⚠️ Слабая прибыльность. Оптимизируйте маркетинг.';
-            } else {
-                verdictEl.textContent = '✅ Отличная модель! Масштабируйтесь.';
+            // AI Contextual Tip
+            if (window.AIAdvisor) {
+                const marginPercent = averageCheck > 0 ? (cm / averageCheck) * 100 : 0;
+                const tipEl = document.getElementById('tip-margin');
+                
+                if (marginPercent < 20) {
+                    tipEl.style.display = 'block';
+                    tipEl.style.color = '#DC2626';
+                    tipEl.innerText = '⚠️ Низкая маржа (<20%). Риск кассового разрыва.';
+                } else if (marginPercent > 50) {
+                    tipEl.style.display = 'block';
+                    tipEl.style.color = '#16A34A';
+                    tipEl.innerText = '✅ Отличная маржа (>50%). Можно масштабировать.';
+                } else {
+                    tipEl.style.display = 'none';
+                }
             }
         }
 
-        function saveProjectData() {
-            if (!currentProject) return;
-            
-            // Re-gather data
-            const data = {
-                marketing_budget: parseFloat(document.getElementById('marketing_budget').value) || 0,
-                clicks: parseFloat(document.getElementById('clicks').value) || 0,
-                conv_lead: parseFloat(document.getElementById('conv_lead').value) || 0,
-                conv_sale: parseFloat(document.getElementById('conv_sale').value) || 0,
-                price: parseFloat(document.getElementById('price').value) || 0,
-                cogs: parseFloat(document.getElementById('cogs').value) || 0,
-                apc: parseFloat(document.getElementById('apc').value) || 1,
-                // Recalculate margin for stats
-                margin: (parseFloat(document.getElementById('price').value) - parseFloat(document.getElementById('cogs').value)) * (parseFloat(document.getElementById('apc').value)) - ((parseFloat(document.getElementById('marketing_budget').value) / (parseFloat(document.getElementById('clicks').value) * (parseFloat(document.getElementById('conv_lead').value)/100) * (parseFloat(document.getElementById('conv_sale').value)/100))) || 0)
-                // Actually easier to just grab the result text or recalc cleanly.
-                // Let's call calc() and capture vars? No, calc updates UI.
-                // Let's just trust the input values for now.
-            };
-            
-            // Simplified margin calc for saving
-            // Profit per user logic duplicated from calc()
-            const leads = Math.floor(data.clicks * (data.conv_lead / 100));
-            const customers = Math.floor(leads * (data.conv_sale / 100));
-            let cac = customers > 0 ? data.marketing_budget / customers : 0;
-            
-            // Учитываем эквайринг в расчетах
-            const acquiring = parseFloat(document.getElementById('acquiring').value) || 2;
-            const acquiringAmount = data.price * (acquiring / 100);
-            const contributionMargin = data.price - data.cogs - acquiringAmount;
-            let ltv = contributionMargin * data.apc;
-            
-            data.margin = ltv - cac;
+        // --- Chart Logic ---
+        let unitChartInstance = null;
 
-            DataManager.updateProject(currentProject.id, 'unit', data);
-            showToast();
-        }
-
-        function showToast() {
-            const t = document.getElementById('toast');
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 2000);
-        }
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            init();
-            calc(); // Первоначальный расчет
+        function updateChart(revenue, cogs, tax, margin) {
+            const ctx = document.getElementById('unitChart');
+            if (!ctx) return;
             
-            // Привязка событий ко всем полям ввода
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                input.addEventListener('input', calc);
+            if (unitChartInstance) unitChartInstance.destroy();
+            
+            unitChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Себестоимость', 'Налоги/Комиссии', 'Маржа'],
+                    datasets: [{
+                        data: [cogs, tax, margin],
+                        backgroundColor: [
+                            '#EF4444', // Red
+                            '#F59E0B', // Orange
+                            '#10B981'  // Green
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+                    },
+                    cutout: '70%'
+                }
             });
+        }
+
+        // Привязка к событиям
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', calculateUnitEconomics);
+        });
+
+        // Save functionality
+        function saveToProject() {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (!currentProjectId) {
+                Modal.showToast('Выберите проект для сохранения', 'error');
+                return;
+            }
+            
+            // Get values
+            const data = {
+                averageCheck: parseFloat(document.getElementById('average-check').value) || 0,
+                cogs: parseFloat(document.getElementById('cogs').value) || 0,
+                acquiring: parseFloat(document.getElementById('acquiring').value) || 0,
+                apc: parseFloat(document.getElementById('apc').value) || 0,
+                cac: parseFloat(document.getElementById('cac').value) || 0,
+                margin: parseFloat(document.getElementById('result-cm').innerText.replace(/[^\d.-]/g, '')) || 0
+            };
+
+            DataManager.updateProject(currentProjectId, 'unit', data);
+            Modal.showToast('Данные сохранены в проект!');
+        }
+
+        // Load data if project selected
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (currentProjectId) {
+                const project = DataManager.getProject(currentProjectId);
+                if (project && project.unitData) {
+                    const d = project.unitData;
+                    if(d.averageCheck) document.getElementById('average-check').value = d.averageCheck;
+                    if(d.cogs) document.getElementById('cogs').value = d.cogs;
+                    if(d.acquiring) document.getElementById('acquiring').value = d.acquiring;
+                    if(d.apc) document.getElementById('apc').value = d.apc;
+                    if(d.cac) document.getElementById('cac').value = d.cac;
+                }
+            }
+            // Always calc at end
+            calculateUnitEconomics();
         });
     </script>
 </body>

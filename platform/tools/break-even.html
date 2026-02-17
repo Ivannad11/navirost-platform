@@ -4,247 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор точки безубыточности онлайн — Расчёт BEP | Навырост</title>
-    <meta name="description" content="Рассчитайте точку безубыточности вашего бизнеса. Узнайте сколько единиц товара нужно продать чтобы покрыть все расходы. Бесплатный онлайн-калькулятор.">
-    <meta name="keywords" content="точка безубыточности калькулятор, break even point, bep расчет, безубыточность онлайн">
-    <link rel="stylesheet" href="../assets/css/styles.css">
-    <link rel="stylesheet" href="../css/calculators.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../platform/css/calculators.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚖️</text></svg>">
     
     <style>
         .calculator-container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 120px 24px 80px;
+            padding: 0;
         }
         
         .calc-header {
-            text-align: center;
-            margin-bottom: 48px;
+            text-align: left;
+            margin-bottom: 32px;
         }
         
         .calc-header h1 {
-            font-size: 42px;
-            margin-bottom: 16px;
+            font-size: 28px;
+            margin-bottom: 8px;
         }
         
         .calc-header p {
-            font-size: 18px;
+            font-size: 14px;
             color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
+            text-align: left;
         }
         
         .calc-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin-top: 40px;
+            gap: 24px;
+            margin-top: 24px;
         }
         
         .calc-inputs,
         .calc-results {
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 32px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
         }
         
         .calc-section-title {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 24px;
-        }
-        
-        .form-group {
             margin-bottom: 20px;
         }
         
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            font-size: 15px;
-            background: var(--bg-tertiary);
-            transition: all 0.2s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            background: white;
-        }
-        
-        .helper-text {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            margin-top: 4px;
-        }
-        
-        .result-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px;
+        .form-group {
             margin-bottom: 16px;
         }
         
-        .result-label {
+        .form-group label {
             font-size: 13px;
-            color: var(--text-tertiary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .result-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+            margin-bottom: 12px;
         }
         
         .result-value {
-            font-size: 32px;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            color: var(--text-primary);
+            font-size: 24px;
         }
         
         .error-message {
             background: #FEF2F2;
             border: 1px solid #FCA5A5;
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px;
             color: #DC2626;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.5;
         }
         
         .cta-block {
-            background: linear-gradient(135deg, #18181B 0%, #3F3F46 100%);
-            border-radius: 20px;
-            padding: 40px;
+            background: linear-gradient(135deg, #F4F4F5 0%, #FFFFFF 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
             text-align: center;
-            margin-top: 48px;
-            color: white;
+            margin-top: 32px;
+            color: var(--text-primary);
         }
         
         .cta-block h3 {
-            font-size: 24px;
-            margin-bottom: 12px;
+            font-size: 18px;
+            margin-bottom: 8px;
         }
         
         .cta-block p {
-            opacity: 0.8;
-            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            opacity: 1;
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .calc-layout {
                 grid-template-columns: 1fr;
-            }
-            
-            .calc-header h1 {
-                font-size: 32px;
             }
         }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="container nav-inner">
-            <a href="../../index.html" class="logo">навырост<span>.</span></a>
-            
-            <button class="burger-btn" id="burger-btn" aria-label="Меню">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            
-            <div class="nav-links" id="nav-links">
-                <a href="../../index.html#platform" class="nav-link">Платформа</a>
-                <a href="../tools/index.html" class="nav-link">Инструменты</a>
-                <a href="../../auth/login.html" class="nav-link">Войти</a>
-                <a href="../../auth/register.html" class="btn-primary">Начать бесплатно</a>
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container no-sidebar-right">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Populated by sidebar-logic.js -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="calculator-container">
+                <div class="calc-header">
+                    <h1>Калькулятор точки безубыточности</h1>
+                    <p>Узнайте сколько единиц товара или услуг нужно продать, чтобы выйти в ноль.</p>
+                </div>
+
+                <div class="calc-layout">
+                    <!-- Левая колонка: Ввод данных -->
+                    <div class="calc-inputs">
+                        <h3 class="calc-section-title">Введите данные</h3>
+                        
+                        <div class="form-group">
+                            <label>Цена продажи за единицу, ₽</label>
+                            <input type="number" id="price" class="form-input" placeholder="1000" value="1000">
+                            <div class="helper-text">Сколько стоит 1 товар/услуга для клиента</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Переменные затраты на единицу, ₽</label>
+                            <input type="number" id="variableCost" class="form-input" placeholder="400" value="400">
+                            <div class="helper-text">Себестоимость, упаковка, доставка на 1 единицу</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Постоянные расходы в месяц, ₽</label>
+                            <input type="number" id="fixedCosts" class="form-input" placeholder="150000" value="150000">
+                            <div class="helper-text">Аренда, зарплаты, коммуналка, налоги</div>
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Результаты -->
+                    <div class="calc-results">
+                        <h3 class="calc-section-title">Результаты</h3>
+                        
+                        <div id="results-container">
+                            <!-- Заполняется JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA блок -->
+                <div class="cta-block">
+                    <h3>Сохранить расчет?</h3>
+                    <p>Сохраните данные в проект для дальнейшего анализа.</p>
+                    <button class="btn-primary" onclick="saveToProject()">
+                        Сохранить в проект
+                    </button>
+                </div>
             </div>
-        </div>
-    </nav>
-
-    <div class="calculator-container">
-        <div class="calc-header">
-            <h1>Калькулятор точки безубыточности</h1>
-            <p>Узнайте сколько единиц товара или услуг нужно продать, чтобы покрыть все расходы и выйти в ноль. Рассчитайте точку безубыточности (BEP) для вашего бизнеса.</p>
-        </div>
-
-        <div class="calc-layout">
-            <!-- Левая колонка: Ввод данных -->
-            <div class="calc-inputs">
-                <h3 class="calc-section-title">Введите данные</h3>
-                
-                <div class="form-group">
-                    <label>Цена продажи за единицу, ₽</label>
-                    <input type="number" id="price" class="form-input" placeholder="1000" value="1000">
-                    <div class="helper-text">Сколько стоит 1 товар/услуга для клиента</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Переменные затраты на единицу, ₽</label>
-                    <input type="number" id="variableCost" class="form-input" placeholder="400" value="400">
-                    <div class="helper-text">Себестоимость, упаковка, доставка на 1 единицу</div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Постоянные расходы в месяц, ₽</label>
-                    <input type="number" id="fixedCosts" class="form-input" placeholder="150000" value="150000">
-                    <div class="helper-text">Аренда, зарплаты, коммуналка, налоги</div>
-                </div>
-            </div>
-
-            <!-- Правая колонка: Результаты -->
-            <div class="calc-results">
-                <h3 class="calc-section-title">Результаты</h3>
-                
-                <div id="results-container">
-                    <!-- Заполняется JS -->
-                </div>
-                
-                <button id="save-calculation" class="btn-primary" style="width: 100%; margin-top: 20px;">Сохранить расчёт</button>
-            </div>
-        </div>
-
-        <!-- CTA блок -->
-        <div class="cta-block">
-            <h3>Хотите сохранить этот расчёт?</h3>
-            <p>Зарегистрируйтесь бесплатно и получите доступ к личному кабинету с историей всех расчётов, дашбордом проектов и экспортом в PDF.</p>
-            <a href="../../auth/register.html" class="btn-primary" style="background: white; color: #18181B; display: inline-flex;">
-                Создать бесплатный аккаунт
-            </a>
-        </div>
+        </main>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">навырост.</div>
-                <div class="footer-links">
-                    <a href="../../index.html#platform">Платформа</a>
-                    <a href="../tools/index.html">Инструменты</a>
-                    <a href="https://t.me/navirost_platform" target="_blank" rel="noopener">Telegram</a>
-                    <a href="mailto:hello@navirost.ru">Контакты</a>
-                </div>
-                <div class="footer-copy" style="color: var(--text-tertiary); font-size: 14px;">
-                    © 2025–2026 Навырост. Все права защищены.
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="../assets/js/script.js"></script>
+    <!-- Scripts -->
+    <script src="../../assets/js/data-manager.js"></script>
+    <script src="../../assets/js/app-config.js"></script>
+    <script src="../../assets/js/sidebar-logic.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+    
     <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        // Auth Check
+        if (!DataManager.getUser()) {
+            window.location.href = '../../auth/login.html';
+        }
+
         const inputs = ['price', 'variableCost', 'fixedCosts'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculate);
         });
+
+        function formatMoney(value) {
+            return new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
 
         function calculate() {
             const price = parseFloat(document.getElementById('price').value) || 0;
@@ -298,20 +282,38 @@
             `;
         }
 
-        function formatMoney(value) {
-            return new Intl.NumberFormat('ru-RU', {
-                style: 'currency',
-                currency: 'RUB',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(value);
-        }
-
         calculate();
 
-        // Обработчик кнопки сохранения
-        document.getElementById('save-calculation').addEventListener('click', () => {
-            alert('Функция сохранения пока в разработке. Backend будет подключен позже.');
+        function saveToProject() {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (!currentProjectId) {
+                alert('Пожалуйста, выберите проект в меню слева или создайте новый.');
+                return;
+            }
+
+            const data = {
+                price: parseFloat(document.getElementById('price').value) || 0,
+                variableCost: parseFloat(document.getElementById('variableCost').value) || 0,
+                fixedCosts: parseFloat(document.getElementById('fixedCosts').value) || 0
+            };
+
+            DataManager.updateProject(currentProjectId, 'break-even', data);
+            alert('Расчет сохранен в проект!');
+        }
+
+        // Load data
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (currentProjectId) {
+                const project = DataManager.getProject(currentProjectId);
+                if (project && project.breakEvenData) {
+                    const d = project.breakEvenData;
+                    if(d.price) document.getElementById('price').value = d.price;
+                    if(d.variableCost) document.getElementById('variableCost').value = d.variableCost;
+                    if(d.fixedCosts) document.getElementById('fixedCosts').value = d.fixedCosts;
+                    calculate();
+                }
+            }
         });
     </script>
 </body>

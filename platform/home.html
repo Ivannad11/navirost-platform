@@ -186,7 +186,7 @@
                 </button>
             </div>
 
-            <!-- Onboarding Widget -->
+            <!-- Onboarding Widget (Hidden if completed) -->
             <div id="onboarding-widget">
                 <div class="widget-title">Прогресс настройки</div>
                 <div class="progress-widget">
@@ -214,15 +214,24 @@
                 </div>
             </div>
 
+            <!-- Education Widget (Visible if onboarding done) -->
+            <div id="education-widget" style="display: none;">
+                <div class="widget-title">Мое обучение</div>
+                <div id="edu-content" class="progress-widget">
+                    <!-- Populated by JS -->
+                </div>
+                <a href="resources/education.html" style="display: block; text-align: center; margin-top: 12px; font-size: 13px; color: var(--primary); text-decoration: none;">Перейти к курсам →</a>
+            </div>
+
             <!-- Quick Actions -->
             <div>
                 <div class="widget-title">Быстрый доступ</div>
                 <div class="quick-links">
-                    <a href="tools/hourly-rate.html" class="quick-link-card">
-                        <span>⏱️</span>
+                    <a href="tools/break-even.html" class="quick-link-card">
+                        <span>⚖️</span>
                         <div>
-                            <div style="font-weight: 500; font-size: 13px;">Почасовая ставка</div>
-                            <div style="font-size: 11px; color: var(--text-tertiary);">Калькулятор фрилансера</div>
+                            <div style="font-weight: 500; font-size: 13px;">Безубыточность</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">Точка окупаемости</div>
                         </div>
                     </a>
                     <a href="tools/roi-calculator.html" class="quick-link-card">
@@ -230,6 +239,13 @@
                         <div>
                             <div style="font-weight: 500; font-size: 13px;">ROI Калькулятор</div>
                             <div style="font-size: 11px; color: var(--text-tertiary);">Окупаемость рекламы</div>
+                        </div>
+                    </a>
+                    <a href="tools/hourly-rate.html" class="quick-link-card">
+                        <span>⏱️</span>
+                        <div>
+                            <div style="font-weight: 500; font-size: 13px;">Почасовая ставка</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">Калькулятор фрилансера</div>
                         </div>
                     </a>
                 </div>
@@ -240,9 +256,11 @@
 
     <!-- Scripts -->
     <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/education-data.js"></script>
     <script src="../assets/js/app-config.js"></script>
     <script src="../assets/js/sidebar-logic.js"></script>
     <script src="../assets/js/modal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -275,9 +293,64 @@
             
             // 3. Onboarding
             updateOnboarding(user);
+            initEducationWidget(user);
 
             // 4. AI Advisor
             initAI();
+        }
+
+        function initEducationWidget(user) {
+            // Logic: Show Education if Onboarding is complete OR explicitly dismissed (future)
+            // For now, if onboarding > 66% (2 steps done), prioritize education
+            const ob = user.onboarding || {};
+            let completed = 0;
+            if (ob.projectCreated) completed++;
+            if (ob.unitCalc) completed++;
+            if (user.company) completed++;
+            
+            // If onboarding is mostly done, switch to education view
+            if (completed >= 3) {
+                document.getElementById('onboarding-widget').style.display = 'none';
+                document.getElementById('education-widget').style.display = 'block';
+                
+                // Render Education Progress
+                const courses = EducationData.courses;
+                let activeCourse = courses[0];
+                let maxProgress = -1;
+                
+                // Find first unfinished course or the one with progress
+                for (let c of courses) {
+                    const prog = DataManager.getCourseProgress(c.id, c.lessons.length);
+                    if (prog < 100) {
+                        activeCourse = c;
+                        maxProgress = prog;
+                        break;
+                    }
+                }
+                
+                const progress = DataManager.getCourseProgress(activeCourse.id, activeCourse.lessons.length);
+                
+                const container = document.getElementById('edu-content');
+                container.innerHTML = `
+                    <div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;">
+                        <div style="font-size:24px;">${activeCourse.icon}</div>
+                        <div>
+                            <div style="font-weight:600; font-size:13px;">${activeCourse.title}</div>
+                            <div style="font-size:11px; color:var(--text-secondary);">Следующий урок доступен</div>
+                        </div>
+                    </div>
+                    <div class="progress-header">
+                        <span>Прогресс</span>
+                        <span>${progress}%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('onboarding-widget').style.display = 'block';
+                document.getElementById('education-widget').style.display = 'none';
+            }
         }
 
         function initAI() {

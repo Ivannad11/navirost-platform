@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактор документа — навырост.</title>
-    <link rel="stylesheet" href="../../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../../assets/css/modal.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/modal.css">
     <style>
         /* Custom layout for editor */
         .editor-container {
@@ -166,11 +166,11 @@
     </div>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
-            <a href="../../index.html" class="sidebar-logo">навырост.</a>
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
             <ul class="nav-menu">
                 <!-- Dynamically populated by sidebar-logic.js -->
             </ul>
@@ -215,10 +215,10 @@
     <!-- Since doc-logic.js was referenced but I don't see it in file list, I'll inline a simple logic or check if it exists. 
          Wait, I didn't check assets/js/doc-logic.js. I'll check it. If not, I'll write inline logic.
     -->
-    <script src="../../assets/js/data-manager.js"></script>
-    <script src="../../assets/js/app-config.js"></script>
-    <script src="../../assets/js/sidebar-logic.js"></script>
-    <script src="../../assets/js/modal.js"></script>
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
     
     <script>
         function toggleSidebar() {
@@ -227,7 +227,7 @@
         }
 
         if (!DataManager.getUser()) {
-            window.location.href = '../../auth/login.html';
+            window.location.href = '../auth/login.html';
         }
 
         // Simple Document Logic
@@ -294,35 +294,104 @@
 
         const params = new URLSearchParams(window.location.search);
         const type = params.get('type') || 'nda';
+        const mode = params.get('mode') || 'edit'; // edit | view
+        const urlTitle = params.get('title');
+        const docId = params.get('id');
+        const projectId = params.get('projectId');
+        
         const doc = documents[type];
-        const formData = {};
+        let formData = {};
+
+        // Load existing data if ID provided
+        if (docId) {
+            const existingDoc = DataManager.getDocument(docId);
+            if (existingDoc && existingDoc.data) {
+                formData = existingDoc.data;
+            }
+        }
 
         if (doc) {
-            document.getElementById('docTitle').innerText = doc.title;
+            document.getElementById('docTitle').innerText = urlTitle ? decodeURIComponent(urlTitle) : doc.title;
             renderForm();
             renderPreview();
+            setupMode();
         } else {
             window.location.href = 'documents.html';
+        }
+
+        function setupMode() {
+            if (mode === 'view') {
+                // Read-only mode
+                document.title = "Просмотр документа — навырост.";
+                
+                // Hide Save button
+                const saveBtn = document.querySelector('button[onclick="saveDocument()"]');
+                if(saveBtn) saveBtn.style.display = 'none';
+
+                // Add Sign/Reject buttons (Mock logic for now)
+                const toolbar = document.querySelector('.editor-toolbar > div:last-child');
+                
+                // Only show if not already added
+                if (!toolbar.querySelector('.btn-sign')) {
+                    const signBtn = document.createElement('button');
+                    signBtn.className = 'btn-primary btn-sign';
+                    signBtn.style.backgroundColor = '#16a34a'; // Green
+                    signBtn.style.marginLeft = '12px';
+                    signBtn.innerHTML = '🖋 Подписать';
+                    signBtn.onclick = () => {
+                        if(confirm('Подписать документ КЭП?')) {
+                            Modal.showToast('Документ успешно подписан!');
+                            setTimeout(() => window.location.href = 'documents.html', 1500);
+                        }
+                    };
+                    
+                    const rejectBtn = document.createElement('button');
+                    rejectBtn.className = 'btn-secondary';
+                    rejectBtn.style.color = '#dc2626';
+                    rejectBtn.style.borderColor = '#dc2626';
+                    rejectBtn.innerHTML = '🚫 Отказать';
+                    rejectBtn.onclick = () => {
+                        if(confirm('Отказать в подписи?')) {
+                            Modal.showToast('Отказ отправлен контрагенту');
+                            setTimeout(() => window.location.href = 'documents.html', 1500);
+                        }
+                    };
+    
+                    toolbar.appendChild(rejectBtn);
+                    toolbar.appendChild(signBtn);
+                }
+
+                // Disable inputs
+                setTimeout(() => {
+                    document.querySelectorAll('.form-input').forEach(input => {
+                        input.disabled = true;
+                        input.style.opacity = '0.7';
+                    });
+                }, 100);
+            }
         }
 
         function renderForm() {
             const container = document.getElementById('formContainer');
             container.innerHTML = '';
             
-            // Auto-fill from user profile
+            // Auto-fill from user profile ONLY if new doc (empty formData)
             const user = DataManager.getUser();
+            const isNew = Object.keys(formData).length === 0;
             
             doc.fields.forEach(field => {
                 const div = document.createElement('div');
                 div.className = 'form-group';
                 
                 // Prefill logic
-                let value = '';
-                if (field.id === 'date') value = new Date().toISOString().split('T')[0];
-                if (field.id === 'city' && user && user.city) value = user.city;
-                if (field.id === 'contractor' && user && user.company) value = user.company;
+                let value = formData[field.id] || '';
                 
-                formData[field.id] = value;
+                if (isNew) {
+                    if (field.id === 'date') value = new Date().toISOString().split('T')[0];
+                    if (field.id === 'city' && user && user.city) value = user.city;
+                    if (field.id === 'contractor' && user && user.company) value = user.company;
+                    formData[field.id] = value; // Update state
+                }
 
                 div.innerHTML = `
                     <label class="form-label">${field.label}</label>
@@ -339,7 +408,7 @@
                 });
             });
         }
-
+        
         function renderPreview() {
             const content = document.getElementById('paperContent');
             content.innerHTML = doc.template(formData);
@@ -371,8 +440,38 @@
         }
 
         function saveDocument() {
-            // Future: Save to Supabase
-            Modal.showToast('Документ сохранен в профиле!');
+            // Determine Project ID
+            let targetProjectId = projectId;
+            
+            if (!targetProjectId) {
+                // If no project passed, check existing projects
+                const projects = DataManager.getProjects();
+                if (projects.length > 0) {
+                    targetProjectId = projects[0].id; // Default to first
+                } else {
+                    // Create default project
+                    const newProj = DataManager.createProject('Мой проект');
+                    targetProjectId = newProj.id;
+                }
+            }
+
+            const newDoc = {
+                id: docId || undefined, // undefined lets DataManager generate ID
+                projectId: targetProjectId,
+                title: doc.title,
+                type: 'PDF', // Assuming PDF for generated docs
+                template: type,
+                data: formData, // Save form state
+                // created/updated handled by DataManager
+            };
+            
+            DataManager.saveDocument(newDoc);
+            Modal.showToast('Документ сохранен в проекте!');
+            
+            // Redirect back after delay
+            setTimeout(() => {
+                window.location.href = 'documents.html';
+            }, 1000);
         }
     </script>
 </body>

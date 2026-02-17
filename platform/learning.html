@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучение — навырост.</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/modal.css">
+    <style>
+        .edu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .course-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-strong);
+        }
+
+        .course-thumb {
+            height: 140px;
+            background: var(--bg-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+        
+        .course-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.9);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .course-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .course-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .course-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-subtle);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #10B981;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container no-sidebar-right">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Dynamically populated -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <div class="welcome-text">
+                    <h1 style="font-size: 24px; font-weight: 600;">База знаний</h1>
+                    <div class="date-text">Курсы и гайды для старта бизнеса</div>
+                </div>
+            </div>
+            
+            <div class="edu-grid" id="coursesContainer">
+                <!-- Courses injected here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/education-data.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        if (!DataManager.getUser()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        // Render Courses
+        const container = document.getElementById('coursesContainer');
+        
+        EducationData.courses.forEach(course => {
+            const total = course.lessons.length;
+            const progress = DataManager.getCourseProgress(course.id, total);
+            
+            // Calculate completed count roughly
+            const completedCount = Math.round((progress / 100) * total);
+
+            const div = document.createElement('div');
+            div.className = 'course-card';
+            div.onclick = () => window.location.href = `course-viewer.html?id=${course.id}`;
+            
+            div.innerHTML = `
+                <div class="course-thumb">
+                    ${course.icon}
+                    <div class="course-tag">${course.title}</div>
+                </div>
+                <div class="course-body">
+                    <div class="course-title">${course.title}</div>
+                    <div class="course-desc">${course.description}</div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%;"></div>
+                    </div>
+                    
+                    <div class="course-meta">
+                        <span>${completedCount} из ${total} уроков</span>
+                        <span>${progress}%</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        // Add "Coming Soon" card
+        const soonDiv = document.createElement('div');
+        soonDiv.className = 'course-card';
+        soonDiv.style.opacity = '0.6';
+        soonDiv.style.cursor = 'not-allowed';
+        soonDiv.innerHTML = `
+            <div class="course-thumb" style="background: #F3F4F6;">
+                🔒
+                <div class="course-tag">Скоро</div>
+            </div>
+            <div class="course-body">
+                <div class="course-title">Юридическая безопасность</div>
+                <div class="course-desc">Как не получить штраф и защитить свои активы.</div>
+                <div class="course-meta">
+                    <span>В разработке</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(soonDiv);
+
+    </script>
+</body>
+</html>

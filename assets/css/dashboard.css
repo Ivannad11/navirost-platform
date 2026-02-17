@@ -55,9 +55,17 @@ body {
     min-height: 100vh;
 }
 
+/* Layout without Right Sidebar */
+.dashboard-container.no-sidebar-right {
+    grid-template-columns: var(--sidebar-width) 1fr;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
     .dashboard-container {
+        grid-template-columns: var(--sidebar-width) 1fr;
+    }
+    .dashboard-container.no-sidebar-right {
         grid-template-columns: var(--sidebar-width) 1fr;
     }
     .right-sidebar {
@@ -118,6 +126,53 @@ body {
     background: var(--bg-subtle);
     color: var(--text-primary);
     font-weight: 600;
+}
+
+/* Sidebar Dropdown */
+.nav-item.has-submenu .nav-link {
+    cursor: pointer;
+    justify-content: space-between;
+}
+
+.nav-item.has-submenu .nav-link span:first-child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.submenu.open {
+    display: block;
+}
+
+.submenu .nav-link {
+    padding-left: 44px; /* Indent */
+    font-size: 13px;
+    background: transparent;
+}
+
+.submenu .nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(0,0,0,0.05);
+}
+
+.arrow {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.nav-item.has-submenu.open .arrow {
+    transform: rotate(180deg);
 }
 
 /* User Profile (Bottom of Sidebar) */

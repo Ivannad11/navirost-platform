@@ -141,7 +141,7 @@
     </div>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -401,19 +401,20 @@
             const currentProjectId = DataManager.getCurrentProjectId();
             if (currentProjectId) {
                 const project = DataManager.getProject(currentProjectId);
-                if (project && project.pnlData) {
-                    const d = project.pnlData;
-                    if (d.revenue) d.revenue.forEach((val, i) => {
-                        if(document.querySelectorAll('.revenue')[i]) document.querySelectorAll('.revenue')[i].value = val;
-                    });
-                    if (d.cogs) d.cogs.forEach((val, i) => {
-                        if(document.querySelectorAll('.cogs')[i]) document.querySelectorAll('.cogs')[i].value = val;
-                    });
-                    // Opex logic is tricky because we flattened it in storage vs UI rows
-                    // Assuming we didn't store granular opex before, or need to adapt.
-                    // For now, let's assume we don't have granular opex data structure yet, 
-                    // or we just save totals. 
-                    // Let's implement simple saving first.
+                if (project && project.pnlData && project.pnlData.details) {
+                    const d = project.pnlData.details;
+                    if (d.revenue) {
+                        d.revenue.forEach((val, i) => {
+                            const el = document.querySelectorAll('.revenue')[i];
+                            if(el) el.value = val;
+                        });
+                    }
+                    if (d.cogs) {
+                        d.cogs.forEach((val, i) => {
+                            const el = document.querySelectorAll('.cogs')[i];
+                            if(el) el.value = val;
+                        });
+                    }
                 }
             }
             

@@ -126,7 +126,7 @@
     </div>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -160,6 +160,10 @@
                     <div class="form-group">
                         <label class="form-label">Email</label>
                         <input type="email" class="form-input" id="userEmail" placeholder="name@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Текущий тариф</label>
+                        <input type="text" class="form-input" id="userPlan" readonly style="opacity: 0.7; cursor: default;">
                     </div>
                 </div>
 
@@ -209,6 +213,20 @@
                         + Добавить проект
                     </button>
                 </div>
+
+                <!-- Education & Onboarding -->
+                <div class="settings-section">
+                    <div class="section-title">Обучение и интерфейс</div>
+                    <div class="project-item">
+                        <div>
+                            <div style="font-weight: 500; font-size: 14px;">Статус онбординга</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">Сбросить подсказки и прогресс обучения</div>
+                        </div>
+                        <button type="button" class="btn-secondary" onclick="resetOnboarding()" style="font-size: 12px; padding: 6px 12px; border: 1px solid var(--border-subtle); border-radius: 6px; cursor: pointer; background: white;">
+                            Сбросить
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -238,6 +256,7 @@
                 document.getElementById('userEmail').value = user.email || '';
                 document.getElementById('userCompany').value = user.company || '';
                 document.getElementById('userCity').value = user.city || '';
+                document.getElementById('userPlan').value = user.plan || 'Free';
                 
                 loadProjects();
                 loadDatabaseSettings();
@@ -318,17 +337,42 @@
                 projectsList.innerHTML = '<div style="color: var(--text-tertiary); font-size: 13px; font-style: italic;">Нет активных проектов</div>';
             } else {
                 projects.forEach(project => {
+                    // Use color from DataManager or default
+                    const color = project.color || '#ccc';
+                    const revenue = project.stats && project.stats.revenue ? DataManager.formatMoney(project.stats.revenue) : '0 ₽';
+
                     const projectItem = document.createElement('div');
                     projectItem.className = 'project-item';
                     projectItem.innerHTML = `
-                        <div>
-                            <div style="font-weight: 500; font-size: 14px; color: var(--text-primary);">${project.name}</div>
-                            <div style="font-size: 11px; color: var(--text-tertiary);">Обновлен: ${DataManager.formatDate(project.updated)}</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${color};"></div>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px; color: var(--text-primary);">${project.name}</div>
+                                <div style="font-size: 11px; color: var(--text-tertiary);">
+                                    Обновлен: ${DataManager.formatDate(project.updated)} • Выручка: ${revenue}
+                                </div>
+                            </div>
                         </div>
                         <button type="button" class="btn-danger" onclick="deleteProject('${project.id}')">Удалить</button>
                     `;
                     projectsList.appendChild(projectItem);
                 });
+            }
+        }
+
+        function resetOnboarding() {
+            if (confirm('Сбросить весь прогресс обучения и подсказки?')) {
+                const user = DataManager.getUser();
+                if (user) {
+                    user.onboarding = {
+                        projectCreated: false,
+                        unitCalc: false,
+                        docGenerated: false
+                    };
+                    user.education = {}; // Clear course progress
+                    DataManager.saveUser(user);
+                    showToast('Прогресс сброшен');
+                }
             }
         }
 

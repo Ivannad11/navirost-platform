@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Просмотр курса — навырост.</title>
-    <link rel="stylesheet" href="../../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../../assets/css/modal.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/modal.css">
     <style>
         .course-layout {
             display: flex;
@@ -173,7 +173,7 @@
         <aside class="course-sidebar">
             <div class="course-header">
                 <div>
-                    <a href="./education.html" class="back-link">← Назад к курсам</a>
+                    <a href="learning.html" class="back-link">← Назад к курсам</a>
                     <div class="course-title-sm" id="courseTitle">Загрузка...</div>
                 </div>
                 <button class="mobile-toggle-lessons" onclick="toggleLessons()">Меню</button>
@@ -201,64 +201,62 @@
         </main>
     </div>
 
-    <script src="../../assets/js/data-manager.js"></script>
-    <script src="../../assets/js/app-config.js"></script>
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/education-data.js"></script>
+    <script src="../assets/js/app-config.js"></script>
     <script>
         // Check Auth
         if (!DataManager.getUser()) {
-            window.location.href = '../../auth/login.html';
+            window.location.href = '../auth/login.html';
         }
-
-        const courses = {
-            start: {
-                title: "Как открыть ИП и не сойти с ума",
-                lessons: [
-                    { id: 1, title: "Введение: ИП или ООО?", duration: "5 мин", content: "<h1>ИП или ООО: что выбрать?</h1><p>Главное отличие: ИП отвечает всем своим имуществом, но деньгами распоряжается свободно. У ООО деньги принадлежат компании, но ответственность ограничена уставным капиталом.</p><h2>Плюсы ИП</h2><ul><li>Простая регистрация</li><li>Свободное распоряжение деньгами</li><li>Меньше штрафы</li></ul>" },
-                    { id: 2, title: "Выбор кодов ОКВЭД", duration: "8 мин", content: "<h1>Коды ОКВЭД</h1><p>ОКВЭД — это код вашей деятельности. От него зависят налоговые льготы, тарифы страхования от несчастных случаев и необходимость лицензий.</p><p>Всегда выбирайте один основной код и несколько дополнительных. Не бойтесь указывать 'с запасом', это ни к чему не обязывает.</p>" },
-                    { id: 3, title: "Налоговые режимы: УСН, Патент, ОСНО", duration: "12 мин", content: "<h1>Налоговые режимы</h1><p>Самый популярный выбор для старта — УСН 'Доходы' (6%). Вы платите 6% со всей выручки.</p><p>Если у вас большие расходы (торговля, производство), выгоднее может быть УСН 'Доходы минус расходы' (15%).</p>" }
-                ]
-            },
-            finance: {
-                title: "Основы финмоделирования",
-                lessons: [
-                    { id: 1, title: "Что такое P&L", duration: "10 мин", content: "<h1>P&L (Profit and Loss)</h1><p>Отчет о прибылях и убытках показывает эффективность бизнеса. Он отвечает на вопрос: 'Заработали мы в этом месяце или нет?'.</p>" },
-                    { id: 2, title: "Cashflow: Движение денег", duration: "15 мин", content: "<h1>Cashflow</h1><p>Отчет о движении денежных средств показывает, сколько денег пришло и ушло со счетов. Он помогает избежать кассовых разрывов.</p>" }
-                ]
-            },
-            marketing: {
-                title: "Маркетинг для основателей",
-                lessons: [
-                    { id: 1, title: "Введение в маркетинг", duration: "10 мин", content: "<h1>Что такое маркетинг?</h1><p>Это не просто реклама. Это понимание того, что нужно клиенту и как ему это дать.</p>" },
-                ]
-            }
-        };
 
         const params = new URLSearchParams(window.location.search);
         const courseId = params.get('id');
-        const course = courses[courseId];
+        
+        // Find course in EducationData
+        const course = EducationData.courses.find(c => c.id === courseId);
         let currentLessonIndex = 0;
 
         function init() {
             if (course) {
                 document.getElementById('courseTitle').innerText = course.title;
-                renderLessons();
-                loadLesson(0);
+                
+                // Find first uncompleted lesson to start with, or 0
+                const uncompletedIndex = course.lessons.findIndex(l => !DataManager.isLessonCompleted(courseId, l.id));
+                if (uncompletedIndex !== -1) {
+                    currentLessonIndex = uncompletedIndex;
+                }
+                
+                renderLessonList();
+                loadLesson(currentLessonIndex);
             } else {
-                window.location.href = 'education.html';
+                window.location.href = 'learning.html';
             }
         }
 
-        function renderLessons() {
+        function renderLessonList() {
             const list = document.getElementById('lessonList');
             list.innerHTML = '';
+            
             course.lessons.forEach((lesson, index) => {
+                const isCompleted = DataManager.isLessonCompleted(courseId, lesson.id);
+                const isActive = index === currentLessonIndex;
+                
                 const el = document.createElement('div');
-                el.className = `lesson-item ${index === currentLessonIndex ? 'active' : ''}`;
+                el.className = `lesson-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+                
+                // Status icon
+                let statusIcon = '';
+                if (isCompleted) statusIcon = '✓';
+                else if (isActive) statusIcon = '●';
+                
                 el.innerHTML = `
-                    <div class="lesson-status">${index < currentLessonIndex ? '✓' : ''}</div>
+                    <div class="lesson-status" style="${isCompleted ? 'background:#10B981; border-color:#10B981;' : ''}">
+                        ${statusIcon}
+                    </div>
                     <div class="lesson-info">
                         <div class="lesson-title">${index + 1}. ${lesson.title}</div>
-                        <div class="lesson-dur">${lesson.duration}</div>
+                        <div class="lesson-dur">5 мин</div>
                     </div>
                 `;
                 el.onclick = () => loadLesson(index);
@@ -269,26 +267,55 @@
         function loadLesson(index) {
             currentLessonIndex = index;
             const lesson = course.lessons[index];
-            document.getElementById('lessonBody').innerHTML = lesson.content;
+            
+            // Render Content
+            const contentBody = document.getElementById('lessonBody');
+            contentBody.innerHTML = `
+                <h1>${lesson.title}</h1>
+                ${lesson.content}
+            `;
             
             // Update buttons
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             
             prevBtn.disabled = index === 0;
-            nextBtn.disabled = index === course.lessons.length - 1;
+            
+            // Last lesson handling
+            if (index === course.lessons.length - 1) {
+                nextBtn.innerText = 'Завершить курс';
+                nextBtn.onclick = () => {
+                    completeCurrentLesson();
+                    Modal.showToast('Курс пройден! Поздравляем!');
+                    setTimeout(() => window.location.href = 'learning.html', 1500);
+                };
+            } else {
+                nextBtn.innerText = 'Следующий урок →';
+                nextBtn.onclick = () => {
+                    completeCurrentLesson();
+                    loadLesson(index + 1);
+                };
+            }
             
             prevBtn.onclick = () => loadLesson(index - 1);
-            nextBtn.onclick = () => loadLesson(index + 1);
             
-            renderLessons();
+            // Re-render list to update active state
+            renderLessonList();
             
-            // Scroll to top of content
+            // Scroll to top
             document.querySelector('.lesson-content').scrollTop = 0;
             
-            // On mobile, close menu after selection
+            // Mobile handling
             if (window.innerWidth <= 768) {
                 document.getElementById('lessonList').classList.remove('active');
+            }
+        }
+
+        function completeCurrentLesson() {
+            const lesson = course.lessons[currentLessonIndex];
+            const changed = DataManager.completeLesson(courseId, lesson.id);
+            if (changed) {
+                renderLessonList(); // Update checkmarks
             }
         }
 

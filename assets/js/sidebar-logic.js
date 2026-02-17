@@ -7,19 +7,43 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSidebar();
 });
 
-function resolvePath(path) {
-    if (!path || path.startsWith('/') || path.startsWith('http') || path.startsWith('#')) return path;
+function resolvePath(targetPath) {
+    if (!targetPath || targetPath.startsWith('/') || targetPath.startsWith('http') || targetPath.startsWith('#')) return targetPath;
     
-    // Check if we are in a subdirectory (tools or resources) inside platform
     const currentPath = window.location.pathname;
-    // Simple heuristic: count how deep we are relative to platform root
-    // If we are in /platform/tools/unit.html, we need ../ for assets
-    // But this function is for links.
     
-    if (currentPath.includes('/tools/') || currentPath.includes('/resources/') || currentPath.includes('/auth/')) {
-        return '../' + path;
+    // Scenarios:
+    // 1. /platform/home.html -> target: tools/unit.html => tools/unit.html
+    // 2. /platform/tools/unit.html -> target: home.html => ../home.html
+    // 3. /platform/tools/unit.html -> target: tools/pnl.html => ../tools/pnl.html (works)
+    // 4. /index.html (Landing) -> target: platform/home.html => platform/home.html
+    // 5. /tools/unit-economics.html (Public) -> target: tools/pnl.html => pnl.html
+    
+    // Check if we are in a subdirectory of platform
+    const isPlatform = currentPath.includes('/platform/');
+    const isTools = currentPath.includes('/platform/tools/');
+    const isAuth = currentPath.includes('/auth/');
+    const isPublicTools = currentPath.includes('/tools/') && !isPlatform;
+    
+    if (isTools) {
+        return '../' + targetPath;
     }
-    return path;
+    
+    if (isAuth) {
+        return '../platform/' + targetPath; 
+    }
+
+    if (isPublicTools) {
+        // We are in public tools folder e.g. /tools/
+        // If target is 'tools/foo.html', we need just 'foo.html'
+        if (targetPath.startsWith('tools/')) {
+            return targetPath.replace('tools/', '');
+        }
+        // If target is 'platform/foo.html' (e.g. login), go up
+        return '../' + targetPath;
+    }
+
+    return targetPath;
 }
 
 function renderSidebar() {
@@ -27,141 +51,262 @@ function renderSidebar() {
     if (!navMenu) return;
 
     navMenu.innerHTML = '';
+    const user = typeof DataManager !== 'undefined' ? DataManager.getUser() : null;
+    const currentPath = window.location.pathname;
+    
+    // Logic:
+    // 1. If user is NOT logged in -> Guest Sidebar
+    // 2. If user IS logged in, but is on a PUBLIC page (not in /platform/) -> Guest Sidebar
+    // 3. If user IS logged in, and is on a PLATFORM page (in /platform/) -> Auth Sidebar
 
-    // 1. Main Category (Home)
-    const mainModules = AppConfig.modules.filter(m => m.category === 'main' && m.showInSidebar);
-    mainModules.forEach(m => navMenu.appendChild(createNavItem(m)));
+    const isPlatformPage = currentPath.includes('/platform/');
+    
+    // Force guest sidebar if not on platform page, even if logged in
+    if (!user || !isPlatformPage) {
+        renderGuestSidebar(navMenu);
+        return;
+    }
 
-    // 2. My Projects (Accordion)
+    // --- AUTHENTICATED MODE (Only on Platform pages) ---
+    renderAuthSidebar(navMenu);
+}
+
+function renderGuestSidebar(navMenu) {
+    // 1. Back Button (Top)
+    const backLi = document.createElement('li');
+    backLi.className = 'nav-item';
+    backLi.style.marginBottom = '12px';
+    
+    // Determine path to root index.html
+    let backUrl = '../index.html'; // Default from platform/
+    if (window.location.pathname.includes('/tools/')) {
+        backUrl = '../../index.html'; // From platform/tools/
+    }
+    
+    backLi.innerHTML = `<a href="${backUrl}" class="nav-link" style="color:var(--text-tertiary)"><span>←</span> Назад</a>`;
+    navMenu.appendChild(backLi);
+
+    // 2. Calculators Dropdown
+    const toolsModule = AppConfig.modules.find(m => m.id === 'tools');
+    if (toolsModule && toolsModule.children) {
+        const li = document.createElement('li');
+        li.className = 'nav-item has-submenu open'; // Default open for guest
+        
+        // Parent Item
+        const div = document.createElement('div');
+        div.className = 'nav-link parent';
+        div.innerHTML = `
+            <div style="display:flex; align-items:center;">
+                ${toolsModule.title}
+            </div>
+            <span class="arrow">▼</span>
+        `;
+        div.onclick = (e) => {
+            e.preventDefault();
+            li.classList.toggle('open');
+            // Toggle submenu display directly if CSS doesn't handle it
+            const submenu = li.querySelector('.submenu');
+            if (submenu) {
+                submenu.style.display = li.classList.contains('open') ? 'block' : 'none';
+            }
+        };
+        li.appendChild(div);
+
+        // Submenu
+        const ul = document.createElement('ul');
+        ul.className = 'submenu';
+        ul.style.display = 'block'; // Force display since we start open
+        
+        toolsModule.children.forEach(tool => {
+            const subLi = document.createElement('li');
+            const subA = document.createElement('a');
+            
+            // Fix path resolution for public tools
+            let finalUrl = resolvePath(tool.url);
+            
+            subA.href = finalUrl;
+            subA.className = 'nav-link';
+            
+            // Robust active check
+            const toolFilename = tool.url.split('/').pop();
+            if (window.location.pathname.endsWith(toolFilename)) {
+                subA.classList.add('active');
+            }
+            
+            subA.innerHTML = tool.title;
+            subLi.appendChild(subA);
+            ul.appendChild(subLi);
+        });
+        
+        li.appendChild(ul);
+        navMenu.appendChild(li);
+    }
+
+    // 3. Remove any existing CTA if present (cleanup)
+    const sidebar = document.querySelector('.sidebar');
+    const existingCta = sidebar.querySelector('.guest-cta');
+    if (existingCta) existingCta.remove();
+}
+
+function renderAuthSidebar(navMenu) {
+    AppConfig.modules.forEach(module => {
+        if (!module.showInSidebar) return;
+        if (module.category === 'footer') return; // Render footer items separately or at end? 
+        // Actually typically settings is at bottom, but let's just render in order for now or separate
+        
+        if (module.children) {
+            // Dropdown Menu
+            const li = document.createElement('li');
+            li.className = 'nav-item has-submenu';
+            
+            // Check if any child is active to open menu by default
+            let isActive = false;
+            if (module.id === 'projects') {
+                 // Check if we are on project page
+                 if (window.location.pathname.includes('project.html') || window.location.pathname.includes('projects.html')) isActive = true;
+            } else {
+                module.children.forEach(child => {
+                    if (child.url && window.location.pathname.includes(child.url)) isActive = true;
+                });
+            }
+            
+            if (isActive) {
+                li.classList.add('open');
+            }
+
+            // Parent Item
+            const div = document.createElement('div');
+            div.className = 'nav-link parent';
+            div.innerHTML = `
+                <div style="display:flex; align-items:center;">
+                    ${module.title}
+                </div>
+                <span class="arrow">▼</span>
+            `;
+            div.onclick = (e) => {
+                e.preventDefault();
+                li.classList.toggle('open');
+                // Explicitly toggle submenu visibility for Auth Sidebar as well
+                const submenu = li.querySelector('.submenu');
+                if (submenu) {
+                    submenu.style.display = li.classList.contains('open') ? 'block' : 'none';
+                }
+            };
+            li.appendChild(div);
+
+            // Submenu
+            const ul = document.createElement('ul');
+            ul.className = 'submenu';
+            // Force display if open
+            if (isActive) {
+                ul.style.display = 'block';
+            }
+
+            // Populate Submenu
+            if (module.id === 'projects') {
+                renderProjectsSubmenu(ul);
+            } else {
+                module.children.forEach(child => {
+                    const subLi = document.createElement('li');
+                    const subA = document.createElement('a');
+                    subA.href = resolvePath(child.url);
+                    subA.className = 'nav-link';
+                    if (child.url && window.location.pathname.includes(child.url)) subA.classList.add('active');
+                    
+                    subA.innerHTML = child.title;
+                    subLi.appendChild(subA);
+                    ul.appendChild(subLi);
+                });
+            }
+            li.appendChild(ul);
+            navMenu.appendChild(li);
+
+        } else {
+            // Standard Item
+            navMenu.appendChild(createNavItem(module));
+        }
+    });
+
+    // Footer Items (Settings, etc)
+    const footerModules = AppConfig.modules.filter(m => m.category === 'footer');
+    if (footerModules.length > 0) {
+        const divider = document.createElement('div');
+        divider.style.height = '1px';
+        divider.style.background = 'var(--border-subtle)';
+        divider.style.margin = '12px 16px';
+        navMenu.appendChild(divider);
+        
+        footerModules.forEach(m => navMenu.appendChild(createNavItem(m)));
+    }
+    
+    // User Profile
+    renderUserProfile();
+}
+
+function renderProjectsSubmenu(ul) {
     const projects = typeof DataManager !== 'undefined' ? DataManager.getProjects() : [];
     const currentPid = typeof DataManager !== 'undefined' ? DataManager.getCurrentProjectId() : null;
-    
-    // Create Project Group Header
-    const projectLi = document.createElement('li');
-    projectLi.className = 'nav-item';
-    projectLi.style.marginTop = '24px';
-    
-    // Group Title
-    const projTitle = document.createElement('div');
-    projTitle.style.padding = '0 12px 8px';
-    projTitle.style.fontSize = '11px';
-    projTitle.style.fontWeight = '600';
-    projTitle.style.color = 'var(--text-tertiary)';
-    projTitle.style.textTransform = 'uppercase';
-    projTitle.innerText = 'Проекты';
-    projectLi.appendChild(projTitle);
 
-    // Projects List Container
-    const projList = document.createElement('div');
-    projList.id = 'sidebar-projects-list';
-    
-    if (projects.length === 0) {
-        const empty = document.createElement('div');
-        empty.style.padding = "4px 12px";
-        empty.style.fontSize = "12px";
-        empty.style.color = "var(--text-tertiary)";
-        empty.innerText = "Нет проектов";
-        projList.appendChild(empty);
-    } else {
+    // 1. "All Projects" link
+    const allLi = document.createElement('li');
+    allLi.innerHTML = `<a href="projects.html" class="nav-link ${window.location.pathname.includes('projects.html') ? 'active' : ''}">Все проекты</a>`;
+    ul.appendChild(allLi);
+
+    // 2. Project List
+    if (projects.length > 0) {
         projects.forEach(p => {
-            const link = document.createElement('a');
-            link.href = '#';
-            link.className = `nav-link ${p.id === currentPid ? 'active' : ''}`;
-            // Small dot indicator
-            link.innerHTML = `
-                <span style="width:6px;height:6px;border-radius:50%;background:${p.id === currentPid ? 'var(--primary)' : 'var(--border-strong)'};margin-right:8px;"></span>
-                ${p.name}
-            `;
-            link.onclick = (e) => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = `nav-link ${p.id === currentPid ? 'active' : ''}`;
+            a.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${p.color || 'var(--primary)'};margin-right:8px; display:inline-block;"></span>${p.name}`;
+            
+            a.onclick = (e) => {
                 e.preventDefault();
                 DataManager.setCurrentProjectId(p.id);
-                window.location.href = resolvePath('project.html');
+                // If we are already on project.html, reload? Or just redirect
+                window.location.href = 'project.html'; // Assuming project.html handles loading current project
             };
-            projList.appendChild(link);
+            li.appendChild(a);
+            ul.appendChild(li);
         });
     }
-    projectLi.appendChild(projList);
 
-    // New Project Button
-    const newProjButton = document.createElement('a');
-    newProjButton.href = '#';
-    newProjButton.className = 'nav-link';
-    newProjButton.style.color = 'var(--text-tertiary)';
-    newProjButton.innerHTML = '<span>+</span> Новый проект';
-    newProjButton.onclick = (e) => {
+    // 3. New Project Action
+    const newLi = document.createElement('li');
+    newLi.innerHTML = `<a href="#" class="nav-link" style="color:var(--text-primary); font-weight:500;">+ Новый проект</a>`;
+    newLi.onclick = (e) => {
         e.preventDefault();
-        if (typeof createNewProject === 'function') {
-            createNewProject();
-        } else if (typeof Modal !== 'undefined') {
-            Modal.prompt('Новый проект', 'Введите название:', (name) => {
-                DataManager.createProject(name);
-                window.location.reload();
-            });
-        }
+        createNewProjectGlobal();
     };
-    projectLi.appendChild(newProjButton);
-    navMenu.appendChild(projectLi);
+    ul.appendChild(newLi);
+}
 
-
-    // 3. Tools (Group)
-    const toolModules = AppConfig.modules.filter(m => m.category === 'tools' && m.showInSidebar);
-    if (toolModules.length > 0) {
-        const toolsLi = document.createElement('li');
-        toolsLi.className = 'nav-item';
-        toolsLi.style.marginTop = '24px';
-        
-        const toolsTitle = document.createElement('div');
-        toolsTitle.style.padding = '0 12px 8px';
-        toolsTitle.style.fontSize = '11px';
-        toolsTitle.style.fontWeight = '600';
-        toolsTitle.style.color = 'var(--text-tertiary)';
-        toolsTitle.style.textTransform = 'uppercase';
-        toolsTitle.innerText = 'Инструменты';
-        toolsLi.appendChild(toolsTitle);
-        
-        toolModules.forEach(m => {
-            const a = document.createElement('a');
-            a.href = resolvePath(m.url);
-            
-            let isActive = false;
-            const currentPath = window.location.pathname;
-            if (currentPath.includes(m.url)) isActive = true;
-            
-            a.className = `nav-link ${isActive ? 'active' : ''}`;
-            a.innerHTML = `<span>${m.icon}</span> ${m.title}`;
-            toolsLi.appendChild(a);
-        });
-        navMenu.appendChild(toolsLi);
-    }
-
-    // 4. Resources (Group)
-    const resModules = AppConfig.modules.filter(m => m.category === 'resources' && m.showInSidebar);
-    if (resModules.length > 0) {
-        const resLi = document.createElement('li');
-        resLi.className = 'nav-item';
-        resLi.style.marginTop = '24px';
-        
-        const resTitle = document.createElement('div');
-        resTitle.style.padding = '0 12px 8px';
-        resTitle.style.fontSize = '11px';
-        resTitle.style.fontWeight = '600';
-        resTitle.style.color = 'var(--text-tertiary)';
-        resTitle.style.textTransform = 'uppercase';
-        resTitle.innerText = 'Ресурсы';
-        resLi.appendChild(resTitle);
-        
-        resModules.forEach(m => {
-            const a = document.createElement('a');
-            a.href = resolvePath(m.url);
-            let isActive = window.location.pathname.includes(m.url);
-            a.className = `nav-link ${isActive ? 'active' : ''}`;
-            a.innerHTML = `<span>${m.icon}</span> ${m.title}`;
-            resLi.appendChild(a);
-        });
-        navMenu.appendChild(resLi);
-    }
+function createNavItem(module) {
+    const li = document.createElement('li');
+    li.className = 'nav-item';
     
-    // 5. User Profile (Append to sidebar bottom if not present)
+    const a = document.createElement('a');
+    a.href = resolvePath(module.url);
+    
+    let isActive = false;
+    const currentPath = window.location.pathname;
+    
+    // Special case for home
+    if (module.id === 'home' && (currentPath.endsWith('/platform/') || currentPath.endsWith('home.html'))) {
+        isActive = true;
+    } else if (module.url && currentPath.includes(module.url) && module.id !== 'home') {
+        isActive = true;
+    }
+
+    a.className = `nav-link ${isActive ? 'active' : ''}`;
+    a.innerHTML = `<span>${module.title}</span>`;
+    
+    li.appendChild(a);
+    return li;
+}
+
+function renderUserProfile() {
     const sidebar = document.querySelector('.sidebar');
     if (sidebar && !sidebar.querySelector('.user-profile')) {
         const user = typeof DataManager !== 'undefined' ? DataManager.getUser() : null;
@@ -181,26 +326,23 @@ function renderSidebar() {
     }
 }
 
-function createNavItem(module) {
-    const li = document.createElement('li');
-    li.className = 'nav-item';
+// Global Helper for creating project
+function createNewProjectGlobal() {
+    if (typeof DataManager === 'undefined') return;
     
-    const a = document.createElement('a');
-    a.href = resolvePath(module.url);
-    
-    let isActive = false;
-    const currentPath = window.location.pathname;
-    
-    // Special case for home
-    if (module.id === 'home' && (currentPath.endsWith('/platform/') || currentPath.endsWith('home.html'))) {
-        isActive = true;
-    } else if (currentPath.includes(module.url) && module.id !== 'home') {
-        isActive = true;
+    const name = prompt('Название нового проекта:');
+    if (name) {
+        DataManager.createProject(name);
+        // Refresh sidebar
+        renderSidebar();
+        // Go to new project
+        // DataManager automatically sets current project on create? No, check implementation.
+        // Usually we want to switch to it.
+        const projects = DataManager.getProjects();
+        const newProj = projects[projects.length - 1]; // Assuming appended
+        if (newProj) {
+            DataManager.setCurrentProjectId(newProj.id);
+            window.location.href = 'project.html';
+        }
     }
-
-    a.className = `nav-link ${isActive ? 'active' : ''}`;
-    a.innerHTML = `<span>${module.icon}</span> ${module.title}`;
-    
-    li.appendChild(a);
-    return li;
 }

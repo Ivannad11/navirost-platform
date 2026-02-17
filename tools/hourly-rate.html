@@ -127,7 +127,7 @@
     </div>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -294,6 +294,22 @@
             DataManager.updateProject(currentProjectId, 'hourly-rate', data);
             alert('Расчет сохранен в проект!');
         }
+
+        // Load saved data
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (currentProjectId) {
+                const project = DataManager.getProject(currentProjectId);
+                if (project && project.hourlyRateData) {
+                    const d = project.hourlyRateData;
+                    if(d.desiredIncome) document.getElementById('desiredIncome').value = d.desiredIncome;
+                    if(d.workingHours) document.getElementById('workingHours').value = d.workingHours;
+                    if(d.businessExpenses) document.getElementById('businessExpenses').value = d.businessExpenses;
+                    if(d.taxRate) document.getElementById('taxRate').value = d.taxRate;
+                    calculate();
+                }
+            }
+        });
     </script>
 </body>
 </html>

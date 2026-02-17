@@ -3,190 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROI Калькулятор — навырост.</title>
-    <link rel="stylesheet" href="../../assets/css/styles.css">
-    <link rel="stylesheet" href="../../assets/css/sidebar.css">
-    <link rel="stylesheet" href="../css/calculators.css">
+    <title>ROI калькулятор онлайн — Расчёт окупаемости инвестиций | Навырост</title>
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../platform/css/calculators.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💰</text></svg>">
+    
+    <style>
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        .calc-header {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+        
+        .calc-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .calc-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 100%;
+            margin: 0;
+            text-align: left;
+        }
+        
+        .calc-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+        
+        .calc-inputs,
+        .calc-results {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .calc-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .result-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .result-value {
+            font-size: 24px;
+        }
+        
+        .result-value.positive {
+            color: var(--status-success-text);
+        }
+        
+        .result-value.negative {
+            color: #DC2626;
+        }
+        
+        .cta-block {
+            background: linear-gradient(135deg, #F4F4F5 0%, #FFFFFF 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 32px;
+            color: var(--text-primary);
+        }
+        
+        .cta-block h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .cta-block p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            opacity: 1;
+        }
+        
+        @media (max-width: 1024px) {
+            .calc-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <nav class="sidebar">
-            <a href="../home.html" class="sidebar-logo">навырост<span>.</span></a>
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container no-sidebar-right">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../../index.html" class="sidebar-logo">навырост.</a>
             <ul class="nav-menu">
                 <!-- Populated by sidebar-logic.js -->
             </ul>
-            <div class="user-profile">
-                <div class="avatar">И</div>
-                <div class="user-info">
-                    <div class="user-name">Иван Петров</div>
-                    <div class="user-role">Free Plan</div>
-                </div>
-            </div>
-        </nav>
-        
+        </aside>
+
+        <!-- Main Content -->
         <main class="main-content">
-            <div class="page-header">
-                <h1>ROI Калькулятор</h1>
-                <p class="page-subtitle">Рассчитайте возврат инвестиций и срок окупаемости</p>
-            </div>
+            <div class="calculator-container">
+                <div class="calc-header">
+                    <h1>ROI калькулятор</h1>
+                    <p>Рассчитайте возврат инвестиций (ROI) и окупаемость вложений.</p>
+                </div>
 
-            <div class="content-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Входные данные</h3>
+                <div class="calc-layout">
+                    <!-- Левая колонка: Ввод данных -->
+                    <div class="calc-inputs">
+                        <h3 class="calc-section-title">Введите данные</h3>
+                        
+                        <div class="form-group">
+                            <label>Сумма инвестиций, ₽</label>
+                            <input type="number" id="investment" class="form-input" placeholder="100000" value="100000">
+                            <div class="helper-text">Сколько вложили (маркетинг, оборудование, проект)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Выручка от инвестиций, ₽</label>
+                            <input type="number" id="revenue" class="form-input" placeholder="250000" value="250000">
+                            <div class="helper-text">Сколько заработали благодаря этим вложениям</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Расходы на реализацию, ₽</label>
+                            <input type="number" id="costs" class="form-input" placeholder="50000" value="50000">
+                            <div class="helper-text">Дополнительные затраты (производство, доставка, зарплаты)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Период (месяцев)</label>
+                            <input type="number" id="period" class="form-input" placeholder="6" value="6">
+                            <div class="helper-text">За сколько месяцев получена эта выручка</div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label class="form-label">Первоначальная инвестиция (₽)</label>
-                            <input type="number" class="form-input" id="initialInvestment" placeholder="100,000" value="100000">
-                            <div class="form-help">Сумма, которую вы инвестируете в проект</div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Ежегодный доход от инвестиции (₽)</label>
-                            <input type="number" class="form-input" id="annualRevenue" placeholder="30,000" value="30000">
-                            <div class="form-help">Сколько денег проект принесет в год</div>
+                    <!-- Правая колонка: Результаты -->
+                    <div class="calc-results">
+                        <h3 class="calc-section-title">Результаты</h3>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Чистая прибыль</div>
+                            <div class="result-value" id="res_profit">0 ₽</div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Ежегодные расходы (₽)</label>
-                            <input type="number" class="form-input" id="annualExpenses" placeholder="5,000" value="5000">
-                            <div class="form-help">Обслуживание, аренда, персонал и другие расходы</div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">ROI (возврат инвестиций)</div>
+                            <div class="result-value" id="res_roi">0%</div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Срок инвестиции (лет)</label>
-                            <input type="number" class="form-input" id="investmentPeriod" placeholder="5" value="5">
-                            <div class="form-help">На сколько лет вы планируете инвестицию</div>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Срок окупаемости</div>
+                            <div class="result-value" id="res_payback">-</div>
                         </div>
-
-                        <button class="btn-primary" onclick="calculateROI()">Рассчитать ROI</button>
+                        
+                        <div class="result-card">
+                            <div class="result-label">Рентабельность</div>
+                            <div class="result-value" id="res_margin">0%</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Результаты расчета</h3>
-                    </div>
-                    <div class="card-body">
-                        <div id="results" style="display: none;">
-                            <div class="metric-card">
-                                <div class="metric-label">Чистая прибыль</div>
-                                <div class="metric-value" id="totalProfit">—</div>
-                            </div>
-
-                            <div class="metric-card">
-                                <div class="metric-label">ROI</div>
-                                <div class="metric-value" id="roiPercentage">—</div>
-                            </div>
-
-                            <div class="metric-card">
-                                <div class="metric-label">Годовой ROI</div>
-                                <div class="metric-value" id="annualRoi">—</div>
-                            </div>
-
-                            <div class="metric-card">
-                                <div class="metric-label">Срок окупаемости</div>
-                                <div class="metric-value" id="paybackPeriod">—</div>
-                            </div>
-
-                            <div class="metric-card">
-                                <div class="metric-label">Общий доход за период</div>
-                                <div class="metric-value" id="totalRevenue">—</div>
-                            </div>
-
-                            <div class="metric-card">
-                                <div class="metric-label">Чистая прибыль в год</div>
-                                <div class="metric-value" id="annualProfit">—</div>
-                            </div>
-
-                            <div id="roiAnalysis" class="explanation-box">
-                                <h4>Анализ инвестиции</h4>
-                                <div id="roiAnalysisText"></div>
-                            </div>
-                        </div>
-
-                        <div id="noResults" class="no-results">
-                            <div class="no-results-icon">📈</div>
-                            <div class="no-results-text">Заполните форму и нажмите "Рассчитать ROI"</div>
-                        </div>
-                    </div>
+                <!-- CTA блок -->
+                <div class="cta-block">
+                    <h3>Сохранить расчет?</h3>
+                    <p>Сохраните данные в проект для дальнейшего анализа.</p>
+                    <button class="btn-primary" onclick="saveToProject()">
+                        Сохранить в проект
+                    </button>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Scripts -->
     <script src="../../assets/js/data-manager.js"></script>
     <script src="../../assets/js/app-config.js"></script>
     <script src="../../assets/js/sidebar-logic.js"></script>
+    <script src="../../assets/js/modal.js"></script>
+
     <script>
-        if (!localStorage.getItem('user')) {
-            window.location.href = '../auth/login.html';
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        function calculateROI() {
-            // Get input values
-            const initialInvestment = parseFloat(document.getElementById('initialInvestment').value) || 0;
-            const annualRevenue = parseFloat(document.getElementById('annualRevenue').value) || 0;
-            const annualExpenses = parseFloat(document.getElementById('annualExpenses').value) || 0;
-            const investmentPeriod = parseFloat(document.getElementById('investmentPeriod').value) || 0;
+        // Auth Check
+        if (!DataManager.getUser()) {
+            window.location.href = '../../auth/login.html';
+        }
 
-            // 1. Чистый доход в год = Ежегодный доход - Ежегодные расходы
-            const annualNetIncome = annualRevenue - annualExpenses;
-            
-            // 2. Общий доход за период = Чистый доход в год × Срок (лет)
-            const totalIncome = annualNetIncome * investmentPeriod;
-            
-            // 3. Чистая прибыль = Общий доход - Первоначальная инвестиция
-            const netProfit = totalIncome - initialInvestment;
-            
-            // 4. ROI = (Чистая прибыль / Первоначальная инвестиция) × 100%
-            const roi = initialInvestment > 0 ? (netProfit / initialInvestment) * 100 : 0;
-            
-            // 5. Годовой ROI = ROI / Срок (лет)
-            const annualRoi = investmentPeriod > 0 ? roi / investmentPeriod : 0;
-            
-            // 6. Срок окупаемости = Первоначальная инвестиция / Чистый доход в год (в годах)
-            const paybackYears = annualNetIncome > 0 ? initialInvestment / annualNetIncome : 0;
+        const inputs = ['investment', 'revenue', 'costs', 'period'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
+        });
 
-            // Display results
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('noResults').style.display = 'none';
+        function formatMoney(value) {
+            return new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
 
-            document.getElementById('totalProfit').textContent = '₽' + Math.round(netProfit).toLocaleString();
-            document.getElementById('roiPercentage').textContent = roi.toFixed(1) + '%';
-            document.getElementById('annualRoi').textContent = annualRoi.toFixed(1) + '%';
-            document.getElementById('paybackPeriod').textContent = paybackYears.toFixed(1) + ' лет';
-            document.getElementById('totalRevenue').textContent = '₽' + Math.round(totalIncome).toLocaleString();
-            document.getElementById('annualProfit').textContent = '₽' + Math.round(annualNetIncome).toLocaleString();
+        function calculate() {
+            const investment = parseFloat(document.getElementById('investment').value) || 0;
+            const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+            const costs = parseFloat(document.getElementById('costs').value) || 0;
+            const period = parseFloat(document.getElementById('period').value) || 1;
 
-            // ROI Analysis
-            let analysisText = '';
-            if (roi > 50) {
-                analysisText = 'Отличная инвестиция! ROI выше 50% указывает на высокую доходность.';
-            } else if (roi > 20) {
-                analysisText = 'Хорошая инвестиция! ROI между 20-50% считается приемлемым для большинства бизнесов.';
-            } else if (roi > 0) {
-                analysisText = 'Инвестиция окупается, но доходность ниже среднерыночной. Рассмотрите альтернативы.';
-            } else {
-                analysisText = 'Инвестиция не окупается. Подумайте о снижении затрат или увеличении дохода.';
+            const profit = revenue - costs - investment;
+            const roi = investment > 0 ? ((profit / investment) * 100) : 0;
+            const monthlyCashflow = (revenue - costs) / period;
+            const payback = monthlyCashflow > 0 ? (investment / monthlyCashflow) : 0;
+            const margin = revenue > 0 ? ((profit / revenue) * 100) : 0;
+
+            const profitEl = document.getElementById('res_profit');
+            profitEl.textContent = formatMoney(profit);
+            profitEl.className = 'result-value ' + (profit > 0 ? 'positive' : 'negative');
+            
+            const roiEl = document.getElementById('res_roi');
+            roiEl.textContent = roi.toFixed(1) + '%';
+            roiEl.className = 'result-value ' + (roi > 0 ? 'positive' : 'negative');
+            
+            document.getElementById('res_payback').textContent = payback > 0 ? payback.toFixed(1) + ' мес' : 'Не окупается';
+            
+            const marginEl = document.getElementById('res_margin');
+            marginEl.textContent = margin.toFixed(1) + '%';
+            marginEl.className = 'result-value ' + (margin > 0 ? 'positive' : 'negative');
+        }
+
+        calculate();
+
+        function saveToProject() {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (!currentProjectId) {
+                alert('Пожалуйста, выберите проект в меню слева или создайте новый.');
+                return;
             }
 
-            if (paybackYears <= 1) {
-                analysisText += ' Срок окупаемости менее года - это отличный показатель.';
-            } else if (paybackYears <= 3) {
-                analysisText += ' Срок окупаемости 1-3 года считается приемлемым для большинства инвестиций.';
-            } else {
-                analysisText += ' Срок окупаемости более 3 лет требует тщательного анализа рисков.';
+            const data = {
+                investment: parseFloat(document.getElementById('investment').value) || 0,
+                revenue: parseFloat(document.getElementById('revenue').value) || 0,
+                costs: parseFloat(document.getElementById('costs').value) || 0,
+                period: parseFloat(document.getElementById('period').value) || 0,
+                roi: parseFloat(document.getElementById('res_roi').textContent.replace(/[^\d.-]/g, '')) || 0
+            };
+
+            DataManager.updateProject(currentProjectId, 'roi-calculator', data);
+            alert('Расчет сохранен в проект!');
+        }
+
+        // Load saved data
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (currentProjectId) {
+                const project = DataManager.getProject(currentProjectId);
+                if (project && project.roiCalculatorData) {
+                    const d = project.roiCalculatorData;
+                    if(d.investment) document.getElementById('investment').value = d.investment;
+                    if(d.revenue) document.getElementById('revenue').value = d.revenue;
+                    if(d.costs) document.getElementById('costs').value = d.costs;
+                    if(d.period) document.getElementById('period').value = d.period;
+                    calculate();
+                }
             }
-
-            document.getElementById('roiAnalysisText').textContent = analysisText;
-        }
-
-        // Initialize sidebar
-        if (typeof renderSidebar === 'function') {
-            renderSidebar();
-        }
+        });
     </script>
 </body>
 </html>

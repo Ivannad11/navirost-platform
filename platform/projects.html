@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои проекты — навырост.</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/modal.css">
+    <style>
+        .projects-layout {
+            padding: 24px 40px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 1px;
+        }
+
+        .filter-item {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .filter-item:hover { color: var(--text-primary); }
+        .filter-item.active { 
+            color: var(--text-primary); 
+            border-bottom-color: var(--text-primary);
+        }
+
+        /* Table */
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-surface);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+        }
+
+        .projects-table th, .projects-table td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 14px;
+        }
+
+        .projects-table th {
+            background: var(--bg-subtle);
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .projects-table tr:last-child td { border-bottom: none; }
+        .projects-table tr:hover td { background: var(--bg-subtle); cursor: pointer; }
+
+        .project-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .project-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #DCFCE7;
+            color: #166534;
+        }
+        .status-badge.archived { background: var(--bg-tertiary); color: var(--text-secondary); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-tertiary);
+        }
+        
+        .action-btn-icon {
+            padding: 6px;
+            border-radius: 4px;
+            color: var(--text-tertiary);
+            transition: all 0.2s;
+        }
+        .action-btn-icon:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container no-sidebar-right">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Dynamically populated -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="projects-layout">
+                <div class="page-header">
+                    <div class="header-title">Мои проекты</div>
+                    <button class="btn-primary" onclick="createNewProject()">+ Создать проект</button>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-item active" onclick="filterProjects('all', this)">Все</div>
+                    <div class="filter-item" onclick="filterProjects('active', this)">Активные</div>
+                    <div class="filter-item" onclick="filterProjects('archived', this)">Архив</div>
+                </div>
+
+                <div id="projectsContainer">
+                    <!-- Table injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        if (!DataManager.getUser()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        let currentFilter = 'all';
+
+        function renderProjects() {
+            const projects = DataManager.getProjects();
+            const container = document.getElementById('projectsContainer');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
+                        <div style="margin-bottom: 8px; font-weight: 500;">У вас пока нет проектов</div>
+                        <button class="btn-secondary" onclick="createNewProject()">Создать первый проект</button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Apply filter (mock archived status as it's not in data model yet, assuming all active)
+            const filtered = projects.filter(p => {
+                if (currentFilter === 'all') return true;
+                if (currentFilter === 'active') return !p.archived;
+                if (currentFilter === 'archived') return p.archived;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state">Нет проектов в этой категории</div>`;
+                return;
+            }
+
+            let html = `
+                <table class="projects-table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Дата создания</th>
+                            <th>Выручка (план)</th>
+                            <th>Прибыль (план)</th>
+                            <th>Статус</th>
+                            <th style="text-align: right;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filtered.forEach(p => {
+                const revenue = p.stats && p.stats.revenue ? DataManager.formatMoney(p.stats.revenue) : '—';
+                const profit = p.stats && p.stats.profit ? DataManager.formatMoney(p.stats.profit) : '—';
+                const date = new Date(p.created).toLocaleDateString('ru-RU');
+                const status = p.archived ? 'Архив' : 'Активен';
+                const statusClass = p.archived ? 'archived' : '';
+
+                html += `
+                    <tr onclick="openProject('${p.id}')">
+                        <td>
+                            <div class="project-name-cell">
+                                <span class="project-color" style="background: ${p.color || '#6366F1'}"></span>
+                                ${p.name}
+                            </div>
+                        </td>
+                        <td>${date}</td>
+                        <td>${revenue}</td>
+                        <td>${profit}</td>
+                        <td><span class="status-badge ${statusClass}">${status}</span></td>
+                        <td style="text-align: right;">
+                            <button class="action-btn-icon" onclick="event.stopPropagation(); deleteProj('${p.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function filterProjects(filter, el) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            renderProjects();
+        }
+
+        function createNewProject() {
+            const name = prompt('Введите название проекта:');
+            if (name) {
+                DataManager.createProject(name);
+                renderProjects();
+                Modal.showToast('Проект создан');
+            }
+        }
+
+        function openProject(id) {
+            window.location.href = `project.html?id=${id}`;
+        }
+
+        function deleteProj(id) {
+            if(confirm('Вы уверены? Это действие нельзя отменить.')) {
+                DataManager.deleteProject(id);
+                renderProjects();
+                Modal.showToast('Проект удален');
+            }
+        }
+
+        renderProjects();
+    </script>
+</body>
+</html>

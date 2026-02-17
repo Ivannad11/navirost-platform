@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Документы — навырост.</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/modal.css">
+    <style>
+        /* Document Management Layout */
+        .doc-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            height: calc(100vh - 140px);
+        }
+
+        /* Sidebar */
+        .doc-sidebar {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            font-weight: 600;
+            margin: 16px 0 8px 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-subtle);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--bg-accent-subtle);
+            color: var(--text-accent);
+            font-weight: 500;
+        }
+
+        .nav-item-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .project-color {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .count-badge {
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .nav-item.active .count-badge {
+            background: var(--bg-surface);
+            color: var(--text-accent);
+        }
+
+        /* Main Area */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-primary { background: var(--text-primary); color: var(--bg-body); }
+        .btn-secondary { background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-primary); }
+        .action-btn:hover { opacity: 0.9; }
+
+        /* Document List */
+        .doc-list-container {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .doc-list-header {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: grid;
+            grid-template-columns: 40px 3fr 1.5fr 1.5fr 1fr;
+            gap: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            background: var(--bg-subtle);
+        }
+
+        .doc-row {
+            display: grid;
+            grid-template-columns: 40px 3fr 1.5fr 1.5fr 1fr;
+            gap: 16px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.1s;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .doc-row:hover { background: var(--bg-subtle); }
+        .doc-row:last-child { border-bottom: none; }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: var(--bg-tertiary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-tertiary);
+            text-align: center;
+            padding: 40px;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+
+        /* Views */
+        .view-section { display: none; height: 100%; }
+        .view-section.active { display: block; }
+
+        @media (max-width: 1024px) {
+            .doc-layout { grid-template-columns: 1fr; }
+            .doc-sidebar { display: none; }
+            .doc-list-header, .doc-row { grid-template-columns: 40px 1fr auto; }
+            .col-hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="#" class="sidebar-logo">навырост.</a>
+        <button class="burger-btn" onclick="toggleSidebar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container no-sidebar-right">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="sidebar-logo">навырост.</a>
+            <ul class="nav-menu">
+                <!-- Dynamically populated -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <div class="welcome-text">
+                    <h1 style="font-size: 24px; font-weight: 600;">Документы проекта</h1>
+                    <div class="date-text">Храните все файлы по проектам в одном месте</div>
+                </div>
+            </div>
+            
+            <div class="doc-layout">
+                <!-- Left Sidebar -->
+                <div class="doc-sidebar">
+                    <div class="nav-item active" onclick="switchView('all', this)">
+                        <div style="display:flex; align-items:center;">
+                            <span class="nav-item-icon">🗂</span> Все документы
+                        </div>
+                    </div>
+                    
+                    <div class="nav-item" onclick="switchView('templates', this)">
+                        <div style="display:flex; align-items:center;">
+                            <span class="nav-item-icon">✨</span> Шаблоны
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section-title">Проекты</div>
+                    
+                    <div id="projectList">
+                        <!-- Projects injected here -->
+                    </div>
+
+                    <div class="nav-item" onclick="createNewProject()" style="color: var(--text-accent); margin-top: 8px;">
+                        <div style="display:flex; align-items:center;">
+                            <span class="nav-item-icon">+</span> Новый проект
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content -->
+                <div class="content-area">
+                    
+                    <!-- View: Document List (Project or All) -->
+                    <div id="listView" class="view-section active">
+                        <div class="content-header">
+                            <div class="header-title" id="currentViewTitle">
+                                🗂 Все документы
+                            </div>
+                            <div class="actions" style="display: flex; gap: 12px;">
+                                <button class="action-btn btn-secondary" onclick="addLink()">
+                                    <span>🔗</span> Ссылка
+                                </button>
+                                <button class="action-btn btn-secondary" onclick="triggerUpload()">
+                                    <span>☁️</span> Загрузить
+                                </button>
+                                <button class="action-btn btn-primary" onclick="switchView('templates')">
+                                    <span>+</span> Создать
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="doc-list-container">
+                            <div class="doc-list-header">
+                                <div></div>
+                                <div>Название</div>
+                                <div class="col-hide-mobile">Тип</div>
+                                <div class="col-hide-mobile">Дата</div>
+                                <div style="text-align: right;"></div>
+                            </div>
+                            <div class="doc-list-body" id="docListBody">
+                                <!-- Docs injected here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View: Templates Grid -->
+                    <div id="templatesView" class="view-section">
+                        <div class="content-header">
+                            <div class="header-title">
+                                <button onclick="goBack()" style="background:none; border:none; cursor:pointer; font-size:18px; margin-right:8px;">←</button>
+                                Выберите шаблон
+                            </div>
+                        </div>
+                        
+                        <div class="doc-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px;">
+                            <div class="doc-card" onclick="openEditor('nda')" style="background:var(--bg-surface); padding:24px; border-radius:12px; border:1px solid var(--border-subtle); cursor:pointer;">
+                                <div style="font-size:24px; margin-bottom:12px;">🔒</div>
+                                <div style="font-weight:600; margin-bottom:8px;">NDA</div>
+                                <div style="font-size:13px; color:var(--text-secondary);">Соглашение о неразглашении</div>
+                            </div>
+                            
+                            <div class="doc-card" onclick="openEditor('service')" style="background:var(--bg-surface); padding:24px; border-radius:12px; border:1px solid var(--border-subtle); cursor:pointer;">
+                                <div style="font-size:24px; margin-bottom:12px;">🤝</div>
+                                <div style="font-weight:600; margin-bottom:8px;">Договор услуг</div>
+                                <div style="font-size:13px; color:var(--text-secondary);">Для фрилансеров и ИП</div>
+                            </div>
+                            
+                            <div class="doc-card" onclick="openEditor('invoice')" style="background:var(--bg-surface); padding:24px; border-radius:12px; border:1px solid var(--border-subtle); cursor:pointer;">
+                                <div style="font-size:24px; margin-bottom:12px;">🧾</div>
+                                <div style="font-weight:600; margin-bottom:8px;">Счет на оплату</div>
+                                <div style="font-size:13px; color:var(--text-secondary);">Автоматический расчет</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(this)">
+
+    <script src="../assets/js/data-manager.js"></script>
+    <script src="../assets/js/app-config.js"></script>
+    <script src="../assets/js/sidebar-logic.js"></script>
+    <script src="../assets/js/modal.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        if (!DataManager.getUser()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        // --- Data ---
+        let projects = [];
+        let docs = [];
+        let currentProjectId = null;
+
+        // --- Init ---
+        loadData();
+        renderProjects();
+        renderDocs();
+
+        function loadData() {
+            projects = DataManager.getProjects();
+            // If no projects, maybe suggest creating one or create a default demo one?
+            if (projects.length === 0) {
+                // Optional: Create a default project for new users
+                // DataManager.createProject('Мой первый проект');
+                // projects = DataManager.getProjects();
+            }
+            docs = DataManager.getDocuments(); // Get all documents
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projectList');
+            container.innerHTML = '';
+            
+            projects.forEach(p => {
+                const count = docs.filter(d => d.projectId === p.id).length;
+                const div = document.createElement('div');
+                div.className = 'nav-item';
+                // Highlight if active
+                if (currentProjectId === p.id) div.classList.add('active');
+                
+                div.onclick = () => switchView('project', div, p.id);
+                div.innerHTML = `
+                    <div style="display:flex; align-items:center;">
+                        <span class="project-color" style="background:${p.color || '#6366F1'}"></span>
+                        ${p.name}
+                    </div>
+                    <span class="count-badge">${count}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderDocs(projectId = null) {
+            const container = document.getElementById('docListBody');
+            container.innerHTML = '';
+            
+            // Re-fetch to ensure fresh data
+            docs = DataManager.getDocuments(); 
+            
+            const filtered = projectId ? docs.filter(d => d.projectId === projectId) : docs;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <div>В этом проекте пока нет документов</div>
+                        <div style="font-size:13px; margin-top:8px;">Загрузите файл или создайте новый</div>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(doc => {
+                const row = document.createElement('div');
+                row.className = 'doc-row';
+                
+                // Determine icon based on type
+                let icon = '📄';
+                if (doc.type === 'PDF') icon = '📄';
+                if (doc.type === 'DOCX') icon = '📝';
+                if (doc.type === 'XLSX') icon = '📊';
+                if (doc.type === 'IMG') icon = '🖼';
+                if (doc.type === 'LINK') icon = '🔗';
+
+                // Click action: if it's a generated doc (has template), open editor. 
+                // If it's a link, open in new tab.
+                // Else show toast.
+                if (doc.template) {
+                     row.onclick = () => window.location.href = `document-editor.html?type=${doc.template}&mode=view&id=${doc.id}&title=${encodeURIComponent(doc.title)}`;
+                } else if (doc.type === 'LINK') {
+                     row.onclick = () => window.open(doc.url || doc.title, '_blank');
+                } else {
+                     row.onclick = () => Modal.showToast(`Скачивание файла: ${doc.title}`);
+                }
+                
+                row.innerHTML = `
+                    <div class="file-icon">${icon}</div>
+                    <div style="font-weight: 500;">${doc.title}</div>
+                    <div class="col-hide-mobile" style="font-size:12px; color:var(--text-secondary); background:var(--bg-tertiary); padding:2px 6px; border-radius:4px; width:fit-content;">${doc.type}</div>
+                    <div class="col-hide-mobile" style="color:var(--text-tertiary);">${new Date(doc.created).toLocaleDateString('ru-RU')}</div>
+                    <div style="text-align: right; color:var(--text-tertiary);">⋮</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function switchView(viewName, element = null, projectId = null) {
+            // UI Active State
+            if (element) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            // Views Logic
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            
+            if (viewName === 'templates') {
+                document.getElementById('templatesView').classList.add('active');
+            } else {
+                document.getElementById('listView').classList.add('active');
+                
+                if (viewName === 'all') {
+                    currentProjectId = null;
+                    document.getElementById('currentViewTitle').innerHTML = '🗂 Все документы';
+                    renderDocs(null);
+                } else if (viewName === 'project') {
+                    currentProjectId = projectId;
+                    const proj = projects.find(p => p.id === projectId);
+                    document.getElementById('currentViewTitle').innerHTML = `
+                        <span class="project-color" style="background:${proj.color || '#6366F1'}; width:12px; height:12px;"></span>
+                        ${proj.name}
+                    `;
+                    renderDocs(projectId);
+                }
+            }
+        }
+
+        function createNewProject() {
+            const name = prompt('Введите название проекта:');
+            if (name) {
+                DataManager.createProject(name);
+                loadData(); // Reload projects
+                renderProjects();
+                Modal.showToast('Проект создан');
+            }
+        }
+
+        function addLink() {
+            if (!currentProjectId) {
+                if (projects.length > 0) {
+                     currentProjectId = projects[0].id;
+                     Modal.showToast(`Ссылка будет добавлена в проект: ${projects[0].name}`);
+                } else {
+                     alert('Сначала создайте проект!');
+                     return;
+                }
+            }
+
+            const url = prompt('Вставьте ссылку (Google Docs, Figma и др.):');
+            if (url) {
+                let name = prompt('Введите название для ссылки:', 'Новая ссылка');
+                if (!name) name = url;
+
+                const newDoc = {
+                    projectId: currentProjectId,
+                    title: name,
+                    type: 'LINK',
+                    url: url,
+                    icon: '🔗'
+                };
+                
+                DataManager.saveDocument(newDoc);
+                renderDocs(currentProjectId);
+                renderProjects();
+                Modal.showToast('Ссылка успешно добавлена');
+            }
+        }
+
+        function triggerUpload() {
+            if (!currentProjectId) {
+                // If in "All Docs", ask user to select a project or default to first?
+                // Ideally we should show a modal to select project.
+                // For MVP, just require selecting a project first or alert.
+                if (projects.length > 0) {
+                     // Default to first
+                     currentProjectId = projects[0].id;
+                     Modal.showToast(`Загрузка в проект: ${projects[0].name}`);
+                } else {
+                     alert('Сначала создайте проект!');
+                     return;
+                }
+            }
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const newDoc = {
+                    projectId: currentProjectId,
+                    title: file.name,
+                    type: file.name.split('.').pop().toUpperCase(),
+                    // created handled by DataManager
+                };
+                
+                DataManager.saveDocument(newDoc);
+                renderDocs(currentProjectId);
+                renderProjects(); // Update counts
+                Modal.showToast('Файл успешно загружен');
+                input.value = ''; // Reset
+            }
+        }
+
+        function openEditor(type) {
+             // Pass currentProjectId if selected
+             let url = `document-editor.html?type=${type}&mode=edit`;
+             if (currentProjectId) {
+                 url += `&projectId=${currentProjectId}`;
+             }
+             window.location.href = url;
+        }
+
+        function goBack() {
+            // Determine where to go back to (Project or All)
+            const activeNav = document.querySelector('.doc-sidebar .nav-item.active');
+            if (activeNav) activeNav.click();
+            else switchView('all');
+        }
+
+    </script>
+</body>
+</html>

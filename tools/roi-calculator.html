@@ -135,7 +135,7 @@
     </div>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -311,6 +311,22 @@
             DataManager.updateProject(currentProjectId, 'roi-calculator', data);
             alert('Расчет сохранен в проект!');
         }
+
+        // Load saved data
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentProjectId = DataManager.getCurrentProjectId();
+            if (currentProjectId) {
+                const project = DataManager.getProject(currentProjectId);
+                if (project && project.roiCalculatorData) {
+                    const d = project.roiCalculatorData;
+                    if(d.investment) document.getElementById('investment').value = d.investment;
+                    if(d.revenue) document.getElementById('revenue').value = d.revenue;
+                    if(d.costs) document.getElementById('costs').value = d.costs;
+                    if(d.period) document.getElementById('period').value = d.period;
+                    calculate();
+                }
+            }
+        });
     </script>
 </body>
 </html>

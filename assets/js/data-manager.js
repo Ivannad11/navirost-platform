@@ -1,5 +1,6 @@
 const DataManager = {
     PROJECTS_KEY: 'navirost_projects',
+    DOCUMENTS_KEY: 'navirost_documents',
     CURRENT_PROJECT_KEY: 'navirost_current_project',
     USER_KEY: 'navirost_user_profile', // Changed from 'user' to avoid conflict/ambiguity, but need to migrate
 
@@ -9,7 +10,15 @@ const DataManager = {
         const legacyUser = localStorage.getItem('user');
         const profile = localStorage.getItem(this.USER_KEY);
         
-        if (profile) return JSON.parse(profile);
+        if (profile) {
+            const user = JSON.parse(profile);
+            // Ensure education object exists
+            if (!user.education) {
+                user.education = {};
+                this.saveUser(user);
+            }
+            return user;
+        }
         
         if (legacyUser) {
             // Migrate
@@ -19,6 +28,7 @@ const DataManager = {
                 city: '',
                 email: 'user@example.com',
                 plan: 'Pro Plan', // Add plan
+                education: {}, // Course progress: { 'courseId': [lessonId, lessonId] }
                 onboarding: {
                     projectCreated: false,
                     unitCalc: false,
@@ -52,6 +62,31 @@ const DataManager = {
         return false;
     },
 
+    // --- Education Management ---
+    completeLesson: function(courseId, lessonId) {
+        const user = this.getUser();
+        if (!user.education) user.education = {};
+        if (!user.education[courseId]) user.education[courseId] = [];
+        
+        if (!user.education[courseId].includes(lessonId)) {
+            user.education[courseId].push(lessonId);
+            this.saveUser(user);
+            return true;
+        }
+        return false;
+    },
+
+    isLessonCompleted: function(courseId, lessonId) {
+        const user = this.getUser();
+        return user.education && user.education[courseId] && user.education[courseId].includes(lessonId);
+    },
+
+    getCourseProgress: function(courseId, totalLessons) {
+        const user = this.getUser();
+        if (!user.education || !user.education[courseId]) return 0;
+        return Math.round((user.education[courseId].length / totalLessons) * 100);
+    },
+
     // --- Project Management ---
     getProjects: function() {
         const data = localStorage.getItem(this.PROJECTS_KEY);
@@ -77,9 +112,13 @@ const DataManager = {
 
     createProject: function(name) {
         const projects = this.getProjects();
+        const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        
         const newProject = {
             id: 'proj_' + Date.now(),
             name: name,
+            color: randomColor,
             created: new Date().toISOString(),
             updated: new Date().toISOString(),
             unitData: null,
@@ -104,18 +143,63 @@ const DataManager = {
         return newProject;
     },
 
+    // --- Document Management ---
+    getDocuments: function(projectId = null) {
+        const data = localStorage.getItem(this.DOCUMENTS_KEY);
+        let docs = data ? JSON.parse(data) : [];
+        if (projectId) {
+            docs = docs.filter(d => d.projectId === projectId);
+        }
+        // Sort by date desc
+        return docs.sort((a, b) => new Date(b.created) - new Date(a.created));
+    },
+
+    getDocument: function(id) {
+        const docs = this.getDocuments();
+        return docs.find(d => d.id === id);
+    },
+
+    saveDocument: function(doc) {
+        let docs = this.getDocuments(); // get all
+        const index = docs.findIndex(d => d.id === doc.id);
+        
+        if (index !== -1) {
+            docs[index] = { ...docs[index], ...doc, updated: new Date().toISOString() };
+        } else {
+            doc.id = doc.id || 'doc_' + Date.now();
+            doc.created = doc.created || new Date().toISOString();
+            doc.updated = new Date().toISOString();
+            docs.push(doc);
+            
+            this.updateUserOnboarding('docGenerated');
+        }
+        
+        localStorage.setItem(this.DOCUMENTS_KEY, JSON.stringify(docs));
+        return doc;
+    },
+
+    deleteDocument: function(id) {
+        let docs = this.getDocuments();
+        docs = docs.filter(d => d.id !== id);
+        localStorage.setItem(this.DOCUMENTS_KEY, JSON.stringify(docs));
+    },
+
     updateProject: function(id, type, data) {
         const projects = this.getProjects();
         const index = projects.findIndex(p => p.id === id);
+        
         if (index !== -1) {
             projects[index].updated = new Date().toISOString();
             
+            // Generic storage: type='break-even' -> projects[index].breakEvenData = data
+            const dataKey = type.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) + 'Data';
+            projects[index][dataKey] = data;
+
+            // Specific stats updates
             if (type === 'unit') {
-                projects[index].unitData = data;
                 if (data.margin) projects[index].stats.margin = data.margin;
                 this.updateUserOnboarding('unitCalc');
             } else if (type === 'pnl') {
-                projects[index].pnlData = data;
                 if (data.revenue) projects[index].stats.revenue = data.revenue;
                 if (data.profit) projects[index].stats.profit = data.profit;
             }
@@ -126,7 +210,7 @@ const DataManager = {
             if (window.SupabaseService && window.SupabaseService.isConnected()) {
                 window.SupabaseService.syncProjects(projects);
             }
-
+            
             return projects[index];
         }
         return null;

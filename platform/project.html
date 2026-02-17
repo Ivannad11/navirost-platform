@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container no-sidebar-right">
         
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -122,7 +122,9 @@
         const toolsGrid = document.getElementById('projectToolsGrid');
         toolsGrid.innerHTML = '';
         
-        const projectTools = AppConfig.modules.filter(m => m.showInProject);
+        // Find the 'tools' module and get its children
+        const toolsModule = AppConfig.modules.find(m => m.id === 'tools');
+        const projectTools = toolsModule && toolsModule.children ? toolsModule.children : [];
         
         projectTools.forEach(m => {
             // Determine status
@@ -130,6 +132,7 @@
             let statusClass = '';
             let statusColor = 'var(--text-tertiary)';
             
+            // Check data presence based on tool id
             if (m.id === 'unit' && project.unitData) {
                 status = 'Заполнено';
                 statusClass = 'done';
@@ -140,11 +143,17 @@
                 statusClass = 'done';
                 statusColor = '#16A34A';
             }
+            // Add other tools checks if needed
 
             const el = document.createElement('div');
             el.className = 'project-card'; // Reuse project card style
             el.style.cursor = 'pointer';
+            
+            // Resolve path for tool url (it is relative to platform root usually, but here we are in platform/ so it works)
+            // AppConfig urls are like 'tools/unit-economics.html'
+            // We are in 'platform/project.html', so 'tools/unit-economics.html' is correct relative path.
             el.onclick = () => window.location.href = m.url;
+            
             el.innerHTML = `
                 <div class="project-top">
                     <div class="project-icon" style="background: var(--bg-secondary);">${m.icon}</div>

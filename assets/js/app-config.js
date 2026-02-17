@@ -9,81 +9,47 @@ const AppConfig = {
             showInSidebar: true
         },
         { 
-            id: 'unit', 
-            title: 'Юнит-экономика', 
+            id: 'projects', 
+            title: 'Мои Проекты', 
+            icon: '🚀', 
+            category: 'main', 
+            showInSidebar: true,
+            children: [
+                { id: 'all_projects', title: 'Все проекты', url: 'projects.html' },
+                { id: 'new_project', title: '+ Новый проект', action: 'createNewProject' }
+            ]
+        },
+        { 
+            id: 'tools', 
+            title: 'Калькуляторы', 
             icon: '🔢', 
-            url: 'tools/unit-economics.html', 
-            desc: 'Расчет стоимости клиента и маржинальности',
-            category: 'tools',
+            category: 'main', 
             showInSidebar: true,
-            showInHome: true,
-            showInProject: true
-        },
-        { 
-            id: 'pnl', 
-            title: 'P&L Отчет', 
-            icon: '💰', 
-            url: 'tools/pnl-report.html', 
-            desc: 'Прогноз прибылей и убытков на 6 месяцев',
-            category: 'tools',
-            showInSidebar: true,
-            showInHome: true,
-            showInProject: true
-        },
-        { 
-            id: 'hourly-rate', 
-            title: 'Калькулятор ставки', 
-            icon: '⏰', 
-            url: 'tools/hourly-rate.html', 
-            desc: 'Расчет почасовой ставки для фрилансеров',
-            category: 'tools',
-            showInSidebar: true,
-            showInHome: true,
-            showInProject: false
-        },
-        { 
-            id: 'roi-calculator', 
-            title: 'ROI Калькулятор', 
-            icon: '📈', 
-            url: 'tools/roi-calculator.html', 
-            desc: 'Расчет возврата инвестиций',
-            category: 'tools',
-            showInSidebar: true,
-            showInHome: true,
-            showInProject: false
-        },
-        { 
-            id: 'break-even', 
-            title: 'Точка безубыточности', 
-            icon: '⚖️', 
-            url: 'tools/break-even.html', 
-            desc: 'Расчет минимального объема продаж',
-            category: 'tools',
-            showInSidebar: true,
-            showInHome: true,
-            showInProject: false
+            children: [
+                { id: 'unit', title: 'Юнит-экономика', url: 'tools/unit-economics.html', icon: '📊' },
+                { id: 'pnl', title: 'P&L Отчет', url: 'tools/pnl-report.html', icon: '💰' },
+                { id: 'hourly', title: 'Калькулятор ставки', url: 'tools/hourly-rate.html', icon: '⏱️' },
+                { id: 'roi', title: 'ROI Калькулятор', url: 'tools/roi-calculator.html', icon: '📈' },
+                { id: 'breakeven', title: 'Точка безубыточности', url: 'tools/break-even.html', icon: '⚖️' }
+            ]
         },
         { 
             id: 'docs', 
             title: 'Документы', 
             icon: '📄', 
-            url: 'resources/documents.html', 
+            url: 'documents.html', 
             desc: 'Шаблоны договоров, счетов и актов',
-            category: 'resources',
-            showInSidebar: true,
-            showInHome: true,
-            showInProject: false
+            category: 'main',
+            showInSidebar: true
         },
         { 
-            id: 'edu', 
+            id: 'learning', 
             title: 'Обучение', 
             icon: '🎓', 
-            url: 'resources/education.html', 
+            url: 'learning.html', 
             desc: 'База знаний и курсы для старта',
-            category: 'resources',
-            showInSidebar: true,
-            showInHome: false,
-            showInProject: false
+            category: 'main',
+            showInSidebar: true
         },
         { 
             id: 'pricing', 
@@ -91,17 +57,15 @@ const AppConfig = {
             icon: '💎', 
             url: 'pricing.html', 
             desc: 'Выберите подходящий тариф',
-            category: 'resources',
-            showInSidebar: true,
-            showInHome: false,
-            showInProject: false
+            category: 'main',
+            showInSidebar: true
         },
         { 
             id: 'settings', 
             title: 'Настройки', 
             icon: '⚙️', 
             url: 'settings.html', 
-            category: 'system',
+            category: 'footer',
             showInSidebar: true
         }
     ]
@@ -112,6 +76,18 @@ window.AppConfig = AppConfig;
 // Load Supabase Client if not present
 (function() {
     if (!document.getElementById('supabase-js')) {
+        // Determine base path for assets
+        let assetsPath = 'assets/js/';
+        const path = window.location.pathname;
+        
+        if (path.includes('/platform/tools/') || path.includes('/platform/resources/')) {
+            assetsPath = '../../assets/js/';
+        } else if (path.includes('/platform/')) {
+            assetsPath = '../assets/js/';
+        } else if (path.includes('/tools/') || path.includes('/auth/')) {
+            assetsPath = '../assets/js/';
+        }
+
         // 1. Supabase
         const script = document.createElement('script');
         script.id = 'supabase-js';
@@ -120,14 +96,7 @@ window.AppConfig = AppConfig;
             console.log('Supabase SDK loaded');
             // Load Service Wrapper
             const serviceScript = document.createElement('script');
-            serviceScript.src = window.location.pathname.includes('/platform/') 
-                ? '../assets/js/services/supabase-service.js' 
-                : 'assets/js/services/supabase-service.js';
-            // Handle deeper nesting
-            if (window.location.pathname.includes('/tools/') || window.location.pathname.includes('/resources/')) {
-                 serviceScript.src = '../../assets/js/services/supabase-service.js';
-            }
-
+            serviceScript.src = assetsPath + 'services/supabase-service.js';
             serviceScript.onload = () => {
                  if (window.SupabaseService) window.SupabaseService.init();
             };
@@ -147,12 +116,7 @@ window.AppConfig = AppConfig;
 
         // 4. AI Advisor
         const aiScript = document.createElement('script');
-        aiScript.src = window.location.pathname.includes('/platform/') 
-                ? '../assets/js/ai/advisor.js' 
-                : 'assets/js/ai/advisor.js';
-        if (window.location.pathname.includes('/tools/') || window.location.pathname.includes('/resources/')) {
-                 aiScript.src = '../../assets/js/ai/advisor.js';
-        }
+        aiScript.src = assetsPath + 'ai/advisor.js';
         document.head.appendChild(aiScript);
     }
 })();
