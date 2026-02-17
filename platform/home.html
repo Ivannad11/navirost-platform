@@ -620,7 +620,7 @@
             </div>
             
             <div class="profile-menu" id="profileMenu">
-                <div class="menu-item" onclick="window.location.href='/platform/settings.html'">⚙️ Настройки</div>
+                <div class="menu-item" onclick="window.location.href='/navirost-platform/platform/settings.html'">⚙️ Настройки</div>
                 <div class="menu-item">💳 Подписка</div>
                 <div class="menu-item danger" onclick="logout()">🚪 Выйти</div>
             </div>
@@ -635,7 +635,7 @@
   <span></span>
 </button>
             <div class="header-left">
-                <a href="/platform/home.html" class="logo">навырост.</a>
+                <a href="/navirost-platform/platform/home.html" class="logo">навырост.</a>
             </div>
             <div class="page-title">
                 <h1>Доброе утро, <span id="user-name">Гость</span>!</h1>
@@ -775,7 +775,7 @@
 
         function openProject(id) {
             DataManager.setCurrentProjectId(id);
-            window.location.href = '/platform/project.html';
+            window.location.href = '/navirost-platform/platform/project.html';
         }
 
         function openQuickTool(type) {
@@ -917,7 +917,7 @@
                     // Make settings step clickable
                     if (stepSettingsEl) {
                         stepSettingsEl.style.cursor = 'pointer';
-                        stepSettingsEl.onclick = () => window.location.href = '/platform/settings.html';
+                        stepSettingsEl.onclick = () => window.location.href = '/navirost-platform/platform/settings.html';
                     }
                 }
 
@@ -1137,7 +1137,7 @@
                     updateDashboard();
                     
                     // Редирект на юнит-экономику с параметром проекта
-                    window.location.href = '/platform/tools/unit-economics.html?project=' + newProject.id;
+                    window.location.href = '/navirost-platform/platform/tools/unit-economics.html?project=' + newProject.id;
                 }
             });
         });
