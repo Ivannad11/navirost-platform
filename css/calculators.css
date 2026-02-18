@@ -12,7 +12,7 @@ select {
   font-size: 16px; /* важно: iOS не зумил при 16px+ */
   border: 1px solid #ddd;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 8px; /* Reduced margin to fit slider */
 }
 
 button {
@@ -20,6 +20,50 @@ button {
   font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+/* Slider styles */
+.input-wrapper {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.range-slider {
+    width: 100%;
+    margin-top: 4px;
+    -webkit-appearance: none;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    outline: none;
+    display: block;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #4F46E5;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: background .15s ease-in-out, transform 0.1s;
+}
+
+.range-slider::-webkit-slider-thumb:active {
+    transform: scale(1.1);
+    background: #4338ca;
+}
+
+.range-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #4F46E5;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: background .15s ease-in-out, transform 0.1s;
 }
 
 /* Общие стили для калькуляторов на мобилке */

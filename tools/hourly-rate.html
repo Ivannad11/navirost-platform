@@ -152,19 +152,28 @@
                         
                         <div class="form-group">
                             <label>Желаемый доход в месяц, ₽</label>
-                            <input type="number" id="desiredIncome" class="form-input" placeholder="150000" value="150000">
+                            <div class="input-wrapper">
+                                <input type="number" id="desiredIncome" class="form-input" placeholder="150000" value="150000">
+                                <input type="range" id="desiredIncome-range" class="range-slider" min="0" max="1000000" step="5000" value="150000">
+                            </div>
                             <div class="helper-text">Сколько хотите получать на руки</div>
                         </div>
                         
                         <div class="form-group">
                             <label>Рабочих часов в месяц</label>
-                            <input type="number" id="workingHours" class="form-input" placeholder="160" value="160">
+                            <div class="input-wrapper">
+                                <input type="number" id="workingHours" class="form-input" placeholder="160" value="160">
+                                <input type="range" id="workingHours-range" class="range-slider" min="0" max="300" step="1" value="160">
+                            </div>
                             <div class="helper-text">Обычно 160 часов (8 часов × 20 рабочих дней)</div>
                         </div>
                         
                         <div class="form-group">
                             <label>Бизнес-расходы в месяц, ₽</label>
-                            <input type="number" id="businessExpenses" class="form-input" placeholder="30000" value="30000">
+                            <div class="input-wrapper">
+                                <input type="number" id="businessExpenses" class="form-input" placeholder="30000" value="30000">
+                                <input type="range" id="businessExpenses-range" class="range-slider" min="0" max="200000" step="1000" value="30000">
+                            </div>
                             <div class="helper-text">Программы, реклама, образование, оборудование</div>
                         </div>
                         
@@ -206,13 +215,36 @@
                     </div>
                 </div>
 
-                <!-- CTA блок -->
-                <div class="cta-block">
+                <div class="cta-block" id="auth-cta" style="display: none;">
                     <h3>Сохранить расчет?</h3>
                     <p>Сохраните данные в проект для дальнейшего анализа.</p>
-                    <button class="btn-primary" onclick="saveToProject()">
-                        Сохранить в проект
-                    </button>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                        <button class="btn-secondary" onclick="exportPDF()" id="pdfBtn" style="border: 1px solid var(--border-strong); padding: 8px 16px; border-radius: 8px; background: white; cursor: pointer; font-size: 13px;">
+                            Скачать PDF
+                        </button>
+                        <button class="btn-primary" onclick="saveToProject()">
+                            Сохранить в проект
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CTA for Guests (Marketing) -->
+                <div class="cta-block guest-marketing" id="guest-cta" style="display: none; background: linear-gradient(135deg, #18181B 0%, #27272A 100%); color: white; border: none;">
+                    <h3 style="color: white; font-size: 20px;">Понравился расчет?</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 24px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        Вы можете скачать этот расчет в PDF бесплатно. Зарегистрируйтесь, чтобы сохранять расчеты в проекты и получить доступ ко всем инструментам.
+                    </p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="exportPDF()" class="btn-primary" style="background: white; color: black; border: none; cursor: pointer;">
+                            Скачать PDF
+                        </button>
+                        <button onclick="window.location.href='../auth/register.html'" class="btn-secondary" style="background: transparent; color: white; border-color: rgba(255,255,255,0.2); cursor: pointer;">
+                            Сохранить в проект
+                        </button>
+                    </div>
+                    <div style="margin-top: 16px; font-size: 12px; opacity: 0.6;">
+                        навырост.рф
+                    </div>
                 </div>
             </div>
         </main>
@@ -223,8 +255,31 @@
     <script src="../assets/js/app-config.js"></script>
     <script src="../assets/js/sidebar-logic.js"></script>
     <script src="../assets/js/modal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = DataManager.getUser();
+            if (user) {
+                document.getElementById('auth-cta').style.display = 'block';
+                
+                const currentProjectId = DataManager.getCurrentProjectId();
+                if (currentProjectId) {
+                    const project = DataManager.getProject(currentProjectId);
+                    if (project && project.hourlyRateData) {
+                        const d = project.hourlyRateData;
+                        if(d.desiredIncome) document.getElementById('desiredIncome').value = d.desiredIncome;
+                        if(d.workingHours) document.getElementById('workingHours').value = d.workingHours;
+                        if(d.businessExpenses) document.getElementById('businessExpenses').value = d.businessExpenses;
+                        if(d.taxRate) document.getElementById('taxRate').value = d.taxRate;
+                        calculate();
+                    }
+                }
+            } else {
+                document.getElementById('guest-cta').style.display = 'block';
+            }
+        });
+
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
@@ -234,8 +289,20 @@
         inputs.forEach(id => {
             const el = document.getElementById(id);
             if(el) {
-                el.addEventListener('input', calculate);
+                el.addEventListener('input', () => {
+                    const range = document.getElementById(id + '-range');
+                    if(range) range.value = el.value;
+                    calculate();
+                });
                 el.addEventListener('change', calculate);
+            }
+            
+            const range = document.getElementById(id + '-range');
+            if(range) {
+                range.addEventListener('input', () => {
+                    if(el) el.value = range.value;
+                    calculate();
+                });
             }
         });
 
@@ -310,6 +377,29 @@
                 }
             }
         });
+        function exportPDF() {
+            const element = document.querySelector('.calculator-container');
+            const btn = document.getElementById('pdfBtn');
+            const originalOverflow = element.style.overflow;
+            
+            const opt = {
+                margin: 10,
+                filename: 'Hourly_Rate_Calculation.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (window.html2pdf) {
+                Modal.setLoading(btn, true);
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Modal.setLoading(btn, false, 'Скачать PDF');
+                    Modal.showToast('PDF файл скачан');
+                });
+            } else {
+                Modal.showToast('Библиотека PDF не загружена', 'error');
+            }
+        }
     </script>
 </body>
 </html>

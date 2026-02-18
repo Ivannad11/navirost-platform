@@ -285,8 +285,9 @@
                     </table>
                 </div>
 
-                <div class="cta-block">
-                    <h3>Действия с отчетом</h3>
+                <div class="cta-block" id="auth-cta" style="display: none;">
+                    <h3>Сохранить расчет?</h3>
+                    <p>Сохраните данные в проект для дальнейшего анализа.</p>
                     <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
                         <button class="btn-secondary" onclick="exportPDF()" id="pdfBtn" style="border: 1px solid var(--border-strong); padding: 8px 16px; border-radius: 8px; background: white; cursor: pointer; font-size: 13px;">
                             Скачать PDF
@@ -294,6 +295,25 @@
                         <button class="btn-primary" onclick="saveToProject()">
                             Сохранить в проект
                         </button>
+                    </div>
+                </div>
+
+                <!-- CTA for Guests (Marketing) -->
+                <div class="cta-block guest-marketing" id="guest-cta" style="display: none; background: linear-gradient(135deg, #18181B 0%, #27272A 100%); color: white; border: none;">
+                    <h3 style="color: white; font-size: 20px;">Понравился расчет?</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 24px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        Вы можете скачать этот расчет в PDF бесплатно. Зарегистрируйтесь, чтобы сохранять расчеты в проекты и получить доступ ко всем инструментам.
+                    </p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="exportPDF()" class="btn-primary" style="background: white; color: black; border: none; cursor: pointer;">
+                            Скачать PDF
+                        </button>
+                        <button onclick="window.location.href='../auth/register.html'" class="btn-secondary" style="background: transparent; color: white; border-color: rgba(255,255,255,0.2); cursor: pointer;">
+                            Сохранить в проект
+                        </button>
+                    </div>
+                    <div style="margin-top: 16px; font-size: 12px; opacity: 0.6;">
+                        навырост.рф
                     </div>
                 </div>
             </div>
@@ -305,8 +325,18 @@
     <script src="../assets/js/app-config.js"></script>
     <script src="../assets/js/sidebar-logic.js"></script>
     <script src="../assets/js/modal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = DataManager.getUser();
+            if (user) {
+                document.getElementById('auth-cta').style.display = 'block';
+            } else {
+                document.getElementById('guest-cta').style.display = 'block';
+            }
+        });
+
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');

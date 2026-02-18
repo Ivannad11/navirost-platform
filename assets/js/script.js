@@ -57,87 +57,79 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-});
 
-// Early Access Form Handler
-const earlyAccessForm = document.getElementById('early-access-form');
-if (earlyAccessForm) {
-    earlyAccessForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const emailInput = document.getElementById('email-input');
-        const messageEl = document.getElementById('form-message');
-        const email = emailInput.value.trim();
-        
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            messageEl.textContent = '❌ Введите корректный email';
-            messageEl.style.color = '#DC2626';
-            return;
-        }
-        
-        let emails = JSON.parse(localStorage.getItem('earlyAccessEmails') || '[]');
-        
-        if (emails.includes(email)) {
-            messageEl.textContent = '⚠️ Этот email уже в списке';
-            messageEl.style.color = '#F59E0B';
-            return;
-        }
-        
-        emails.push(email);
-        localStorage.setItem('earlyAccessEmails', JSON.stringify(emails));
-        
-        messageEl.textContent = '✅ Вы в списке! Напишем, как только запустимся';
-        messageEl.style.color = '#16A34A';
-        emailInput.value = '';
-        
-        console.log('New email registered:', email);
-    });
-}
-
-// Burger Menu
-const burgerBtn = document.getElementById('burger-btn');
-const navLinks = document.getElementById('nav-links');
-
-if (burgerBtn && navLinks) {
-    burgerBtn.addEventListener('click', () => {
-        burgerBtn.classList.toggle('active');
-        navLinks.classList.toggle('active');
-    });
-    
-    navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            burgerBtn.classList.remove('active');
-            navLinks.classList.remove('active');
-        });
-    });
-    
-    document.addEventListener('click', (e) => {
-        if (!burgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
-            burgerBtn.classList.remove('active');
-            navLinks.classList.remove('active');
-        }
-    });
-}
-
-// Бургер-меню (дубликат для совместимости)
-document.addEventListener('DOMContentLoaded', function() {
+    // Burger Menu Logic (Unified)
     const burgerBtn = document.getElementById('burger-btn');
     const navLinks = document.getElementById('nav-links');
-    
-    if (burgerBtn) {
-        burgerBtn.addEventListener('click', function() {
+
+    if (burgerBtn && navLinks) {
+        burgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent immediate closing
             burgerBtn.classList.toggle('active');
-            navLinks.classList.toggle('active');
+            navLinks.classList.toggle('mobile-active'); // Use new class for mobile
+            
+            // Lock body scroll when menu is open
+            if (navLinks.classList.contains('mobile-active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
         });
         
-        // Закрыть меню при клике на ссылку
-        const links = navLinks.querySelectorAll('a');
-        links.forEach(link => {
-            link.addEventListener('click', function() {
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
                 burgerBtn.classList.remove('active');
-                navLinks.classList.remove('active');
+                navLinks.classList.remove('mobile-active');
+                document.body.style.overflow = '';
             });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navLinks.classList.contains('mobile-active') && 
+                !burgerBtn.contains(e.target) && 
+                !navLinks.contains(e.target)) {
+                burgerBtn.classList.remove('active');
+                navLinks.classList.remove('mobile-active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // Early Access Form Handler
+    const earlyAccessForm = document.getElementById('early-access-form');
+    if (earlyAccessForm) {
+        earlyAccessForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('email-input');
+            const messageEl = document.getElementById('form-message');
+            const email = emailInput.value.trim();
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                messageEl.textContent = '❌ Введите корректный email';
+                messageEl.style.color = '#DC2626';
+                return;
+            }
+            
+            let emails = JSON.parse(localStorage.getItem('earlyAccessEmails') || '[]');
+            
+            if (emails.includes(email)) {
+                messageEl.textContent = '⚠️ Этот email уже в списке';
+                messageEl.style.color = '#F59E0B';
+                return;
+            }
+            
+            emails.push(email);
+            localStorage.setItem('earlyAccessEmails', JSON.stringify(emails));
+            
+            messageEl.textContent = '✅ Вы в списке! Напишем, как только запустимся';
+            messageEl.style.color = '#16A34A';
+            emailInput.value = '';
+            
+            console.log('New email registered:', email);
         });
     }
 });

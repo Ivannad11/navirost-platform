@@ -159,31 +159,46 @@
                         
                         <div class="form-group">
                             <label>Средний чек (цена продажи), ₽</label>
-                            <input type="number" id="average-check" class="form-input" placeholder="1000" value="1000">
+                            <div class="input-wrapper">
+                                <input type="number" id="average-check" class="form-input" placeholder="1000" value="1000">
+                                <input type="range" id="average-check-range" class="range-slider" min="0" max="100000" step="100" value="1000">
+                            </div>
                             <div class="helper-text">Сколько клиент платит за одну покупку</div>
                         </div>
                         
                         <div class="form-group">
                             <label>Себестоимость (COGS), ₽</label>
-                            <input type="number" id="cogs" class="form-input" placeholder="400" value="400">
+                            <div class="input-wrapper">
+                                <input type="number" id="cogs" class="form-input" placeholder="400" value="400">
+                                <input type="range" id="cogs-range" class="range-slider" min="0" max="50000" step="50" value="400">
+                            </div>
                             <div class="helper-text">Затраты на производство/закупку товара</div>
                         </div>
                         
                         <div class="form-group">
                             <label>Эквайринг (%)</label>
-                            <input type="number" id="acquiring" class="form-input" placeholder="2" value="2" step="0.1">
+                            <div class="input-wrapper">
+                                <input type="number" id="acquiring" class="form-input" placeholder="2" value="2" step="0.1">
+                                <input type="range" id="acquiring-range" class="range-slider" min="0" max="10" step="0.1" value="2">
+                            </div>
                             <div class="helper-text">Комиссия платёжной системы (обычно 1.5-3%)</div>
                         </div>
                         
                         <div class="form-group">
                             <label>Среднее количество покупок (APC)</label>
-                            <input type="number" id="apc" class="form-input" placeholder="5" value="5">
+                            <div class="input-wrapper">
+                                <input type="number" id="apc" class="form-input" placeholder="5" value="5">
+                                <input type="range" id="apc-range" class="range-slider" min="1" max="50" step="1" value="5">
+                            </div>
                             <div class="helper-text">Сколько раз клиент покупает за всю жизнь</div>
                         </div>
                         
                         <div class="form-group">
                             <label>Стоимость привлечения клиента (CAC), ₽</label>
-                            <input type="number" id="cac" class="form-input" placeholder="800" value="800">
+                            <div class="input-wrapper">
+                                <input type="number" id="cac" class="form-input" placeholder="800" value="800">
+                                <input type="range" id="cac-range" class="range-slider" min="0" max="10000" step="50" value="800">
+                            </div>
                             <div class="helper-text">Сколько тратите на маркетинг чтобы привлечь 1 клиента</div>
                         </div>
                     </div>
@@ -225,16 +240,37 @@
                     </div>
                 </div>
 
-                <!-- CTA блок (Visible only if not logged in - strictly logic to add later, for now keep static but styled) -->
-                <!-- Actually, since this is INSIDE dashboard, the user IS logged in or should be? -->
-                <!-- The original file had a "Register" CTA. If we are in the dashboard, we probably want "Save to Project" CTA. -->
-                
-                <div class="cta-block" id="save-cta">
-                    <h3>Сохранить в проект?</h3>
-                    <p>Выберите проект, чтобы сохранить расчеты и отслеживать динамику.</p>
-                    <button class="btn-primary" onclick="saveToProject()">
-                        Сохранить результат
-                    </button>
+                <!-- CTA for Authenticated Users -->
+                <div class="cta-block" id="auth-cta" style="display: none;">
+                    <h3>Сохранить расчет?</h3>
+                    <p>Сохраните данные в проект для дальнейшего анализа.</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                        <button class="btn-secondary" onclick="exportPDF()" id="pdfBtn" style="border: 1px solid var(--border-strong); padding: 8px 16px; border-radius: 8px; background: white; cursor: pointer; font-size: 13px;">
+                            Скачать PDF
+                        </button>
+                        <button class="btn-primary" onclick="saveToProject()">
+                            Сохранить в проект
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CTA for Guests (Marketing) -->
+                <div class="cta-block guest-marketing" id="guest-cta" style="display: none; background: linear-gradient(135deg, #18181B 0%, #27272A 100%); color: white; border: none;">
+                    <h3 style="color: white; font-size: 20px;">Понравился расчет?</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 24px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        Вы можете скачать этот расчет в PDF бесплатно. Зарегистрируйтесь, чтобы сохранять расчеты в проекты и получить доступ ко всем инструментам.
+                    </p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="exportPDF()" class="btn-primary" style="background: white; color: black; border: none; cursor: pointer;">
+                            Скачать PDF
+                        </button>
+                        <button onclick="window.location.href='../auth/register.html'" class="btn-secondary" style="background: transparent; color: white; border-color: rgba(255,255,255,0.2); cursor: pointer;">
+                            Сохранить в проект
+                        </button>
+                    </div>
+                    <div style="margin-top: 16px; font-size: 12px; opacity: 0.6;">
+                        навырост.рф
+                    </div>
                 </div>
             </div>
 
@@ -246,8 +282,33 @@
     <script src="../assets/js/app-config.js"></script>
     <script src="../assets/js/sidebar-logic.js"></script>
     <script src="../assets/js/modal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = DataManager.getUser();
+            if (user) {
+                document.getElementById('auth-cta').style.display = 'block';
+                
+                // Load data logic
+                const currentProjectId = DataManager.getCurrentProjectId();
+                if (currentProjectId) {
+                    const project = DataManager.getProject(currentProjectId);
+                    if (project && project.unitData) {
+                        const d = project.unitData;
+                        if(d.averageCheck) document.getElementById('average-check').value = d.averageCheck;
+                        if(d.cogs) document.getElementById('cogs').value = d.cogs;
+                        if(d.acquiring) document.getElementById('acquiring').value = d.acquiring;
+                        if(d.apc) document.getElementById('apc').value = d.apc;
+                        if(d.cac) document.getElementById('cac').value = d.cac;
+                        calculateUnitEconomics();
+                    }
+                }
+            } else {
+                document.getElementById('guest-cta').style.display = 'block';
+            }
+        });
+
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
@@ -338,8 +399,24 @@
         }
 
         // Привязка к событиям
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', calculateUnitEconomics);
+        const inputs = ['average-check', 'cogs', 'acquiring', 'apc', 'cac'];
+        inputs.forEach(id => {
+            const numInput = document.getElementById(id);
+            const rangeInput = document.getElementById(id + '-range');
+            
+            if (numInput && rangeInput) {
+                // Sync Number -> Range
+                numInput.addEventListener('input', () => {
+                    rangeInput.value = numInput.value;
+                    calculateUnitEconomics();
+                });
+                
+                // Sync Range -> Number
+                rangeInput.addEventListener('input', () => {
+                    numInput.value = rangeInput.value;
+                    calculateUnitEconomics();
+                });
+            }
         });
 
         // Первоначальный расчет
@@ -383,6 +460,29 @@
                 }
             }
         });
+        function exportPDF() {
+            const element = document.querySelector('.calculator-container');
+            const btn = document.getElementById('pdfBtn');
+            const originalOverflow = element.style.overflow;
+            
+            const opt = {
+                margin: 10,
+                filename: 'Unit_Economics.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (window.html2pdf) {
+                Modal.setLoading(btn, true);
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Modal.setLoading(btn, false, 'Скачать PDF');
+                    Modal.showToast('PDF файл скачан');
+                });
+            } else {
+                Modal.showToast('Библиотека PDF не загружена', 'error');
+            }
+        }
     </script>
 </body>
 </html>
